@@ -7,6 +7,7 @@ import theano
 from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
+from raw_pool_theano import *
 
 import lasagne
 
@@ -145,6 +146,56 @@ class MaxPoolLayer(object):
         self.output=pooled_out
 
 
+class SwitchedMaxPoolLayer(object):
+
+    def __init__(self,inputData,poolsize=(2,2)):
+        self.input=inputData
+
+        switch_out=pool_2d(
+            input=self.input,
+            ds=poolsize,
+            ignore_border=True
+        )
+
+        self.switch=switch_out
+
+        pooled_out=downsample.max_pool_2d(
+            input=self.input,
+            ds=poolsize,
+            ignore_border=True
+        )
+
+        self.output=pooled_out
+
+        """
+        self.input=inputData
+        self.poolsize=poolsize
+
+
+        #self.input_shape=self.input.shape.eval()
+        self.input_shape=[3,3,224,224]
+
+        num_rows=self.input_shape[2]/poolsize[0]
+        num_cols=self.input_shape[3]/poolsize[1]
+
+        out_values = numpy.zeros(self.input_shape, dtype=theano.config.floatX)
+
+        for m in range(self.input_shape[0]):
+            for n in range(self.input_shape[1]):
+                for i in range(num_rows):
+                    for j in range(num_cols):
+
+                        row_start=i*poolsize[0]
+                        row_end=numpy.min(row_start+poolsize[0],num_rows)
+
+                        col_start=j*poolsize[1]
+                        col_end=numpy.min(col_start+poolsize[1],num_cols)
+
+                        data=self.input[m][n][row_start:row_end][col_start:col_end]
+                        out_values[m][n][i][j]=numpy.min(data)
+
+        self.out = theano.shared(value=out_values, borrow=True)
+        """
 
 class PaddedDeConvLayer(object):
 
