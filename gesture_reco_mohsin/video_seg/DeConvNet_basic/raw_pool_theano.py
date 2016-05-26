@@ -114,6 +114,83 @@ def pool_2d(input, ds, ignore_border=None, st=None, padding=(0, 0),
     return tensor.reshape(output, outshp, ndim=input.ndim)
 
 
+def unpool_2d(input, ds, switch, ignore_border=None, st=None, padding=(0, 0),
+            mode='max'):
+    """Downscale the input by a specified factor
+
+    Takes as input a N-D tensor, where N >= 2. It downscales the input image by
+    the specified factor, by keeping only the maximum value of non-overlapping
+    patches of size (ds[0],ds[1])
+
+    Parameters
+    ----------
+    input : N-D theano tensor of input images
+        Input images. Max pooling will be done over the 2 last dimensions.
+    ds : tuple of length 2
+        Factor by which to downscale (vertical ds, horizontal ds).
+        (2,2) will halve the image in each dimension.
+    ignore_border : bool (default None, will print a warning and set to False)
+        When True, (5,5) input with ds=(2,2) will generate a (2,2) output.
+        (3,3) otherwise.
+    st : tuple of two ints
+        Stride size, which is the number of shifts over rows/cols to get the
+        next pool region. If st is None, it is considered equal to ds
+        (no overlap on pooling regions).
+    padding : tuple of two ints
+        (pad_h, pad_w), pad zeros to extend beyond four borders of the
+        images, pad_h is the size of the top and bottom margins, and
+        pad_w is the size of the left and right margins.
+    mode : {'max', 'sum', 'average_inc_pad', 'average_exc_pad'}
+        Operation executed on each window. `max` and `sum` always exclude
+        the padding in the computation. `average` gives you the choice to
+        include or exclude it.
+
+    """
+    if input.ndim < 2:
+        raise NotImplementedError('pool_2d requires a dimension >= 2')
+    if ignore_border is None:
+        warnings.warn(
+            "pool_2d() will have the parameter ignore_border"
+            " default value changed to True (currently"
+            " False). To have consistent behavior with all Theano"
+            " version, explicitly add the parameter ignore_border=True."
+            " On the GPU, using ignore_border=True is needed to use cuDNN."
+            " When using ignore_border=False and not using cuDNN, the only"
+            " GPU combination supported is when"
+            " `ds == st and padding == (0, 0) and mode == 'max'`."
+            " Otherwise, the convolution will be executed on CPU.",
+            stacklevel=2)
+        ignore_border = True
+    if input.ndim == 4:
+        op = UnPool(ds, switch,ignore_border, st=st, padding=padding,
+                  mode=mode)
+        output = op(input)
+        return output
+
+    # extract image dimensions
+    img_shape = input.shape[-2:]
+
+    # count the number of "leading" dimensions, store as dmatrix
+    batch_size = tensor.prod(input.shape[:-2])
+    batch_size = tensor.shape_padright(batch_size, 1)
+
+    # store as 4D tensor with shape: (batch_size,1,height,width)
+    new_shape = tensor.cast(tensor.join(0, batch_size,
+                                        tensor.as_tensor([1]),
+                                        img_shape), 'int64')
+    input_4D = tensor.reshape(input, new_shape, ndim=4)
+
+    # downsample mini-batch of images
+    op = UnPool(ds, switch,ignore_border, st=st, padding=padding,
+              mode=mode)
+    output = op(input_4D)
+
+    # restore to original shape
+    outshp = tensor.join(0, input.shape[:-2], output.shape[-2:])
+    return tensor.reshape(output, outshp, ndim=input.ndim)
+
+
+
 
 class Pool(Op):
     """
@@ -737,6 +814,250 @@ class SwitchedPool(Op):
                                                    x.shape[-1] + pad_w)
                         zz[n, k, r, c] = numpy.argmax(y[
                             n, k, row_st:row_end, col_st:col_end])
+
+
+
+
+    def infer_shape(self, node, in_shapes):
+        shp = self.out_shape(in_shapes[0], self.ds,
+                             self.ignore_border, self.st, self.padding)
+        return [shp]
+
+
+class UnPool(Op):
+    """
+    For N-dimensional tensors, consider that the last two dimensions span
+    images. This Op downsamples these images by taking the max, sum or average
+    over different patch.
+
+    The constructor takes the max, sum or average or different input patches.
+
+    Parameters
+    ----------
+    ds : list or tuple of two ints
+        Downsample factor over rows and column.
+        ds indicates the pool region size.
+    ignore_border : bool
+        If ds doesn't divide imgshape, do we include an extra row/col
+        of partial downsampling (False) or ignore it (True).
+    st : list or tuple of two ints or None
+        Stride size, which is the number of shifts over rows/cols to get the
+        next pool region. If st is None, it is considered equal to ds
+        (no overlap on pooling regions).
+    padding: tuple of two ints
+        (pad_h, pad_w), pad zeros to extend beyond four borders of the images,
+        pad_h is the size of the top and bottom margins, and pad_w is the size
+        of the left and right margins.
+    mode : {'max', 'sum', 'average_inc_pad', 'average_exc_pad'}
+        ('average_inc_pad' excludes the padding from the count,
+        'average_exc_pad' include it)
+
+    """
+
+    __props__ = ('ds', 'ignore_border', 'st', 'padding', 'mode')
+
+    @staticmethod
+    def out_shape(imgshape, ds, ignore_border=False, st=None, padding=(0, 0)):
+        """
+        Return the shape of the output from this op, for input of given
+        shape and flags.
+
+        Parameters
+        ----------
+        imgshape : tuple, list, or similar of integer or scalar Theano variable
+            The shape of a tensor of images. The last two elements are
+            interpreted as the number of rows, and the number of cols.
+        ds : list or tuple of two ints
+            Downsample factor over rows and columns this parameter indicates
+            the size of the pooling region.
+        st : list or tuple of two ints
+            The stride size. This is the distance between the pooling regions.
+            If it's set to None, it equals ds.
+        ignore_border : bool
+            If ds doesn't divide imgshape, do we include an extra row/col of
+            partial downsampling (False) or ignore it (True).
+        padding : tuple of two ints
+            (pad_h, pad_w), pad zeros to extend beyond four borders
+            of the images, pad_h is the size of the top and bottom margins,
+            and pad_w is the size of the left and right margins.
+
+        Returns
+        -------
+        list
+            The shape of the output from this op, for input of given shape.
+            This will have the same length as imgshape, but with last two
+            elements reduced as per the downsampling & ignore_border flags.
+
+        """
+        if len(imgshape) < 2:
+            raise TypeError('imgshape must have at least two elements '
+                            '(rows, cols)')
+
+        if st is None:
+            st = ds
+        r, c = imgshape[-2:]
+        r += padding[0] * 2
+        c += padding[1] * 2
+
+        if ignore_border:
+            if ds[0] == st[0]:
+                """
+                This is the only case that is handled.
+                It is expected that the inputs are given such that this logic
+                is entered.
+                """
+                nr = r * st[0]
+            else:
+                out_r = (r - ds[0]) // st[0] + 1
+                if isinstance(r, theano.Variable):
+                    nr = tensor.maximum(out_r, 0)
+                else:
+                    nr = numpy.maximum(out_r, 0)
+
+            if ds[1] == st[1]:
+                nc = c * st[1]
+                """
+                This is the only case that is handled.
+                It is expected that the inputs are given such that this logic
+                is entered.
+                """
+            else:
+                out_c = (c - ds[1]) // st[1] + 1
+                if isinstance(c, theano.Variable):
+                    nc = tensor.maximum(out_c, 0)
+                else:
+                    nc = numpy.maximum(out_c, 0)
+        else:
+            if isinstance(r, theano.Variable):
+                nr = tensor.switch(tensor.ge(st[0], ds[0]),
+                                   (r - 1) // st[0] + 1,
+                                   tensor.maximum(0, (r - 1 - ds[0]) //
+                                                  st[0] + 1) + 1)
+            elif st[0] >= ds[0]:
+                nr = (r - 1) // st[0] + 1
+            else:
+                nr = max(0, (r - 1 - ds[0]) // st[0] + 1) + 1
+
+            if isinstance(c, theano.Variable):
+                nc = tensor.switch(tensor.ge(st[1], ds[1]),
+                                   (c - 1) // st[1] + 1,
+                                   tensor.maximum(0, (c - 1 - ds[1]) //
+                                                  st[1] + 1) + 1)
+            elif st[1] >= ds[1]:
+                nc = (c - 1) // st[1] + 1
+            else:
+                nc = max(0, (c - 1 - ds[1]) // st[1] + 1) + 1
+
+        rval = list(imgshape[:-2]) + [nr, nc]
+        return rval
+
+    def __init__(self, ds, switch, ignore_border=False, st=None, padding=(0, 0),
+                 mode='max'):
+        self.ds = tuple(ds)
+        if not all([isinstance(d, integer_types) for d in ds]):
+            raise ValueError(
+                "Pool downsample parameters must be ints."
+                " Got %s" % str(ds))
+        if st is None:
+            st = ds
+        assert isinstance(st, (tuple, list))
+        self.st = tuple(st)
+        self.ignore_border = ignore_border
+        self.padding = tuple(padding)
+        self.switch=switch
+        if self.padding != (0, 0) and not ignore_border:
+            raise NotImplementedError(
+                'padding works only with ignore_border=True')
+        if self.padding[0] >= self.ds[0] or self.padding[1] >= self.ds[1]:
+            raise NotImplementedError(
+                'padding_h and padding_w must be smaller than strides')
+        if mode not in ['max', 'average_inc_pad', 'average_exc_pad', 'sum']:
+            raise ValueError(
+                "Pool mode parameter only support 'max', 'sum',"
+                " 'average_inc_pad' and 'average_exc_pad'. Got %s" % mode)
+        self.mode = mode
+
+    def make_node(self, x):
+        if x.type.ndim != 4:
+            raise TypeError()
+        # TODO: consider restricting the dtype?
+        x = tensor.as_tensor_variable(x)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        broad = x.broadcastable[:2] + (False, False)
+        out = tensor.TensorType(x.dtype, broad)
+        return gof.Apply(self, [x], [out()])
+
+    def perform(self, node, inp, out):
+        x, = inp
+        z, = out
+        if len(x.shape) != 4:
+            raise NotImplementedError(
+                'Pool requires 4D input for now')
+        z_shape = self.out_shape(x.shape, self.ds, self.ignore_border, self.st,
+                                 self.padding)
+        if (z[0] is None) or (z[0].shape != z_shape):
+            z[0] = numpy.empty(z_shape, dtype=x.dtype)
+        zz = z[0]
+        # number of unpooling output rows
+        upr = zz.shape[-2]
+        # number of unpooling output cols
+        upc = zz.shape[-1]
+
+        pr=x.shape[-1]
+        pc=x.shape[-2]
+
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+        pad_h = self.padding[0]
+        pad_w = self.padding[1]
+        img_rows = x.shape[-2] + 2 * pad_h
+        img_cols = x.shape[-1] + 2 * pad_w
+        inc_pad = self.mode == 'average_inc_pad'
+
+        sw=0
+
+        # pad the image
+        if self.padding != (0, 0):
+            y = numpy.zeros(
+                (x.shape[0], x.shape[1], img_rows, img_cols),
+                dtype=x.dtype)
+            sw = numpy.zeros(
+                (x.shape[0], x.shape[1], img_rows, img_cols),
+                dtype=x.dtype)
+
+            y[:, :, pad_h:(img_rows - pad_h), pad_w:(img_cols - pad_w)] = x
+            sw[:, :, pad_h:(img_rows - pad_h), pad_w:(img_cols - pad_w)] = self.switch
+        else:
+            y = x
+            sw= self.switch
+
+        func = numpy.max
+        if self.mode == 'sum':
+            func = numpy.sum
+        elif self.mode != 'max':
+            func = numpy.average
+
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(pr):
+                    row_st = r * st0
+                    row_end = builtins.min(row_st + ds0, img_rows)
+                    if not inc_pad:
+                        row_st = builtins.max(row_st, self.padding[0])
+                        row_end = builtins.min(row_end, x.shape[-2] + pad_h)
+                    for c in xrange(pc):
+                        col_st = c * st1
+                        col_end = builtins.min(col_st + ds1, img_cols)
+                        if not inc_pad:
+                            col_st = builtins.max(col_st, self.padding[1])
+                            col_end = builtins.min(col_end,
+                                                   x.shape[-1] + pad_w)
+                        max_index=sw[n,k,r,c]
+
+                        row_pos=row_st+max_index // st0
+                        col_pos=col_st+max_index-(max_index// st0)*st0
+                        #zz[n, k, row_pos, col_pos] = y[n,k,r,c]
+                        zz[n,k,r,c]=y[n,k,r,c]
 
 
 

@@ -33,9 +33,13 @@ class DeConvNet(object):
         max_pool_layer1_input=x.reshape((self.batch_size,3,224,224))
         self.max_pool_layer1=SwitchedMaxPoolLayer(max_pool_layer1_input)
 
+        unpool_layer1_input=self.max_pool_layer1.output
+        unpool_layer1_switch=self.max_pool_layer1.switch
+        self.unpool_layer1=UnPoolLayer(unpool_layer1_input,unpool_layer1_switch)
+
 
     def test(self,test_set_x):
-        out=self.batch_norm_layer1.output
+        #out=self.batch_norm_layer1.output
 
         # Code for testing batch convolution
         #out_mean=self.batch_norm_layer1.batch_mean
@@ -43,8 +47,11 @@ class DeConvNet(object):
         #out_gamma=self.batch_norm_layer1.gamma
 
         # Code for testing swtiched max pooling
-        switch=self.max_pool_layer1.switch
-        out=self.max_pool_layer1.output
+        #switch=self.max_pool_layer1.switch
+        #out=self.max_pool_layer1.output
+
+        # Code for testing unpooling layer
+        out=self.unpool_layer1.output
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
@@ -53,7 +60,7 @@ class DeConvNet(object):
 
         testDeConvNet=theano.function(
             inputs=[index],
-            outputs=[out,switch],
+            outputs=[out],
             on_unused_input='warn',
             givens={
                 self.x :testDataX[index * batch_size: (index + 1) * batch_size]
