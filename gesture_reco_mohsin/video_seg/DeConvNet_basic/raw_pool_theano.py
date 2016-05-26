@@ -162,9 +162,9 @@ def unpool_2d(input, ds, switch, ignore_border=None, st=None, padding=(0, 0),
             stacklevel=2)
         ignore_border = True
     if input.ndim == 4:
-        op = UnPool(ds, switch,ignore_border, st=st, padding=padding,
+        op = UnPool(ds,ignore_border, st=st, padding=padding,
                   mode=mode)
-        output = op(input)
+        output = op(input,switch)
         return output
 
     # extract image dimensions
@@ -181,9 +181,9 @@ def unpool_2d(input, ds, switch, ignore_border=None, st=None, padding=(0, 0),
     input_4D = tensor.reshape(input, new_shape, ndim=4)
 
     # downsample mini-batch of images
-    op = UnPool(ds, switch,ignore_border, st=st, padding=padding,
+    op = UnPool(ds,ignore_border, st=st, padding=padding,
               mode=mode)
-    output = op(input_4D)
+    output = op(input_4D,switch)
 
     # restore to original shape
     outshp = tensor.join(0, input.shape[:-2], output.shape[-2:])
@@ -951,7 +951,7 @@ class UnPool(Op):
         rval = list(imgshape[:-2]) + [nr, nc]
         return rval
 
-    def __init__(self, ds, switch, ignore_border=False, st=None, padding=(0, 0),
+    def __init__(self, ds, ignore_border=False, st=None, padding=(0, 0),
                  mode='max'):
         self.ds = tuple(ds)
         if not all([isinstance(d, integer_types) for d in ds]):
@@ -964,7 +964,7 @@ class UnPool(Op):
         self.st = tuple(st)
         self.ignore_border = ignore_border
         self.padding = tuple(padding)
-        self.switch=switch
+        #self.switch=switch
         if self.padding != (0, 0) and not ignore_border:
             raise NotImplementedError(
                 'padding works only with ignore_border=True')
@@ -977,18 +977,25 @@ class UnPool(Op):
                 " 'average_inc_pad' and 'average_exc_pad'. Got %s" % mode)
         self.mode = mode
 
-    def make_node(self, x):
+    def make_node(self, x,y):
+
         if x.type.ndim != 4:
+            raise TypeError()
+        if y.type.ndim != 4:
             raise TypeError()
         # TODO: consider restricting the dtype?
         x = tensor.as_tensor_variable(x)
+        y = tensor.as_tensor_variable(y)
         # If the input shape are broadcastable we can have 0 in the output shape
         broad = x.broadcastable[:2] + (False, False)
         out = tensor.TensorType(x.dtype, broad)
-        return gof.Apply(self, [x], [out()])
+        return gof.Apply(self, [x,y], [out()])
 
     def perform(self, node, inp, out):
-        x, = inp
+        x = inp
+        x= inp[0]
+        sw=inp[1]
+        #raise ValueError("%s" % str(len(sw.shape)))
         z, = out
         if len(x.shape) != 4:
             raise NotImplementedError(
@@ -996,7 +1003,7 @@ class UnPool(Op):
         z_shape = self.out_shape(x.shape, self.ds, self.ignore_border, self.st,
                                  self.padding)
         if (z[0] is None) or (z[0].shape != z_shape):
-            z[0] = numpy.empty(z_shape, dtype=x.dtype)
+            z[0] = numpy.zeros(z_shape, dtype=x.dtype)
         zz = z[0]
         # number of unpooling output rows
         upr = zz.shape[-2]
@@ -1014,22 +1021,17 @@ class UnPool(Op):
         img_cols = x.shape[-1] + 2 * pad_w
         inc_pad = self.mode == 'average_inc_pad'
 
-        sw=0
 
         # pad the image
         if self.padding != (0, 0):
             y = numpy.zeros(
                 (x.shape[0], x.shape[1], img_rows, img_cols),
                 dtype=x.dtype)
-            sw = numpy.zeros(
-                (x.shape[0], x.shape[1], img_rows, img_cols),
-                dtype=x.dtype)
 
             y[:, :, pad_h:(img_rows - pad_h), pad_w:(img_cols - pad_w)] = x
-            sw[:, :, pad_h:(img_rows - pad_h), pad_w:(img_cols - pad_w)] = self.switch
         else:
             y = x
-            sw= self.switch
+            #sw= self.switch
 
         func = numpy.max
         if self.mode == 'sum':
@@ -1056,8 +1058,8 @@ class UnPool(Op):
 
                         row_pos=row_st+max_index // st0
                         col_pos=col_st+max_index-(max_index// st0)*st0
-                        #zz[n, k, row_pos, col_pos] = y[n,k,r,c]
-                        zz[n,k,r,c]=y[n,k,r,c]
+                        zz[n, k, row_pos, col_pos] = y[n,k,r,c]
+                        #zz[n,k,r,c]=y[n,k,r,c]
 
 
 

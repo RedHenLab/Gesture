@@ -104,9 +104,11 @@ if __name__=="__main__":
 
     outs=deNet.test(data)
     #print data[0]
-    #print data[1][0]
+    print data[1][0][12][90:100]
+    print data[1][0][13][90:100]
 
     print "outs"
     print len(outs)
     print outs[1].shape
-    print outs[1][0]
+    print outs[1][0][12][90:100]
+    print outs[1][0][13][90:100]
