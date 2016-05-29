@@ -815,6 +815,164 @@ class SwitchedPool(Op):
                         zz[n, k, r, c] = numpy.argmax(y[
                             n, k, row_st:row_end, col_st:col_end])
 
+    def c_headers(self):
+        return ['<algorithm>']
+
+    def c_code(self, node, name, inp, out, sub):
+        if self.mode not in ('max', 'sum', 'average_exc_pad', 'average_inc_pad'):
+            raise theano.gof.utils.MethodNotDefined()
+        x, = inp
+        z, = out
+        fail = sub['fail']
+        ignore_border = int(self.ignore_border)
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+        pd0, pd1 = self.padding
+        ccode = """
+        int typenum = PyArray_ObjectType((PyObject*)%(x)s, 0);
+        int z_r, z_c; // shape of the output
+        int r, c; // shape of the padded_input
+        if(PyArray_NDIM(%(x)s)!=4)
+        {
+            PyErr_SetString(PyExc_ValueError, "x must be a 4d ndarray");
+            %(fail)s;
+        }
+        r = PyArray_DIMS(%(x)s)[2];
+        c = PyArray_DIMS(%(x)s)[3];
+        r += %(pd0)s * 2;
+        c += %(pd1)s * 2;
+        if (%(pd0)s != 0 && %(pd1)s != 0 && !%(ignore_border)s)
+            {
+              PyErr_SetString(PyExc_ValueError,
+                "padding must be (0,0) when ignore border is False");
+              %(fail)s;
+            }
+        if (%(ignore_border)s)
+        {
+            // '/' in C is different from '/' in python
+            if (r - %(ds0)s < 0)
+            {
+              z_r = 0;
+            }
+            else
+            {
+              z_r = (r - %(ds0)s) / %(st0)s + 1;
+            }
+            if (c - %(ds1)s < 0)
+            {
+              z_c = 0;
+            }
+            else
+            {
+              z_c = (c - %(ds1)s) / %(st1)s + 1;
+            }
+        }
+        else
+        {
+            // decide how many rows the output has
+            if (%(st0)s >= %(ds0)s)
+            {
+                z_r = (r - 1) / %(st0)s + 1;
+            }
+            else
+            {
+                z_r = std::max(0, (r - 1 - %(ds0)s) / %(st0)s + 1) + 1;
+            }
+            // decide how many columns the output has
+            if (%(st1)s >= %(ds1)s)
+            {
+                z_c = (c - 1) / %(st1)s + 1;
+            }
+            else
+            {
+                z_c = std::max(0, (c - 1 - %(ds1)s) / %(st1)s + 1) + 1;
+            }
+        }
+        // memory allocation of z if necessary
+        if ((!%(z)s)
+          || *PyArray_DIMS(%(z)s)!=4
+          ||(PyArray_DIMS(%(z)s)[0] != PyArray_DIMS(%(x)s)[0])
+          ||(PyArray_DIMS(%(z)s)[1] != PyArray_DIMS(%(x)s)[1])
+          ||(PyArray_DIMS(%(z)s)[2] != z_r)
+          ||(PyArray_DIMS(%(z)s)[3] != z_c)
+          )
+        {
+          if (%(z)s) Py_XDECREF(%(z)s);
+          npy_intp dims[4] = {0,0,0,0};
+          dims[0]=PyArray_DIMS(%(x)s)[0];
+          dims[1]=PyArray_DIMS(%(x)s)[1];
+          dims[2]=z_r;
+          dims[3]=z_c;
+          //TODO: zeros not necessary
+          %(z)s = (PyArrayObject*) PyArray_ZEROS(4, dims, typenum,0);
+        }
+        // used for indexing a pool region inside the input
+        int r_st, r_end, c_st, c_end;
+        dtype_%(x)s collector; // temp var for the value in a region
+        if (z_r && z_c)
+        {
+            for(int b=0; b<PyArray_DIMS(%(x)s)[0]; b++){
+              for(int k=0; k<PyArray_DIMS(%(x)s)[1]; k++){
+                for(int i=0; i< z_r; i++){
+                  r_st = i * %(st0)s;
+                  r_end = r_st + %(ds0)s;
+                  // skip the padding
+                  r_st = r_st < %(pd0)s ? %(pd0)s : r_st;
+                  r_end = r_end > (r - %(pd0)s) ? r - %(pd0)s : r_end;
+                  // from padded_img space to img space
+                  r_st -= %(pd0)s;
+                  r_end -= %(pd0)s;
+                  // handle the case where no padding, ignore border is True
+                  if (%(ignore_border)s)
+                  {
+                    r_end = r_end > r ? r : r_end;
+                  }
+                  for(int j=0; j<z_c; j++){
+                    c_st = j * %(st1)s;
+                    c_end = c_st + %(ds1)s;
+                    // skip the padding
+                    c_st = c_st < %(pd1)s ? %(pd1)s : c_st;
+                    c_end = c_end > (c - %(pd1)s) ? c - %(pd1)s : c_end;
+                    dtype_%(z)s * z = (
+                          (dtype_%(z)s*)(PyArray_GETPTR4(%(z)s, b, k, i, j)));
+                    // change coordinates from padding_img space into img space
+                    c_st -= %(pd1)s;
+                    c_end -= %(pd1)s;
+                    // handle the case where no padding, ignore border is True
+                    if (%(ignore_border)s)
+                    {
+                      c_end = c_end > c ? c : c_end;
+                    }
+        """
+        if self.mode == 'max':
+            ccode += """
+                    // use the first element as the initial value of collector
+                    collector = ((dtype_%(x)s*)(PyArray_GETPTR4(%(x)s,b,k,r_st,c_st)))[0];
+                    // go through the pooled region in the unpadded input
+                    dtype_%(x)s max_val=collector;
+                    collector=0;
+                    for(int m=r_st; m<r_end; m++)
+                    {
+                      for(int n=c_st; n<c_end; n++)
+                      {
+                        dtype_%(x)s a = ((dtype_%(x)s*)(PyArray_GETPTR4(%(x)s,b,k,m,n)))[0];
+                        // collector = (a > collector) ? a : collector;
+                        if(a>=max_val){
+                            max_val=a;
+                            collector=(r_end-r_st)*(m-r_st)+(n-c_st);
+                        }
+                      }
+                    }
+                    z[0] = collector;
+            """
+        ccode += """
+                  }
+                }
+              }
+            }
+        }
+        """
+        return ccode % locals()
 
 
 
