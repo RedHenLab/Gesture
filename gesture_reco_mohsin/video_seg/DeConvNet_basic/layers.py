@@ -261,6 +261,37 @@ class PaddedDeConvLayer(object):
         assignb()
 
 
+class DeConvLayer(object):
+
+    def __init__(self,rng,inputData,image_shape,filter_shape):
+        self.input=inputData
+
+        self.deConvLayer=lasagne.layers.TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
+        filter_size=(filter_shape[2],filter_shape[3]),nonlinearity=lasagne.nonlinearities.linear)
+
+        self.params=self.deConvLayer.get_params()
+
+        self.output=self.deConvLayer.get_output_for(self.input)
+
+
+    def assignParams(self,W,b):
+        updates_W=(self.params[0],W)
+        updates_b=(self.params[1],b)
+
+        assignW=theano.function(
+            inputs=[],
+            updates=[updates_W]
+        )
+
+        assignb=theano.function(
+            inputs=[],
+            updates=[updates_b]
+        )
+
+        assignW()
+        assignb()
+
+
 class UnPoolLayer(object):
 
     def __init__(self,inputData,switchedData,poolsize=(2,2)):

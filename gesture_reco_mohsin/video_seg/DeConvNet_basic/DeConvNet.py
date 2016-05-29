@@ -286,7 +286,7 @@ class DeConvNet(object):
         convLayer6_1_input_shape=(self.batch_size,num_features[12],7,7)
         convLayer6_1_filter=(num_features[13],num_features[12],7,7)
         weights_conv6_1=pickle.load(open("weights/conv6_1W.p","rb"))
-        print weights_conv6_1.shape
+        #print weights_conv6_1.shape
         bias_conv6_1=pickle.load(open("weights/bias6_1.p","rb"))
         self.convLayer6_1=ConvLayer(rng,convLayer6_1_input,convLayer6_1_input_shape,convLayer6_1_filter)
         self.convLayer6_1.assignParams(weights_conv6_1,bias_conv6_1)
@@ -307,7 +307,6 @@ class DeConvNet(object):
         convLayer7_1_input_shape=(self.batch_size,num_features[13],7,7)
         convLayer7_1_filter=(num_features[14],num_features[13],7,7)
         weights_conv7_1=pickle.load(open("weights/conv7_1W.p","rb"))
-        print weights_conv7_1.shape
         bias_conv7_1=pickle.load(open("weights/bias7_1.p","rb"))
         self.convLayer7_1=ConvLayer(rng,convLayer7_1_input,convLayer7_1_input_shape,convLayer7_1_filter)
         self.convLayer7_1.assignParams(weights_conv7_1,bias_conv7_1)
@@ -322,9 +321,29 @@ class DeConvNet(object):
         self.relu_layer7_1=ReLuLayer(relu_layer7_1_input)
 
 
-        unpool_layer1_input=self.max_pool_layer5.output
-        unpool_layer1_switch=self.max_pool_layer5.switch
-        self.unpool_layer1=UnPoolLayer(unpool_layer1_input,unpool_layer1_switch)
+
+        # 7 x 7
+        deconvLayer6_1_input=self.relu_layer7_1.output
+        deconvLayer6_1_input_shape=(self.batch_size,num_features[14],1,1)
+        deconvLayer6_1_filter=(num_features[13],num_features[14],7,7)
+        weights_deconv6_1=pickle.load(open("weights/deconv6_1W.p","rb"))
+        bias_deconv6_1=pickle.load(open("weights/deconvbias6_1.p","rb"))
+        self.deconvLayer6_1=DeConvLayer(rng,deconvLayer6_1_input,deconvLayer6_1_input_shape,deconvLayer6_1_filter)
+        self.deconvLayer6_1.assignParams(weights_deconv6_1,bias_deconv6_1)
+
+        deconvbatch_norm_layer6_1_input=self.deconvLayer6_1.output
+        deconvbn6_1gamma=pickle.load(open("weights/deconvbn6_1gamma.p"))
+        deconvbn6_1beta=pickle.load(open("weights/deconvbn6_1beta.p"))
+        self.deconvbatch_norm_layer6_1=CNNBatchNormLayer(deconvbatch_norm_layer6_1_input,num_features[13])
+        self.deconvbatch_norm_layer6_1.assignParams(deconvbn6_1gamma,deconvbn6_1beta)
+
+        deconvrelu_layer6_1_input=self.deconvbatch_norm_layer6_1.output
+        self.deconvrelu_layer6_1=ReLuLayer(deconvrelu_layer6_1_input)
+
+
+        unpool_layer5_input=self.deconvrelu_layer6_1.output
+        unpool_layer5_switch=self.max_pool_layer5.switch
+        self.unpool_layer5=UnPoolLayer(unpool_layer5_input,unpool_layer5_switch)
 
 
 
@@ -342,9 +361,9 @@ class DeConvNet(object):
         #out=self.max_pool_layer2.switch
 
         # Code for testing unpooling layer
-        #out=self.unpool_layer1.output
+        out=self.unpool_layer5.output
 
-        out=self.relu_layer7_1.output
+        #out=self.relu_layer7_1.output
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
@@ -406,5 +425,6 @@ if __name__=="__main__":
     print outs[1].shape
     #print outs[1][0:200]#[12][0:10]
     #print outs[1][0]#[13][0:10]
+    print outs[1][0][1]
 
     print "elpased time ="+str(time.time()-start_time)
