@@ -31,11 +31,31 @@ class DeConvNet(object):
 
         batch_norm_layer1_input=self.convLayer1.output
         #batch_norm_layer1_input=x.reshape((self.batch_size,3,224,224))
+        bn1_1gamma=pickle.load(open("weights/bn1_1gamma.p"))
+        bn1_1beta=pickle.load(open("weights/bn1_1beta.p"))
         self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,num_features[0])
         #self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,3)
+        self.batch_norm_layer1.assignParams(bn1_1gamma,bn1_1beta)
+
+        relu_layer1_1_input=self.batch_norm_layer1.output
+        self.relu_layer1_1=ReLuLayer(relu_layer1_1_input)
+
+        convLayer1_2_input=self.relu_layer1_1.output
+        convLayer1_2_input_shape=(self.batch_size,num_features[0],224,224)
+        convLayer1_2_filter=(num_features[1],num_features[0],3,3)
+        weights_conv1_2=pickle.load(open("weights/conv1_2W.p","rb"))
+        bias_conv1_2=pickle.load(open("weights/bias1_2.p","rb"))
+        self.convLayer1_2=PaddedConvLayer(rng,convLayer1_2_input,convLayer1_2_input_shape,convLayer1_2_filter)
+        self.convLayer1_2.assignParams(weights_conv1_2,bias_conv1_2)
+
+        batch_norm_layer1_2_input=self.convLayer1.output
+        bn1_2gamma=pickle.load(open("weights/bn1_2gamma.p"))
+        bn1_2beta=pickle.load(open("weights/bn1_2beta.p"))
+        self.batch_norm_layer1_2=CNNBatchNormLayer(batch_norm_layer1_2_input,num_features[1])
+        self.batch_norm_layer1_2.assignParams(bn1_2gamma,bn1_2beta)
 
         #max_pool_layer1_input=x.reshape((self.batch_size,3,224,224))
-        max_pool_layer1_input=self.batch_norm_layer1.output
+        max_pool_layer1_input=self.batch_norm_layer1_2.output
         self.max_pool_layer1=SwitchedMaxPoolLayer(max_pool_layer1_input)
 
         unpool_layer1_input=self.max_pool_layer1.output
