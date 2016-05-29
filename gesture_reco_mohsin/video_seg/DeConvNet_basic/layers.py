@@ -62,12 +62,12 @@ class PaddedConvLayer(object):
 
         assignW=theano.function(
             inputs=[],
-            updates=updates_W
+            updates=[updates_W]
         )
 
         assignb=theano.function(
             inputs=[],
-            updates=updates_b
+            updates=[updates_b]
         )
 
         assignW()
@@ -84,10 +84,10 @@ class CNNBatchNormLayer(object):
         self.input=inputData
 
         gamma_values = numpy.ones((num_out,), dtype=theano.config.floatX)
-        self.gamma = theano.shared(value=gamma_values, borrow=True)
+        self.gamma_vals = theano.shared(value=gamma_values, borrow=True)
 
         beta_values = numpy.zeros((num_out,), dtype=theano.config.floatX)
-        self.beta = theano.shared(value=beta_values, borrow=True)
+        self.beta_vals = theano.shared(value=beta_values, borrow=True)
 
         batch_mean=T.mean(self.input,keepdims=True,axis=0)
         batch_var=T.var(self.input,keepdims=True,axis=0)
@@ -97,26 +97,26 @@ class CNNBatchNormLayer(object):
 
         batch_normalize=(inputData-batch_mean)/(T.pow(batch_var,0.5))
 
-        self.beta = self.beta.dimshuffle('x', 0, 'x', 'x')
-        self.gamma = self.gamma.dimshuffle('x', 0, 'x', 'x')
+        self.beta = self.beta_vals.dimshuffle('x', 0, 'x', 'x')
+        self.gamma = self.gamma_vals.dimshuffle('x', 0, 'x', 'x')
 
         self.output=batch_normalize*self.gamma+self.beta
 
-        self.params=[self.gamma,self.beta]
+        self.params=[self.gamma_vals,self.beta_vals]
 
 
     def assignParams(self,gamma,beta):
-        updates_gamma=(self.gamma,gamma)
-        updates_beta=(self.beta,beta)
+        updates_gamma=(self.gamma_vals,gamma)
+        updates_beta=(self.beta_vals,beta)
 
         assignGamma=theano.function(
             inputs=[],
-            updates=updates_gamma
+            updates=[updates_gamma]
         )
 
         assignBeta=theano.function(
             inputs=[],
-            updates=updates_beta
+            updates=[updates_beta]
         )
 
         assignGamma()
@@ -188,12 +188,12 @@ class PaddedDeConvLayer(object):
 
         assignW=theano.function(
             inputs=[],
-            updates=updates_W
+            updates=[updates_W]
         )
 
         assignb=theano.function(
             inputs=[],
-            updates=updates_b
+            updates=[updates_b]
         )
 
         assignW()

@@ -2,6 +2,7 @@ import numpy
 import pylab
 from PIL import Image
 import pickle
+import time
 
 import theano
 from theano import tensor as T
@@ -23,14 +24,18 @@ class DeConvNet(object):
         convLayer1_input=x.reshape((self.batch_size,3,224,224))
         convLayer1_input_shape=(self.batch_size,3,224,224)
         convLayer1_filter=(num_features[0],3,3,3)
+        weights_conv1=pickle.load(open("weights/weights1.p","rb"))
+        bias_conv1=pickle.load(open("weights/bias1.p","rb"))
         self.convLayer1=PaddedConvLayer(rng,convLayer1_input,convLayer1_input_shape,convLayer1_filter)
+        self.convLayer1.assignParams(weights_conv1,bias_conv1)
 
-        #batch_norm_layer1_input=self.convLayer1.output
-        batch_norm_layer1_input=x.reshape((self.batch_size,3,224,224))
-#        self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,num_features[0])
-        self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,3)
+        batch_norm_layer1_input=self.convLayer1.output
+        #batch_norm_layer1_input=x.reshape((self.batch_size,3,224,224))
+        self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,num_features[0])
+        #self.batch_norm_layer1=CNNBatchNormLayer(batch_norm_layer1_input,3)
 
-        max_pool_layer1_input=x.reshape((self.batch_size,3,224,224))
+        #max_pool_layer1_input=x.reshape((self.batch_size,3,224,224))
+        max_pool_layer1_input=self.batch_norm_layer1.output
         self.max_pool_layer1=SwitchedMaxPoolLayer(max_pool_layer1_input)
 
         unpool_layer1_input=self.max_pool_layer1.output
@@ -102,6 +107,7 @@ if __name__=="__main__":
     data=loadData()
     print "finished loading data"
 
+    start_time=time.time()
     outs=deNet.test(data)
     #print data[0]
     print data[1][0][12][90:100]
@@ -112,3 +118,5 @@ if __name__=="__main__":
     print outs[1].shape
     print outs[1][0][12][90:100]
     print outs[1][0][13][90:100]
+
+    print "elpased time ="+str(time.time()-start_time)
