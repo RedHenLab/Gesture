@@ -193,7 +193,7 @@ class DeConvNet(object):
         batch_norm_layer4_2_input=self.convLayer4_2.output
         bn4_2gamma=pickle.load(open("weights/bn4_2gamma.p"))
         bn4_2beta=pickle.load(open("weights/bn4_2beta.p"))
-        self.batch_norm_layer4_2=CNNBatchNormLayer(batch_norm_layer4_2_input,num_features[5])
+        self.batch_norm_layer4_2=CNNBatchNormLayer(batch_norm_layer4_2_input,num_features[8])
         self.batch_norm_layer4_2.assignParams(bn4_2gamma,bn4_2beta)
 
         relu_layer4_2_input=self.batch_norm_layer4_2.output
@@ -221,8 +221,67 @@ class DeConvNet(object):
         self.max_pool_layer4=SwitchedMaxPoolLayer(max_pool_layer4_input)
 
 
-        unpool_layer1_input=self.max_pool_layer4.output
-        unpool_layer1_switch=self.max_pool_layer4.switch
+
+        # 14 x 14
+        convLayer5_1_input=self.max_pool_layer4.output
+        convLayer5_1_input_shape=(self.batch_size,num_features[9],14,14)
+        convLayer5_1_filter=(num_features[10],num_features[9],3,3)
+        weights_conv5_1=pickle.load(open("weights/conv5_1W.p","rb"))
+        bias_conv5_1=pickle.load(open("weights/bias5_1.p","rb"))
+        self.convLayer5_1=PaddedConvLayer(rng,convLayer5_1_input,convLayer5_1_input_shape,convLayer5_1_filter)
+        self.convLayer5_1.assignParams(weights_conv5_1,bias_conv5_1)
+
+        batch_norm_layer5_1_input=self.convLayer5_1.output
+        bn5_1gamma=pickle.load(open("weights/bn5_1gamma.p"))
+        bn5_1beta=pickle.load(open("weights/bn5_1beta.p"))
+        self.batch_norm_layer5_1=CNNBatchNormLayer(batch_norm_layer5_1_input,num_features[10])
+        self.batch_norm_layer5_1.assignParams(bn5_1gamma,bn5_1beta)
+
+        relu_layer5_1_input=self.batch_norm_layer5_1.output
+        self.relu_layer5_1=ReLuLayer(relu_layer5_1_input)
+
+
+        convLayer5_2_input=self.relu_layer5_1.output
+        convLayer5_2_input_shape=(self.batch_size,num_features[10],14,14)
+        convLayer5_2_filter=(num_features[11],num_features[10],3,3)
+        weights_conv5_2=pickle.load(open("weights/conv5_2W.p","rb"))
+        bias_conv5_2=pickle.load(open("weights/bias5_2.p","rb"))
+        self.convLayer5_2=PaddedConvLayer(rng,convLayer5_2_input,convLayer5_2_input_shape,convLayer5_2_filter)
+        self.convLayer5_2.assignParams(weights_conv5_2,bias_conv5_2)
+
+        batch_norm_layer5_2_input=self.convLayer5_2.output
+        bn5_2gamma=pickle.load(open("weights/bn5_2gamma.p"))
+        bn5_2beta=pickle.load(open("weights/bn5_2beta.p"))
+        self.batch_norm_layer5_2=CNNBatchNormLayer(batch_norm_layer5_2_input,num_features[11])
+        self.batch_norm_layer5_2.assignParams(bn5_2gamma,bn5_2beta)
+
+        relu_layer5_2_input=self.batch_norm_layer5_2.output
+        self.relu_layer5_2=ReLuLayer(relu_layer5_2_input)
+
+
+        convLayer5_3_input=self.relu_layer5_2.output
+        convLayer5_3_input_shape=(self.batch_size,num_features[11],14,14)
+        convLayer5_3_filter=(num_features[12],num_features[11],3,3)
+        weights_conv5_3=pickle.load(open("weights/conv5_3W.p","rb"))
+        bias_conv5_3=pickle.load(open("weights/bias5_3.p","rb"))
+        self.convLayer5_3=PaddedConvLayer(rng,convLayer5_3_input,convLayer5_3_input_shape,convLayer5_3_filter)
+        self.convLayer5_3.assignParams(weights_conv5_3,bias_conv5_3)
+
+        batch_norm_layer5_3_input=self.convLayer5_3.output
+        bn5_3gamma=pickle.load(open("weights/bn5_3gamma.p"))
+        bn5_3beta=pickle.load(open("weights/bn5_3beta.p"))
+        self.batch_norm_layer5_3=CNNBatchNormLayer(batch_norm_layer5_3_input,num_features[12])
+        self.batch_norm_layer5_3.assignParams(bn5_3gamma,bn5_3beta)
+
+        relu_layer5_3_input=self.batch_norm_layer5_3.output
+        self.relu_layer5_3=ReLuLayer(relu_layer5_3_input)
+
+        max_pool_layer5_input=self.relu_layer5_3.output
+        self.max_pool_layer5=SwitchedMaxPoolLayer(max_pool_layer5_input)
+
+
+        unpool_layer1_input=self.max_pool_layer5.output
+        unpool_layer1_switch=self.max_pool_layer5.switch
         self.unpool_layer1=UnPoolLayer(unpool_layer1_input,unpool_layer1_switch)
 
 
@@ -288,7 +347,7 @@ def loadData():
     return numpy.array(images)
 
 if __name__=="__main__":
-    deNet=DeConvNet(3,[64,64,128,128,256,256,256,512,512,512])
+    deNet=DeConvNet(3,[64,64,128,128,256,256,256,512,512,512,512,512,512])
     numpy.set_printoptions(threshold='nan')
     print "loading data"
     data=loadData()
@@ -303,7 +362,7 @@ if __name__=="__main__":
     print "outs"
     print len(outs)
     print outs[1].shape
-    print outs[1][0][12][10:20]
-    print outs[1][0][13][10:20]
+    print outs[1][0][12][0:10]
+    print outs[1][0][13][0:10]
 
     print "elpased time ="+str(time.time()-start_time)
