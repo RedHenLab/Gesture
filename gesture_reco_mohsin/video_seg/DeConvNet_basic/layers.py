@@ -73,6 +73,67 @@ class PaddedConvLayer(object):
         assignW()
         assignb()
 
+
+
+class ConvLayer(object):
+
+    def __init__(self,rng,inputData,image_shape,filter_shape):
+
+        """
+        rng : Random number generator
+        input : tensor4(batch_size,num_input_feature_maps,height,width)
+        filter_shape:tensor4(num_features,num_input_feature_maps,filter height, filter_width)
+        out_features_shape=tensor4(batch_size,num)
+        """
+
+        assert image_shape[1]==filter_shape[1]
+
+        self.input=inputData
+
+        fan_in = numpy.prod(filter_shape[1:])
+        fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) )
+
+        # initialize weights with random weights
+        W_bound = numpy.sqrt(6. / (fan_in + fan_out))
+
+        self.W=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=filter_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        self.b = theano.shared(value=b_values, borrow=True)
+
+        # adding a padding to get the same size of output and input.
+        #padding=(filter_shape[2]-1)/2
+        conv_out=conv2d(self.input,self.W)
+
+        self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
+
+        self.params=[self.W,self.b]
+
+
+    def assignParams(self,W,b):
+        updates_W=(self.W,W)
+        updates_b=(self.b,b)
+
+        assignW=theano.function(
+            inputs=[],
+            updates=[updates_W]
+        )
+
+        assignb=theano.function(
+            inputs=[],
+            updates=[updates_b]
+        )
+
+        assignW()
+        assignb()
+
+
 """
 Batch normalization layer. The output and the input are
 of the same size. It is just normalized across batch and
