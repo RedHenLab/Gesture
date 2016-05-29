@@ -162,9 +162,69 @@ class DeConvNet(object):
         self.max_pool_layer3=SwitchedMaxPoolLayer(max_pool_layer3_input)
 
 
-        unpool_layer1_input=self.max_pool_layer3.output
-        unpool_layer1_switch=self.max_pool_layer3.switch
+
+        # 28 x 28
+        convLayer4_1_input=self.max_pool_layer3.output
+        convLayer4_1_input_shape=(self.batch_size,num_features[6],28,28)
+        convLayer4_1_filter=(num_features[7],num_features[6],3,3)
+        weights_conv4_1=pickle.load(open("weights/conv4_1W.p","rb"))
+        bias_conv4_1=pickle.load(open("weights/bias4_1.p","rb"))
+        self.convLayer4_1=PaddedConvLayer(rng,convLayer4_1_input,convLayer4_1_input_shape,convLayer4_1_filter)
+        self.convLayer4_1.assignParams(weights_conv4_1,bias_conv4_1)
+
+        batch_norm_layer4_1_input=self.convLayer4_1.output
+        bn4_1gamma=pickle.load(open("weights/bn4_1gamma.p"))
+        bn4_1beta=pickle.load(open("weights/bn4_1beta.p"))
+        self.batch_norm_layer4_1=CNNBatchNormLayer(batch_norm_layer4_1_input,num_features[7])
+        self.batch_norm_layer4_1.assignParams(bn4_1gamma,bn4_1beta)
+
+        relu_layer4_1_input=self.batch_norm_layer4_1.output
+        self.relu_layer4_1=ReLuLayer(relu_layer4_1_input)
+
+
+        convLayer4_2_input=self.relu_layer4_1.output
+        convLayer4_2_input_shape=(self.batch_size,num_features[7],28,28)
+        convLayer4_2_filter=(num_features[8],num_features[7],3,3)
+        weights_conv4_2=pickle.load(open("weights/conv4_2W.p","rb"))
+        bias_conv4_2=pickle.load(open("weights/bias4_2.p","rb"))
+        self.convLayer4_2=PaddedConvLayer(rng,convLayer4_2_input,convLayer4_2_input_shape,convLayer4_2_filter)
+        self.convLayer4_2.assignParams(weights_conv4_2,bias_conv4_2)
+
+        batch_norm_layer4_2_input=self.convLayer4_2.output
+        bn4_2gamma=pickle.load(open("weights/bn4_2gamma.p"))
+        bn4_2beta=pickle.load(open("weights/bn4_2beta.p"))
+        self.batch_norm_layer4_2=CNNBatchNormLayer(batch_norm_layer4_2_input,num_features[5])
+        self.batch_norm_layer4_2.assignParams(bn4_2gamma,bn4_2beta)
+
+        relu_layer4_2_input=self.batch_norm_layer4_2.output
+        self.relu_layer4_2=ReLuLayer(relu_layer4_2_input)
+
+
+        convLayer4_3_input=self.relu_layer4_2.output
+        convLayer4_3_input_shape=(self.batch_size,num_features[8],28,28)
+        convLayer4_3_filter=(num_features[9],num_features[8],3,3)
+        weights_conv4_3=pickle.load(open("weights/conv4_3W.p","rb"))
+        bias_conv4_3=pickle.load(open("weights/bias4_3.p","rb"))
+        self.convLayer4_3=PaddedConvLayer(rng,convLayer4_3_input,convLayer4_3_input_shape,convLayer4_3_filter)
+        self.convLayer4_3.assignParams(weights_conv4_3,bias_conv4_3)
+
+        batch_norm_layer4_3_input=self.convLayer4_3.output
+        bn4_3gamma=pickle.load(open("weights/bn4_3gamma.p"))
+        bn4_3beta=pickle.load(open("weights/bn4_3beta.p"))
+        self.batch_norm_layer4_3=CNNBatchNormLayer(batch_norm_layer4_3_input,num_features[9])
+        self.batch_norm_layer4_3.assignParams(bn4_3gamma,bn4_3beta)
+
+        relu_layer4_3_input=self.batch_norm_layer4_3.output
+        self.relu_layer4_3=ReLuLayer(relu_layer4_3_input)
+
+        max_pool_layer4_input=self.relu_layer4_3.output
+        self.max_pool_layer4=SwitchedMaxPoolLayer(max_pool_layer4_input)
+
+
+        unpool_layer1_input=self.max_pool_layer4.output
+        unpool_layer1_switch=self.max_pool_layer4.switch
         self.unpool_layer1=UnPoolLayer(unpool_layer1_input,unpool_layer1_switch)
+
 
 
     def test(self,test_set_x):
