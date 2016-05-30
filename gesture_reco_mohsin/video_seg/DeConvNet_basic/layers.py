@@ -236,16 +236,30 @@ class SwitchedMaxPoolLayer(object):
 
 class PaddedDeConvLayer(object):
 
-    def __init__(self,rng,inputData,image_shape,filter_shape):
+    def __init__(self,rng,inputData,image_shape,filter_shape,output_shape):
         self.input=inputData
 
-        self.deConvLayer=lasagne.layers.TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
-        filter_size=(filter_shape[2],filter_shape[3]),nonlinearity=lasagne.nonlinearities.linear,
-        pad='same')
+        fan_in = numpy.prod(filter_shape[1:])
+        fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) )
 
-        self.params=self.deConvLayer.get_params()
+        # initialize weights with random weights
+        W_bound = numpy.sqrt(6. / (fan_in + fan_out))
 
-        self.output=self.deConvLayer.get_output_for(self.input)
+        self.W=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=filter_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        self.b = theano.shared(value=b_values, borrow=True)
+
+        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape,border_mode='half')
+        self.output=op(self.W,self.input,output_shape[2:])
+
+        self.params=[self.W,self.b]
 
 
     def assignParams(self,W,b):
