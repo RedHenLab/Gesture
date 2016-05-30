@@ -1,6 +1,125 @@
 import theano
 import lasagne
-from lasagne import layers.Layer
+from lasagne.layers import Layer
+from lasagne import init
+from lasagne import nonlinearities
+from lasagne.utils import as_tuple
+import theano.tensor as T
+
+def conv_output_length(input_length, filter_size, stride, pad=0):
+    """Helper function to compute the output size of a convolution operation
+    This function computes the length along a single axis, which corresponds
+    to a 1D convolution. It can also be used for convolutions with higher
+    dimensionalities by using it individually for each axis.
+    Parameters
+    ----------
+    input_length : int or None
+        The size of the input.
+    filter_size : int
+        The size of the filter.
+    stride : int
+        The stride of the convolution operation.
+    pad : int, 'full' or 'same' (default: 0)
+        By default, the convolution is only computed where the input and the
+        filter fully overlap (a valid convolution). When ``stride=1``, this
+        yields an output that is smaller than the input by ``filter_size - 1``.
+        The `pad` argument allows you to implicitly pad the input with zeros,
+        extending the output size.
+        A single integer results in symmetric zero-padding of the given size on
+        both borders.
+        ``'full'`` pads with one less than the filter size on both sides. This
+        is equivalent to computing the convolution wherever the input and the
+        filter overlap by at least one position.
+        ``'same'`` pads with half the filter size on both sides (one less on
+        the second side for an even filter size). When ``stride=1``, this
+        results in an output size equal to the input size.
+    Returns
+    -------
+    int or None
+        The output size corresponding to the given convolution parameters, or
+        ``None`` if `input_size` is ``None``.
+    Raises
+    ------
+    ValueError
+        When an invalid padding is specified, a `ValueError` is raised.
+    """
+    if input_length is None:
+        return None
+    if pad == 'valid':
+        output_length = input_length - filter_size + 1
+    elif pad == 'full':
+        output_length = input_length + filter_size - 1
+    elif pad == 'same':
+        output_length = input_length
+    elif isinstance(pad, int):
+        output_length = input_length + 2 * pad - filter_size + 1
+    else:
+        raise ValueError('Invalid pad: {0}'.format(pad))
+
+    # This is the integer arithmetic equivalent to
+    # np.ceil(output_length / stride)
+    output_length = (output_length + stride - 1) // stride
+
+    return output_length
+
+
+def conv_input_length(output_length, filter_size, stride, pad=0):
+    """Helper function to compute the input size of a convolution operation
+    This function computes the length along a single axis, which corresponds
+    to a 1D convolution. It can also be used for convolutions with higher
+    dimensionalities by using it individually for each axis.
+    Parameters
+    ----------
+    output_length : int or None
+        The size of the output.
+    filter_size : int
+        The size of the filter.
+    stride : int
+        The stride of the convolution operation.
+    pad : int, 'full' or 'same' (default: 0)
+        By default, the convolution is only computed where the input and the
+        filter fully overlap (a valid convolution). When ``stride=1``, this
+        yields an output that is smaller than the input by ``filter_size - 1``.
+        The `pad` argument allows you to implicitly pad the input with zeros,
+        extending the output size.
+        A single integer results in symmetric zero-padding of the given size on
+        both borders.
+        ``'full'`` pads with one less than the filter size on both sides. This
+        is equivalent to computing the convolution wherever the input and the
+        filter overlap by at least one position.
+        ``'same'`` pads with half the filter size on both sides (one less on
+        the second side for an even filter size). When ``stride=1``, this
+        results in an output size equal to the input size.
+    Returns
+    -------
+    int or None
+        The smallest input size corresponding to the given convolution
+        parameters for the given output size, or ``None`` if `output_size` is
+        ``None``. For a strided convolution, any input size of up to
+        ``stride - 1`` elements larger than returned will still give the same
+        output size.
+    Raises
+    ------
+    ValueError
+        When an invalid padding is specified, a `ValueError` is raised.
+    Notes
+    -----
+    This can be used to compute the output size of a convolution backward pass,
+    also called transposed convolution, fractionally-strided convolution or
+    (wrongly) deconvolution in the literature.
+    """
+    if output_length is None:
+        return None
+    if pad == 'valid':
+        pad = 0
+    elif pad == 'full':
+        pad = filter_size - 1
+    elif pad == 'same':
+        pad = filter_size // 2
+    if not isinstance(pad, int):
+        raise ValueError('Invalid pad: {0}'.format(pad))
+    return (output_length - 1) * stride - 2 * pad + filter_size
+
 
 class BaseConvLayer(Layer):
     """

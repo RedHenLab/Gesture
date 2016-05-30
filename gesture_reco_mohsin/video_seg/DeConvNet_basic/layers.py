@@ -10,6 +10,9 @@ from theano.tensor.signal import downsample
 from raw_pool_theano import *
 
 import lasagne
+from raw_lasagne_conv import *
+from lasagne.utils import as_tuple
+
 
 """
 The output image size of the convolution layer is
@@ -51,7 +54,8 @@ class PaddedConvLayer(object):
         #padding=(filter_shape[2]-1)/2
         conv_out=conv2d(self.input,self.W,border_mode='half')
 
-        self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
+        #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
+        self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')
 
         self.params=[self.W,self.b]
 
@@ -111,7 +115,8 @@ class ConvLayer(object):
         #padding=(filter_shape[2]-1)/2
         conv_out=conv2d(self.input,self.W)
 
-        self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
+        #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
+        self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')
 
         self.params=[self.W,self.b]
 
@@ -262,21 +267,50 @@ class PaddedDeConvLayer(object):
 
 
 class DeConvLayer(object):
-
+    """
     def __init__(self,rng,inputData,image_shape,filter_shape):
-        self.input=inputData
+        self.input=lasagne.layers.InputLayer(shape=image_shape,input_var=inputData)
 
-        self.deConvLayer=lasagne.layers.TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
+        self.deConvLayer=TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
         filter_size=(filter_shape[2],filter_shape[3]),nonlinearity=lasagne.nonlinearities.linear)
 
         self.params=self.deConvLayer.get_params()
 
-        self.output=self.deConvLayer.get_output_for(self.input)
+        #self.output=self.deConvLayer.get_output_for(self.input)
+        self.output=lasagne.layers.get_output(self.deConvLayer)
+    """
+    def __init__(self,rng,inputData,image_shape,filter_shape,output_shape):
+        self.input=inputData
+
+        fan_in = numpy.prod(filter_shape[1:])
+        fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) )
+
+        # initialize weights with random weights
+        W_bound = numpy.sqrt(6. / (fan_in + fan_out))
+
+        self.W=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=filter_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        self.b = theano.shared(value=b_values, borrow=True)
+
+        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape)
+        self.output=op(self.W,self.input,output_shape[2:])
+
+        self.params=[self.W,self.b]
 
 
     def assignParams(self,W,b):
         updates_W=(self.params[0],W)
         updates_b=(self.params[1],b)
+
+        updates_W=(self.W,W)
+        updates_b=(self.b,b)
 
         assignW=theano.function(
             inputs=[],
