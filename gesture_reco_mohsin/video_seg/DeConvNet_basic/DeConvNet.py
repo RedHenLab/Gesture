@@ -3,6 +3,7 @@ import pylab
 from PIL import Image
 import pickle
 import time
+import matplotlib.pyplot as plt
 
 import theano
 from theano import tensor as T
@@ -504,9 +505,9 @@ class DeConvNet(object):
 
 
         deconvLayer3_2_input=self.deconvrelu_layer3_1.output
-        deconvLayer3_2_input_shape=(self.batch_size,num_features[5],28,28)
-        deconvLayer3_2_output_shape=(self.batch_size,num_features[4],28,28)
-        deconvLayer3_2_filter=(num_features[8],num_features[7],3,3)
+        deconvLayer3_2_input_shape=(self.batch_size,num_features[5],56,56)
+        deconvLayer3_2_output_shape=(self.batch_size,num_features[4],56,56)
+        deconvLayer3_2_filter=(num_features[5],num_features[4],3,3)
         weights_deconv3_2=pickle.load(open("weights/deconv3_2W.p","rb"))
         bias_deconv3_2=pickle.load(open("weights/deconvbias3_2.p","rb"))
         self.deconvLayer3_2=PaddedDeConvLayer(rng,deconvLayer3_2_input,deconvLayer3_2_input_shape,deconvLayer3_2_filter
@@ -524,9 +525,9 @@ class DeConvNet(object):
 
 
         deconvLayer3_3_input=self.deconvrelu_layer3_2.output
-        deconvLayer3_3_input_shape=(self.batch_size,num_features[7],28,28)
-        deconvLayer3_3_output_shape=(self.batch_size,num_features[6],28,28)
-        deconvLayer3_3_filter=(num_features[7],num_features[6],3,3)
+        deconvLayer3_3_input_shape=(self.batch_size,num_features[4],56,56)
+        deconvLayer3_3_output_shape=(self.batch_size,num_features[3],56,56)
+        deconvLayer3_3_filter=(num_features[4],num_features[3],3,3)
         weights_deconv3_3=pickle.load(open("weights/deconv3_3W.p","rb"))
         bias_deconv3_3=pickle.load(open("weights/deconvbias3_3.p","rb"))
         self.deconvLayer3_3=PaddedDeConvLayer(rng,deconvLayer3_3_input,deconvLayer3_3_input_shape,deconvLayer3_3_filter
@@ -536,7 +537,7 @@ class DeConvNet(object):
         deconvbatch_norm_layer3_3_input=self.deconvLayer3_3.output
         deconvbn3_3gamma=pickle.load(open("weights/deconvbn3_3gamma.p"))
         deconvbn3_3beta=pickle.load(open("weights/deconvbn3_3beta.p"))
-        self.deconvbatch_norm_layer3_3=CNNBatchNormLayer(deconvbatch_norm_layer3_3_input,num_features[6])
+        self.deconvbatch_norm_layer3_3=CNNBatchNormLayer(deconvbatch_norm_layer3_3_input,num_features[3])
         self.deconvbatch_norm_layer3_3.assignParams(deconvbn3_3gamma,deconvbn3_3beta)
 
         deconvrelu_layer3_3_input=self.deconvbatch_norm_layer3_3.output
@@ -546,6 +547,106 @@ class DeConvNet(object):
         unpool_layer2_input=self.deconvrelu_layer3_3.output
         unpool_layer2_switch=self.max_pool_layer2.switch
         self.unpool_layer2=UnPoolLayer(unpool_layer2_input,unpool_layer2_switch)
+
+
+
+        # 112 x 112
+        deconvLayer2_1_input=self.unpool_layer2.output
+        deconvLayer2_1_input_shape=(self.batch_size,num_features[3],112,112)
+        deconvLayer2_1_output_shape=(self.batch_size,num_features[2],112,112)
+        deconvLayer2_1_filter=(num_features[3],num_features[2],3,3)
+        weights_deconv2_1=pickle.load(open("weights/deconv2_1W.p","rb"))
+        bias_deconv2_1=pickle.load(open("weights/deconvbias2_1.p","rb"))
+        self.deconvLayer2_1=PaddedDeConvLayer(rng,deconvLayer2_1_input,deconvLayer2_1_input_shape,deconvLayer2_1_filter
+        ,deconvLayer2_1_output_shape)
+        self.deconvLayer2_1.assignParams(weights_deconv2_1,bias_deconv2_1)
+
+        deconvbatch_norm_layer2_1_input=self.deconvLayer2_1.output
+        deconvbn2_1gamma=pickle.load(open("weights/deconvbn2_1gamma.p"))
+        deconvbn2_1beta=pickle.load(open("weights/deconvbn2_1beta.p"))
+        self.deconvbatch_norm_layer2_1=CNNBatchNormLayer(deconvbatch_norm_layer2_1_input,num_features[2])
+        self.deconvbatch_norm_layer2_1.assignParams(deconvbn2_1gamma,deconvbn2_1beta)
+
+        deconvrelu_layer2_1_input=self.deconvbatch_norm_layer2_1.output
+        self.deconvrelu_layer2_1=ReLuLayer(deconvrelu_layer2_1_input)
+
+
+        deconvLayer2_2_input=self.deconvrelu_layer2_1.output
+        deconvLayer2_2_input_shape=(self.batch_size,num_features[2],112,112)
+        deconvLayer2_2_output_shape=(self.batch_size,num_features[1],112,112)
+        deconvLayer2_2_filter=(num_features[2],num_features[1],3,3)
+        weights_deconv2_2=pickle.load(open("weights/deconv2_2W.p","rb"))
+        bias_deconv2_2=pickle.load(open("weights/deconvbias2_2.p","rb"))
+        self.deconvLayer2_2=PaddedDeConvLayer(rng,deconvLayer2_2_input,deconvLayer2_2_input_shape,deconvLayer2_2_filter
+        ,deconvLayer2_2_output_shape)
+        self.deconvLayer2_2.assignParams(weights_deconv2_2,bias_deconv2_2)
+
+        deconvbatch_norm_layer2_2_input=self.deconvLayer2_2.output
+        deconvbn2_2gamma=pickle.load(open("weights/deconvbn2_2gamma.p"))
+        deconvbn2_2beta=pickle.load(open("weights/deconvbn2_2beta.p"))
+        self.deconvbatch_norm_layer2_2=CNNBatchNormLayer(deconvbatch_norm_layer2_2_input,num_features[1])
+        self.deconvbatch_norm_layer2_2.assignParams(deconvbn2_2gamma,deconvbn2_2beta)
+
+        deconvrelu_layer2_2_input=self.deconvbatch_norm_layer2_2.output
+        self.deconvrelu_layer2_2=ReLuLayer(deconvrelu_layer2_2_input)
+
+
+        unpool_layer1_input=self.deconvrelu_layer2_2.output
+        unpool_layer1_switch=self.max_pool_layer1.switch
+        self.unpool_layer1=UnPoolLayer(unpool_layer1_input,unpool_layer1_switch)
+
+
+        # 224 x 224
+        deconvLayer1_1_input=self.unpool_layer1.output
+        deconvLayer1_1_input_shape=(self.batch_size,num_features[0],224,224)
+        deconvLayer1_1_output_shape=(self.batch_size,num_features[0],224,224)
+        deconvLayer1_1_filter=(num_features[0],num_features[0],3,3)
+        weights_deconv1_1=pickle.load(open("weights/deconv1_1W.p","rb"))
+        bias_deconv1_1=pickle.load(open("weights/deconvbias1_1.p","rb"))
+        self.deconvLayer1_1=PaddedDeConvLayer(rng,deconvLayer1_1_input,deconvLayer1_1_input_shape,deconvLayer1_1_filter
+        ,deconvLayer1_1_output_shape)
+        self.deconvLayer1_1.assignParams(weights_deconv1_1,bias_deconv1_1)
+
+        deconvbatch_norm_layer1_1_input=self.deconvLayer1_1.output
+        deconvbn1_1gamma=pickle.load(open("weights/deconvbn1_1gamma.p"))
+        deconvbn1_1beta=pickle.load(open("weights/deconvbn1_1beta.p"))
+        self.deconvbatch_norm_layer1_1=CNNBatchNormLayer(deconvbatch_norm_layer1_1_input,num_features[0])
+        self.deconvbatch_norm_layer1_1.assignParams(deconvbn1_1gamma,deconvbn1_1beta)
+
+        deconvrelu_layer1_1_input=self.deconvbatch_norm_layer1_1.output
+        self.deconvrelu_layer1_1=ReLuLayer(deconvrelu_layer1_1_input)
+
+
+        deconvLayer1_2_input=self.deconvrelu_layer1_1.output
+        deconvLayer1_2_input_shape=(self.batch_size,num_features[0],224,224)
+        deconvLayer1_2_output_shape=(self.batch_size,num_features[1],224,224)
+        deconvLayer1_2_filter=(num_features[0],num_features[0],3,3)
+        weights_deconv1_2=pickle.load(open("weights/deconv1_2W.p","rb"))
+        bias_deconv1_2=pickle.load(open("weights/deconvbias1_2.p","rb"))
+        self.deconvLayer1_2=PaddedDeConvLayer(rng,deconvLayer1_2_input,deconvLayer1_2_input_shape,deconvLayer1_2_filter
+        ,deconvLayer1_2_output_shape)
+        self.deconvLayer1_2.assignParams(weights_deconv1_2,bias_deconv1_2)
+
+        deconvbatch_norm_layer1_2_input=self.deconvLayer1_2.output
+        deconvbn1_2gamma=pickle.load(open("weights/deconvbn1_2gamma.p"))
+        deconvbn1_2beta=pickle.load(open("weights/deconvbn1_2beta.p"))
+        self.deconvbatch_norm_layer1_2=CNNBatchNormLayer(deconvbatch_norm_layer1_2_input,num_features[1])
+        self.deconvbatch_norm_layer1_2.assignParams(deconvbn1_2gamma,deconvbn1_2beta)
+
+        deconvrelu_layer1_2_input=self.deconvbatch_norm_layer1_2.output
+        self.deconvrelu_layer1_2=ReLuLayer(deconvrelu_layer1_2_input)
+
+
+
+        # output
+        outLayer_input=self.deconvrelu_layer1_2.output
+        outLayer_input_shape=(self.batch_size,num_features[0],224,224)
+        outLayer_filter=(num_features[0],num_features[0],1,1)
+        weights_out=pickle.load(open("weights/out_W.p","rb"))
+        bias_out=pickle.load(open("weights/bias_out.p","rb"))
+        self.outLayer=ConvLayer(rng,outLayer_input,outLayer_input_shape,outLayer_filter)
+        self.outLayer.assignParams(weights_out,bias_out)
+
 
 
     def test(self,test_set_x):
@@ -562,11 +663,12 @@ class DeConvNet(object):
         #out=self.max_pool_layer2.switch
 
         # Code for testing unpooling layer
-        out=self.unpool_layer2.output
+        #out=self.unpool_layer2.output
 
         #out=self.relu_layer7_1.output
 
-        #out=self.deconvLayer6_1.output
+        #out=self.deconvLayer1_2.output
+        out=self.outLayer.output
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
@@ -610,7 +712,57 @@ def loadData():
         images.append(img_)
     return numpy.array(images)
 
+
+
+def processOutput(data):
+    #out_shape=(data.shape[0])+data.shape[2:]
+    #outs=np.zeros(out_shape)
+    outs=numpy.argmax(data,axis=1)
+    print outs.shape
+    return outs
+
+
+def genImage(data):
+    class_label=15
+    print data
+    img_shape=data.shape#+(3,)
+
+    for class_label in range(20):
+
+        img_vals=numpy.zeros(img_shape)
+        for i in range(data.shape[0]):
+            for j in range(data.shape[1]):
+                if data[i][j]==class_label:
+                    #print "hello"
+                    img_vals[i][j]=255
+                    #img_vals[i][j][1]=255
+                    #img_vals[i][j][2]=255
+        #print img_vals
+
+        img=Image.fromarray(img_vals,'L')
+        img.show(title="class"+str(class_label))
+
+
+def genImagePlot(data):
+
+    class_label=18
+
+    plotY=[]
+    plotX=[]
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if data[i][j]==class_label:
+
+                plotX.append(j)
+                plotY.append(240-i)
+    plt.plot(plotX,plotY,"ro")
+    plt.show()
+
+
+
 if __name__=="__main__":
+    """
     deNet=DeConvNet(3,[64,64,128,128,256,256,256,512,512,512,512,512,512,4096,4096])
     numpy.set_printoptions(threshold='nan')
     print "loading data"
@@ -620,14 +772,25 @@ if __name__=="__main__":
     start_time=time.time()
     outs=deNet.test(data)
     #print data[0]
-    print data[1][0][12][90:100]
-    print data[1][0][13][90:100]
+    #print data[1][0][12][90:100]
+    #print data[1][0][13][90:100]
 
-    print "outs"
-    print len(outs)
-    print outs[1].shape
-    #print outs[1][0:200]#[12][0:10]
-    #print outs[1][0]#[13][0:10]
+    #print "outs"
+    #print len(outs)
+    #print outs[1].shape
+    #print outs[1][0][12][90:100]
+    #print outs[1][0][13][90:100]
     #print outs[1][0]
 
+    new_out=processOutput(outs)
+    pickle.dump(new_out,open("outs.p","wb"))
+    #print new_out[0][0]
+
     print "elpased time ="+str(time.time()-start_time)
+    """
+
+    new_out=pickle.load(open("outs.p","rb"))
+    numpy.set_printoptions(threshold='nan')
+    print new_out[6]
+    genImagePlot(new_out[6])
+    #"""

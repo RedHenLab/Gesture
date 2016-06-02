@@ -256,7 +256,7 @@ class PaddedDeConvLayer(object):
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
 
-        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape,border_mode='half')
+        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape,border_mode='half',filter_flip=False)
         self.output=op(self.W,self.input,output_shape[2:])
 
         self.params=[self.W,self.b]
@@ -313,7 +313,7 @@ class DeConvLayer(object):
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
 
-        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape)
+        op=T.nnet.abstract_conv.AbstractConv2d_gradInputs(output_shape,filter_shape,filter_flip=False)
         self.output=op(self.W,self.input,output_shape[2:])
 
         self.params=[self.W,self.b]
