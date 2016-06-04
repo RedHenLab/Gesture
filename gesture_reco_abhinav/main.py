@@ -1,10 +1,11 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+import sys
 
-
-# create capture from webcam
-cap = cv2.VideoCapture(0)
+# create capture from filename or webcamera
+if(len(sys.argv)>1): cap = cv2.VideoCapture(sys.argv[1])
+else : cap = cv2.VideoCapture(0)
 
 
 while(True):
