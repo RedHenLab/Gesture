@@ -1,4 +1,5 @@
 Command to run the code: python main.py <videofilename>.mp4
+						 python skin.py <videofilename>.mp4
 
 Required libraries:
 	opencv
