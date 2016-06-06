@@ -24,14 +24,16 @@ while(True):
     #detecting face and making rectangle around it
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x,y,w,h) in faces:
-        cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+        # cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
+        
+        val, mask = cv2.threshold(roi_gray, 145, 255, cv2.THRESH_BINARY)
         
         roi_hsv = cv2.cvtColor(roi_color,cv2.COLOR_BGR2HSV)
 
         #getting histogram of face for backprojection
-        roihist = cv2.calcHist([roi_hsv],[0, 1], None, [180, 256], [0, 180, 0, 256] )
+        roihist = cv2.calcHist([roi_hsv],[0, 1], mask, [180, 256], [0, 180, 0, 256] )
 
         cv2.normalize(roihist,roihist,0,255,cv2.NORM_MINMAX)
     
@@ -46,9 +48,11 @@ while(True):
         # taking threshold to get binary 
         ret,thresh = cv2.threshold(dst,50,255,0)
         
-        # kernel = np.ones((4,4),np.uint8)
-        # thresh = cv2.erode(thresh,kernel,iterations = 2)
-        # thresh = cv2.dilate(thresh,kernel,iterations = 2 )
+        kernel = np.ones((4,4),np.uint8)
+        #fgmask = cv2.erode(fgmask,kernel,iterations= 1)
+        #fgmask = cv2.dilate(fgmask,kernel,iterations= 2)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+        thresh = cv2.GaussianBlur(thresh,(5,5),0)
     
         # finding contours
         im2, contours, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -56,8 +60,9 @@ while(True):
         # Draw the contour on the source image
         for i, c in enumerate(contours):
             area = cv2.contourArea(c)
-            if area > 1000:
-                cv2.drawContours(img, contours, i, (0, 255, 0), 3)
+            if area > 1700:
+                ellipse = cv2.fitEllipse(c)
+                cv2.ellipse(img,ellipse,(0,255,0),2)
     
         thresh = cv2.merge((thresh,thresh,thresh))
                 #res = cv2.bitwise_and(img,thresh)
