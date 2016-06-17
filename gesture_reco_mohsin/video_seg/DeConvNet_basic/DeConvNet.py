@@ -644,7 +644,7 @@ class DeConvNet(object):
         outLayer_filter=(num_features[0],num_features[0],1,1)
         weights_out=pickle.load(open("weights/out_W.p","rb"))
         bias_out=pickle.load(open("weights/bias_out.p","rb"))
-        self.outLayer=ConvLayer(rng,outLayer_input,outLayer_input_shape,outLayer_filter)
+        self.outLayer=PaddedConvLayer(rng,outLayer_input,outLayer_input_shape,outLayer_filter)
         self.outLayer.assignParams(weights_out,bias_out)
 
 
@@ -668,7 +668,8 @@ class DeConvNet(object):
         #out=self.relu_layer7_1.output
 
         #out=self.deconvLayer1_2.output
-        out=self.outLayer.output
+        #out=self.outLayer.output
+        out=self.convLayer1.output
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
@@ -762,7 +763,7 @@ def genImagePlot(data):
 
 
 if __name__=="__main__":
-    """
+    #"""
     deNet=DeConvNet(3,[64,64,128,128,256,256,256,512,512,512,512,512,512,4096,4096])
     numpy.set_printoptions(threshold='nan')
     print "loading data"
@@ -775,12 +776,12 @@ if __name__=="__main__":
     #print data[1][0][12][90:100]
     #print data[1][0][13][90:100]
 
-    #print "outs"
+    print "outs"
     #print len(outs)
     #print outs[1].shape
     #print outs[1][0][12][90:100]
     #print outs[1][0][13][90:100]
-    #print outs[1][0]
+    print outs
 
     new_out=processOutput(outs)
     pickle.dump(new_out,open("outs.p","wb"))
@@ -791,6 +792,6 @@ if __name__=="__main__":
 
     new_out=pickle.load(open("outs.p","rb"))
     numpy.set_printoptions(threshold='nan')
-    print new_out[6]
-    genImagePlot(new_out[6])
-    #"""
+    print new_out[0]
+    genImagePlot(new_out[0])
+    """
