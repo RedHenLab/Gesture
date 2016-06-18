@@ -362,3 +362,17 @@ class CropLayer(object):
         )
 
         self.output=output
+
+
+class FuseSumLayer(object):
+
+    def __init__(self,inputData1,inputData2):
+        self.input1=inputData1
+        self.input2=inputData2
+
+        output=fuse2d(
+            input1=self.input1,
+            input2=self.input2
+        )
+
+        self.output=output

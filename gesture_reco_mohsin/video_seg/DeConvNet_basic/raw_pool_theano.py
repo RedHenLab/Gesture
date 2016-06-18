@@ -1151,7 +1151,6 @@ class UnPool(Op):
         return gof.Apply(self, [x,y], [out()])
 
     def perform(self, node, inp, out):
-        x = inp
         x= inp[0]
         sw=inp[1]
         #raise ValueError("%s" % str(len(sw.shape)))

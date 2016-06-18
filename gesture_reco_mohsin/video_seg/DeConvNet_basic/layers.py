@@ -52,7 +52,7 @@ class PaddedConvLayer(object):
 
         # adding a padding to get the same size of output and input.
         #padding=(filter_shape[2]-1)/2
-        conv_out=conv2d(self.input,self.W,border_mode='half')
+        conv_out=conv2d(self.input,self.W,border_mode='half',filter_flip=False)
 
         #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
         self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')
@@ -113,7 +113,7 @@ class ConvLayer(object):
 
         # adding a padding to get the same size of output and input.
         #padding=(filter_shape[2]-1)/2
-        conv_out=conv2d(self.input,self.W)
+        conv_out=conv2d(self.input,self.W,filter_flip=False)
 
         #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
         self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')

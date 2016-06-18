@@ -4,6 +4,7 @@ import theano
 from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
+import matplotlib.pyplot as plt
 
 from layers import *
 
@@ -253,11 +254,61 @@ class FCN(object):
         self.score_pool4c_Layer=CropLayer(score_pool4c_Layer_input,score_pool4c_Layer_offset)
 
 
+        fuse_pool4_Layer_input1=self.upscore2_Layer.output
+        fuse_pool4_Layer_input2=self.score_pool4c_Layer.output
+        self.fuse_pool4_Layer=FuseSumLayer(fuse_pool4_Layer_input1,fuse_pool4_Layer_input2)
+
+
+        upscore4_Layer_input=self.fuse_pool4_Layer.output
+        upscore4_Layer_input_shape=(self.batch_size,21,34,24)
+        upscore4_Layer_filter=(21,21,4,4)
+        upscore4_Layer_output=(self.batch_size,21,70,50)
+        weights_upscore4=pickle.load(open("weights/upscore4_W.p","rb"))
+        upscore4_stride=2
+        self.upscore4_Layer=DeConvLayer(rng,upscore4_Layer_input,upscore4_Layer_input_shape,upscore4_Layer_filter,upscore4_Layer_output,upscore4_stride)
+        self.upscore4_Layer.assignParams(weights_upscore4)
+
+
+        score_pool3_Layer_input=self.max_pool_layer3.output
+        score_pool3_Layer_input_shape=(self.batch_size,21,70,50)
+        score_pool3_Layer_filter=(21,21,1,1)
+        weights_score_pool3=pickle.load(open("weights/score_pool3_W.p","rb"))
+        bias_score_pool3=pickle.load(open("weights/bias_score_pool3.p","rb"))
+        score_pool3_pad=0
+        self.score_pool3_Layer=PaddedConvLayer(rng,score_pool3_Layer_input,score_pool3_Layer_input_shape,score_pool3_Layer_filter,score_pool3_pad)
+        self.score_pool3_Layer.assignParams(weights_score_pool3,bias_score_pool3)
+
+
+        score_pool3c_Layer_input=self.score_pool3_Layer.output
+        score_pool3c_Layer_offset=9
+        self.score_pool3c_Layer=CropLayer(score_pool3c_Layer_input,score_pool3c_Layer_offset)
+
+
+        fuse_pool3_Layer_input1=self.upscore4_Layer.output
+        fuse_pool3_Layer_input2=self.score_pool3c_Layer.output
+        self.fuse_pool3_Layer=FuseSumLayer(fuse_pool3_Layer_input1,fuse_pool3_Layer_input2)
+
+
+        upscore8_Layer_input=self.fuse_pool3_Layer.output
+        upscore8_Layer_input_shape=(self.batch_size,21,70,50)
+        upscore8_Layer_filter=(21,21,16,16)
+        upscore8_Layer_output=(self.batch_size,21,568,408)
+        weights_upscore8=pickle.load(open("weights/upscore8_W.p","rb"))
+        upscore8_stride=8
+        self.upscore8_Layer=DeConvLayer(rng,upscore8_Layer_input,upscore8_Layer_input_shape,upscore8_Layer_filter,upscore8_Layer_output,upscore8_stride)
+        self.upscore8_Layer.assignParams(weights_upscore8)
+
+
+        score_Layer_input=self.upscore8_Layer.output
+        score_Layer_offset=31
+        self.score_Layer=CropLayer(score_Layer_input,score_Layer_offset)
+
+
 
     def test(self,test_set_x):
         #out=self.relu_layer7_1.output
         #out=self.max_pool_layer3.output
-        out=self.score_pool4c_Layer.output
+        out=self.score_Layer.output
 
 
 
@@ -300,11 +351,66 @@ def loadData():
     return in_
 
 
+def infer(outs):
+    res=[]
+    for out in outs:
+        res.append(out.argmax(axis=0))
+    return res
+
+def genImage(data):
+    img_shape=data.shape#+(3,)
+    class_label=15
+
+    img_vals=numpy.zeros(img_shape)
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if data[i][j]==class_label:
+                #print "hello"
+
+                img_vals[i][j]=255
+                #img_vals[i][j][2]=255
+        #print img_vals
+
+    img=Image.fromarray(img_vals,'L')
+    img.show(title="class")
+
+
+def genImagePlot(data):
+
+    class_label=2
+    class_label2=15
+
+    plotY=[]
+    plotX=[]
+    plotY2=[]
+    plotX2=[]
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if data[i][j]==class_label:
+
+                plotX.append(j)
+                plotY.append(data.shape[1]-i)
+            if data[i][j]==class_label2:
+
+                plotX2.append(j)
+                plotY2.append(data.shape[1]-i)
+    plt.plot(plotX,plotY,"ro")
+    plt.plot(plotX2,plotY2,"bo")
+    plt.show()
+
+
 if __name__=="__main__":
     im=loadData()
-    print im.shape
+    #print im.shape
     net=FCN(1,im.shape[1:])
     out=net.test(np.array([im]))
     #print out[0][10][0]
-    print np.unravel_index(out.argmax(),out.shape)
-    print out.shape
+    #print np.unravel_index(out.argmax(),out.shape)
+    #print np.max(out)
+    np.set_printoptions(threshold=np.nan)
+
+    labels=infer(out)
+    #print out.shape
+    genImagePlot(labels[0])
