@@ -8,6 +8,7 @@ from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
 
+from raw_theano import *
 
 """
 The output image size of the convolution layer is
@@ -344,6 +345,20 @@ class UnPoolLayer(object):
             ds=poolsize,
             switch=self.switch,
             ignore_border=True
+        )
+
+        self.output=output
+
+
+class CropLayer(object):
+
+    def __init__(self,inputData,offset):
+        self.input=inputData
+        self.offset=offset
+
+        output=crop2d(
+            input=self.input,
+            offset=self.offset
         )
 
         self.output=output

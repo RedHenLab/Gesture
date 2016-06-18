@@ -1,6 +1,5 @@
 import numpy as np
-import numpy.ceil as cl
-
+from numpy import ceil as cl
 import theano
 from theano import tensor as T
 from theano.tensor.nnet import conv2d
@@ -228,6 +227,7 @@ class FCN(object):
         self.score_fr_Layer=PaddedConvLayer(rng,score_fr_Layer_input,score_fr_Layer_input_shape,score_fr_Layer_filter,score_fr_pad)
         self.score_fr_Layer.assignParams(weights_score_fr,bias_score_fr)
 
+
         upscore2_Layer_input=self.score_fr_Layer.output
         upscore2_Layer_input_shape=(self.batch_size,21,cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6,cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6)
         upscore2_Layer_filter=(21,21,4,4)
@@ -238,11 +238,26 @@ class FCN(object):
         self.upscore2_Layer.assignParams(weights_upscore2)
 
 
+        score_pool4_Layer_input=self.max_pool_layer4.output
+        score_pool4_Layer_input_shape=(self.batch_size,512,cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2),cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2))
+        score_pool4_Layer_filter=(21,512,1,1)
+        weights_score_pool4=pickle.load(open("weights/score_pool4_W.p","rb"))
+        bias_score_pool4=pickle.load(open("weights/bias_score_pool4.p","rb"))
+        score_pool4_pad=0
+        self.score_pool4_Layer=PaddedConvLayer(rng,score_pool4_Layer_input,score_pool4_Layer_input_shape,score_pool4_Layer_filter,score_pool4_pad)
+        self.score_pool4_Layer.assignParams(weights_score_pool4,bias_score_pool4)
+
+
+        score_pool4c_Layer_input=self.score_pool4_Layer.output
+        score_pool4c_Layer_offset=5
+        self.score_pool4c_Layer=CropLayer(score_pool4c_Layer_input,score_pool4c_Layer_offset)
+
+
 
     def test(self,test_set_x):
         #out=self.relu_layer7_1.output
         #out=self.max_pool_layer3.output
-        out=self.upscore2_Layer.output
+        out=self.score_pool4c_Layer.output
 
 
 

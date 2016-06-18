@@ -608,6 +608,7 @@ class Pool(Op):
         return (0, 6, 8, 3)
 
 
+
 class SwitchedPool(Op):
     """
     For N-dimensional tensors, consider that the last two dimensions span
