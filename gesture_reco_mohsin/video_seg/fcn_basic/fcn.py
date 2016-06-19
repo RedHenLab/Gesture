@@ -232,7 +232,8 @@ class FCN(object):
         upscore2_Layer_input=self.score_fr_Layer.output
         upscore2_Layer_input_shape=(self.batch_size,21,cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6,cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6)
         upscore2_Layer_filter=(21,21,4,4)
-        upscore2_Layer_output=(self.batch_size,21,34,24)
+        #upscore2_Layer_output=(self.batch_size,21,34,24)
+        upscore2_Layer_output=(self.batch_size,21,int(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6)),int(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6)))
         weights_upscore2=pickle.load(open("weights/upscore2_W.p","rb"))
         upscore2_stride=2
         self.upscore2_Layer=DeConvLayer(rng,upscore2_Layer_input,upscore2_Layer_input_shape,upscore2_Layer_filter,upscore2_Layer_output,upscore2_stride)
@@ -260,9 +261,11 @@ class FCN(object):
 
 
         upscore4_Layer_input=self.fuse_pool4_Layer.output
-        upscore4_Layer_input_shape=(self.batch_size,21,34,24)
+        #upscore4_Layer_input_shape=(self.batch_size,21,34,24)
+        upscore4_Layer_input_shape=(self.batch_size,21,int(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6)),int(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6)))
         upscore4_Layer_filter=(21,21,4,4)
-        upscore4_Layer_output=(self.batch_size,21,70,50)
+        #upscore4_Layer_output=(self.batch_size,21,70,50)
+        upscore4_Layer_output=(self.batch_size,21,int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6))),int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6))))
         weights_upscore4=pickle.load(open("weights/upscore4_W.p","rb"))
         upscore4_stride=2
         self.upscore4_Layer=DeConvLayer(rng,upscore4_Layer_input,upscore4_Layer_input_shape,upscore4_Layer_filter,upscore4_Layer_output,upscore4_stride)
@@ -270,7 +273,8 @@ class FCN(object):
 
 
         score_pool3_Layer_input=self.max_pool_layer3.output
-        score_pool3_Layer_input_shape=(self.batch_size,21,70,50)
+        #score_pool3_Layer_input_shape=(self.batch_size,21,70,50)
+        score_pool3_Layer_input_shape=(self.batch_size,21,int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6))),int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6))))
         score_pool3_Layer_filter=(21,21,1,1)
         weights_score_pool3=pickle.load(open("weights/score_pool3_W.p","rb"))
         bias_score_pool3=pickle.load(open("weights/bias_score_pool3.p","rb"))
@@ -290,9 +294,11 @@ class FCN(object):
 
 
         upscore8_Layer_input=self.fuse_pool3_Layer.output
-        upscore8_Layer_input_shape=(self.batch_size,21,70,50)
+        #upscore8_Layer_input_shape=(self.batch_size,21,70,50)
+        upscore8_Layer_input_shape=(self.batch_size,21,int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6))),int(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6))))
         upscore8_Layer_filter=(21,21,16,16)
-        upscore8_Layer_output=(self.batch_size,21,568,408)
+        #upscore8_Layer_output=(self.batch_size,21,568,408)
+        upscore8_Layer_output=(self.batch_size,21,int(8+8*(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[0]+198)/2)/2)/2)/2)/2)-6)))),int(8+8*(2+2*(2+2*(cl(cl(cl(cl(cl((input_size[1]+198)/2)/2)/2)/2)/2)-6)))))
         weights_upscore8=pickle.load(open("weights/upscore8_W.p","rb"))
         upscore8_stride=8
         self.upscore8_Layer=DeConvLayer(rng,upscore8_Layer_input,upscore8_Layer_input_shape,upscore8_Layer_filter,upscore8_Layer_output,upscore8_stride)
@@ -343,7 +349,7 @@ class FCN(object):
 
 
 def loadData():
-    im = Image.open('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_000129.jpg')
+    im = Image.open('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_000170.jpg')
     in_ = np.array(im, dtype=np.float64)
     in_ = in_[:,:,::-1]
     in_ -= np.array((104.00698793,116.66876762,122.67891434))
