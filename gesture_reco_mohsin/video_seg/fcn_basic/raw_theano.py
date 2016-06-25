@@ -31,8 +31,6 @@ class Crop(Op):
         rval=list(imgshape[:-2]) + [nr-2*offset,nc-2*offset]
         return rval
 
-
-
     def __init__(self,offset):
         self.offset=offset
 
@@ -125,9 +123,18 @@ class Crop(Op):
         return ccode % locals()
 
 
-    def grad(self,inps,outs):
-        pass
+    def grad(self,inps,out_grads):
+        x=inps
+        gz=out_grads
+        zz=np.zeros_like(x)
 
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(offset,x.shape[2]-offset):
+                    for c in xrange(offset,x.shape[3]-*offset):
+                        zz[n,k,r,c]=x[n,k,r-offset,c-offset]
+
+        return zz
 
 
 class FuseSum(Op):
