@@ -125,6 +125,10 @@ class Crop(Op):
         return ccode % locals()
 
 
+    def grad(self,inps,outs):
+        pass
+
+
 
 class FuseSum(Op):
     """

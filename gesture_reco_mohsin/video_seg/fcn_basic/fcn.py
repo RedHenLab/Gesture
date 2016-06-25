@@ -5,6 +5,9 @@ from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
 import matplotlib.pyplot as plt
+import time
+from video_support import *
+
 
 from layers import *
 
@@ -349,7 +352,7 @@ class FCN(object):
 
 
 def loadData():
-    im = Image.open('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_000170.jpg')
+    im = Image.open('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_006559.jpg')
     in_ = np.array(im, dtype=np.float64)
     in_ = in_[:,:,::-1]
     in_ -= np.array((104.00698793,116.66876762,122.67891434))
@@ -373,8 +376,16 @@ def genImage(data):
         for j in range(data.shape[1]):
             if data[i][j]==class_label:
                 #print "hello"
-
-                img_vals[i][j]=255
+                try:
+                    img_vals[i][j]=255
+                    img_vals[i-1][j-1]=255
+                    img_vals[i-1][j]=255
+                    img_vals[i][j-1]=255
+                    img_vals[i][j+1]=255
+                    img_vals[i+1][j]=255
+                    img_vals[i+1][j+1]=255
+                except IndexError:
+                    pass
                 #img_vals[i][j][2]=255
         #print img_vals
 
@@ -397,26 +408,53 @@ def genImagePlot(data):
             if data[i][j]==class_label:
 
                 plotX.append(j)
-                plotY.append(data.shape[1]-i)
+                plotY.append(data.shape[0]-i)
             if data[i][j]==class_label2:
 
                 plotX2.append(j)
-                plotY2.append(data.shape[1]-i)
+                plotY2.append(data.shape[0]-i)
     plt.plot(plotX,plotY,"ro")
     plt.plot(plotX2,plotY2,"bo")
     plt.show()
 
 
-if __name__=="__main__":
+def processImage():
     im=loadData()
-    #print im.shape
+    print im.shape
     net=FCN(1,im.shape[1:])
+    print "network loaded"
+    start_time=time.time()
     out=net.test(np.array([im]))
+    print "elpased time ="+str(time.time()-start_time)
     #print out[0][10][0]
     #print np.unravel_index(out.argmax(),out.shape)
     #print np.max(out)
     np.set_printoptions(threshold=np.nan)
 
     labels=infer(out)
-    #print out.shape
+    print out.shape
     genImagePlot(labels[0])
+    saveImage(labels[0],15)
+
+
+def processVideo():
+    inp_frames=loadVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news_01.mp4")
+    out_frames=[]
+    net=FCN(1,inp_frames[0].shape[1:])
+    print "network loaded"
+    start_time=time.time()
+
+    for i in range(1000):
+        if not i%3==0:
+            continue
+        im=inp_frames[i]
+        out=net.test(np.array([im]))
+        labels=infer(out)
+        out_frames.append(labels[0])
+
+    saveVideo(out_frames,15)
+    print "elpased time ="+str(time.time()-start_time)
+
+
+if __name__=="__main__":
+    processVideo()
