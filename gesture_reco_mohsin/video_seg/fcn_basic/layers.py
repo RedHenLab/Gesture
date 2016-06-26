@@ -376,3 +376,9 @@ class FuseSumLayer(object):
         )
 
         self.output=output
+
+
+class SoftmaxWithLossLayer(object):
+
+    def __init__(self,inputData):
+        

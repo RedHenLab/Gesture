@@ -16,6 +16,7 @@ class FCN(object):
     def __init__(self,batch_size,input_size):
         self.batch_size=batch_size
         poolsize=(2,2)
+        self.params=[]
 
         x=T.tensor4('x')
         self.x=x
@@ -29,6 +30,7 @@ class FCN(object):
         bias_conv1_1=pickle.load(open("weights/bias1_1.p","rb"))
         self.convLayer1_1=PaddedConvLayer(rng,convLayer1_input,convLayer1_input_shape,convLayer1_filter,conv1_pad)
         self.convLayer1_1.assignParams(weights_conv1_1,bias_conv1_1)
+        self.params.extend(self.convLayer1_1.params)
 
         relu_layer1_1_input=self.convLayer1_1.output
         self.relu_layer1_1=ReLuLayer(relu_layer1_1_input)
@@ -41,6 +43,7 @@ class FCN(object):
         bias_conv1_2=pickle.load(open("weights/bias1_2.p","rb"))
         self.convLayer1_2=PaddedConvLayer(rng,convLayer1_2_input,convLayer1_2_input_shape,convLayer1_2_filter,conv1_2pad)
         self.convLayer1_2.assignParams(weights_conv1_2,bias_conv1_2)
+        self.params.extend(self.convLayer1_2.params)
 
         relu_layer1_2_input=self.convLayer1_2.output
         self.relu_layer1_2=ReLuLayer(relu_layer1_2_input)
@@ -57,6 +60,8 @@ class FCN(object):
         conv2_1pad=1
         self.convLayer2_1=PaddedConvLayer(rng,convLayer2_1_input,convLayer2_1_input_shape,convLayer2_1_filter,conv2_1pad)
         self.convLayer2_1.assignParams(weights_conv2_1,bias_conv2_1)
+        self.params.extend(self.convLayer2_1.params)
+
 
         relu_layer2_1_input=self.convLayer2_1.output
         self.relu_layer2_1=ReLuLayer(relu_layer2_1_input)
@@ -69,6 +74,8 @@ class FCN(object):
         conv2_2pad=1
         self.convLayer2_2=PaddedConvLayer(rng,convLayer2_2_input,convLayer2_2_input_shape,convLayer2_2_filter,conv2_2pad)
         self.convLayer2_2.assignParams(weights_conv2_2,bias_conv2_2)
+        self.params.extend(self.convLayer2_2.params)
+
 
         relu_layer2_2_input=self.convLayer2_2.output
         self.relu_layer2_2=ReLuLayer(relu_layer2_2_input)
@@ -85,6 +92,7 @@ class FCN(object):
         conv3_1pad=1
         self.convLayer3_1=PaddedConvLayer(rng,convLayer3_1_input,convLayer3_1_input_shape,convLayer3_1_filter,conv3_1pad)
         self.convLayer3_1.assignParams(weights_conv3_1,bias_conv3_1)
+        self.params.extend(self.convLayer3_1.params)
 
         relu_layer3_1_input=self.convLayer3_1.output
         self.relu_layer3_1=ReLuLayer(relu_layer3_1_input)
@@ -97,6 +105,7 @@ class FCN(object):
         conv3_2pad=1
         self.convLayer3_2=PaddedConvLayer(rng,convLayer3_2_input,convLayer3_2_input_shape,convLayer3_2_filter,conv3_2pad)
         self.convLayer3_2.assignParams(weights_conv3_2,bias_conv3_2)
+        self.params.extend(self.convLayer3_2.params)
 
         relu_layer3_2_input=self.convLayer3_2.output
         self.relu_layer3_2=ReLuLayer(relu_layer3_2_input)
@@ -109,6 +118,7 @@ class FCN(object):
         conv3_3pad=1
         self.convLayer3_3=PaddedConvLayer(rng,convLayer3_3_input,convLayer3_3_input_shape,convLayer3_3_filter,conv3_3pad)
         self.convLayer3_3.assignParams(weights_conv3_3,bias_conv3_3)
+        self.params.extend(self.convLayer3_3.params)
 
         relu_layer3_3_input=self.convLayer3_3.output
         self.relu_layer3_3=ReLuLayer(relu_layer3_3_input)
@@ -125,6 +135,7 @@ class FCN(object):
         conv4_1pad=1
         self.convLayer4_1=PaddedConvLayer(rng,convLayer4_1_input,convLayer4_1_input_shape,convLayer4_1_filter,conv4_1pad)
         self.convLayer4_1.assignParams(weights_conv4_1,bias_conv4_1)
+        self.params.extend(self.convLayer4_1.params)
 
         relu_layer4_1_input=self.convLayer4_1.output
         self.relu_layer4_1=ReLuLayer(relu_layer4_1_input)
@@ -137,6 +148,7 @@ class FCN(object):
         conv4_2pad=1
         self.convLayer4_2=PaddedConvLayer(rng,convLayer4_2_input,convLayer4_2_input_shape,convLayer4_2_filter,conv4_2pad)
         self.convLayer4_2.assignParams(weights_conv4_2,bias_conv4_2)
+        self.params.extend(self.convLayer4_2.params)
 
         relu_layer4_2_input=self.convLayer4_2.output
         self.relu_layer4_2=ReLuLayer(relu_layer4_2_input)
@@ -149,6 +161,7 @@ class FCN(object):
         conv4_3pad=1
         self.convLayer4_3=PaddedConvLayer(rng,convLayer4_3_input,convLayer4_3_input_shape,convLayer4_3_filter,conv4_3pad)
         self.convLayer4_3.assignParams(weights_conv4_3,bias_conv4_3)
+        self.params.extend(self.convLayer4_3.params)
 
         relu_layer4_3_input=self.convLayer4_3.output
         self.relu_layer4_3=ReLuLayer(relu_layer4_3_input)
@@ -165,6 +178,7 @@ class FCN(object):
         conv5_1pad=1
         self.convLayer5_1=PaddedConvLayer(rng,convLayer5_1_input,convLayer5_1_input_shape,convLayer5_1_filter,conv5_1pad)
         self.convLayer5_1.assignParams(weights_conv5_1,bias_conv5_1)
+        self.params.extend(self.convLayer5_1.params)
 
         relu_layer5_1_input=self.convLayer5_1.output
         self.relu_layer5_1=ReLuLayer(relu_layer5_1_input)
@@ -177,6 +191,7 @@ class FCN(object):
         conv5_2pad=1
         self.convLayer5_2=PaddedConvLayer(rng,convLayer5_2_input,convLayer5_2_input_shape,convLayer5_2_filter,conv5_2pad)
         self.convLayer5_2.assignParams(weights_conv5_2,bias_conv5_2)
+        self.params.extend(self.convLayer5_2.params)
 
         relu_layer5_2_input=self.convLayer5_2.output
         self.relu_layer5_2=ReLuLayer(relu_layer5_2_input)
@@ -189,6 +204,8 @@ class FCN(object):
         conv5_3pad=1
         self.convLayer5_3=PaddedConvLayer(rng,convLayer5_3_input,convLayer5_3_input_shape,convLayer5_3_filter,conv5_3pad)
         self.convLayer5_3.assignParams(weights_conv5_3,bias_conv5_3)
+        self.params.extend(self.convLayer5_3.params)
+
 
         relu_layer5_3_input=self.convLayer5_3.output
         self.relu_layer5_3=ReLuLayer(relu_layer5_3_input)
@@ -204,6 +221,8 @@ class FCN(object):
         conv6_1pad=0
         self.convLayer6_1=PaddedConvLayer(rng,convLayer6_1_input,convLayer6_1_input_shape,convLayer6_1_filter,conv6_1pad)
         self.convLayer6_1.assignParams(weights_conv6_1,bias_conv6_1)
+        self.params.extend(self.convLayer6_1.params)
+
 
         relu_layer6_1_input=self.convLayer6_1.output
         self.relu_layer6_1=ReLuLayer(relu_layer6_1_input)
@@ -217,6 +236,7 @@ class FCN(object):
         conv7_1pad=0
         self.convLayer7_1=PaddedConvLayer(rng,convLayer7_1_input,convLayer7_1_input_shape,convLayer7_1_filter,conv7_1pad)
         self.convLayer7_1.assignParams(weights_conv7_1,bias_conv7_1)
+        self.params.extend(self.convLayer7_1.params)
 
         relu_layer7_1_input=self.convLayer7_1.output
         self.relu_layer7_1=ReLuLayer(relu_layer7_1_input)
@@ -230,6 +250,7 @@ class FCN(object):
         score_fr_pad=0
         self.score_fr_Layer=PaddedConvLayer(rng,score_fr_Layer_input,score_fr_Layer_input_shape,score_fr_Layer_filter,score_fr_pad)
         self.score_fr_Layer.assignParams(weights_score_fr,bias_score_fr)
+        self.params.extend(self.score_fr_Layer.params)
 
 
         upscore2_Layer_input=self.score_fr_Layer.output
@@ -241,6 +262,7 @@ class FCN(object):
         upscore2_stride=2
         self.upscore2_Layer=DeConvLayer(rng,upscore2_Layer_input,upscore2_Layer_input_shape,upscore2_Layer_filter,upscore2_Layer_output,upscore2_stride)
         self.upscore2_Layer.assignParams(weights_upscore2)
+        self.params.extend(self.upscore2_Layer.params)
 
 
         score_pool4_Layer_input=self.max_pool_layer4.output
@@ -251,6 +273,7 @@ class FCN(object):
         score_pool4_pad=0
         self.score_pool4_Layer=PaddedConvLayer(rng,score_pool4_Layer_input,score_pool4_Layer_input_shape,score_pool4_Layer_filter,score_pool4_pad)
         self.score_pool4_Layer.assignParams(weights_score_pool4,bias_score_pool4)
+        self.params.extend(self.score_pool4_Layer.params)
 
 
         score_pool4c_Layer_input=self.score_pool4_Layer.output
@@ -273,6 +296,7 @@ class FCN(object):
         upscore4_stride=2
         self.upscore4_Layer=DeConvLayer(rng,upscore4_Layer_input,upscore4_Layer_input_shape,upscore4_Layer_filter,upscore4_Layer_output,upscore4_stride)
         self.upscore4_Layer.assignParams(weights_upscore4)
+        self.params.extend(self.upscore4_Layer.params)
 
 
         score_pool3_Layer_input=self.max_pool_layer3.output
@@ -284,6 +308,7 @@ class FCN(object):
         score_pool3_pad=0
         self.score_pool3_Layer=PaddedConvLayer(rng,score_pool3_Layer_input,score_pool3_Layer_input_shape,score_pool3_Layer_filter,score_pool3_pad)
         self.score_pool3_Layer.assignParams(weights_score_pool3,bias_score_pool3)
+        self.params.extend(self.score_pool3_Layer.params)
 
 
         score_pool3c_Layer_input=self.score_pool3_Layer.output
@@ -306,6 +331,7 @@ class FCN(object):
         upscore8_stride=8
         self.upscore8_Layer=DeConvLayer(rng,upscore8_Layer_input,upscore8_Layer_input_shape,upscore8_Layer_filter,upscore8_Layer_output,upscore8_stride)
         self.upscore8_Layer.assignParams(weights_upscore8)
+        self.params.extend(self.upscore8_Layer.params)
 
 
         score_Layer_input=self.upscore8_Layer.output
@@ -349,6 +375,10 @@ class FCN(object):
 
         #print outs
         return np.array(outs)
+
+
+    def train(self,train_set_x):
+
 
 
 def loadData():

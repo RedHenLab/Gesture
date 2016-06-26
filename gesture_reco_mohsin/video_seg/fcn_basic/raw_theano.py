@@ -253,3 +253,7 @@ class FuseSum(Op):
         """
 
         return ccode % locals()
+
+
+    def grad(self,inps,out_grads):
+        return out_grads,out_grads
