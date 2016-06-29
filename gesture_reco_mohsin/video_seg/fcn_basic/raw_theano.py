@@ -4,6 +4,7 @@ from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
 from theano import gof, Op, tensor, Variable, Apply
+from theano.gof.null_type import NullType, null_type
 
 
 def crop2d(input,offset):
@@ -42,7 +43,8 @@ class Crop(Op):
         # If the input shape are broadcastable we can have 0 in the output shape
         broad = x.broadcastable[:2] + (False, False)
         out = tensor.TensorType(x.dtype, broad)
-        return gof.Apply(self, [x], [out()])
+        return Apply(self, [x], [x.type()])
+
 
     def perform(self,node,inp,out):
         x, = inp
@@ -124,17 +126,106 @@ class Crop(Op):
 
 
     def grad(self,inps,out_grads):
-        x=inps
-        gz=out_grads
-        zz=np.zeros_like(x)
+        x,=inps
+        gz,=out_grads
+        print x.type
+        #zz=np.zeros_like(x)
+        """
+        print x.shape
+
 
         for n in xrange(x.shape[0]):
             for k in xrange(x.shape[1]):
                 for r in xrange(offset,x.shape[2]-offset):
-                    for c in xrange(offset,x.shape[3]-*offset):
+                    for c in xrange(offset,x.shape[3]-offset):
                         zz[n,k,r,c]=x[n,k,r-offset,c-offset]
+        """
 
-        return zz
+        #return x,
+        return np.array([CropGrad(self.offset)(x,gz)])
+        #return [None]
+        #input_grads=[T.zeros_like(x,dtype=x.type())]
+        #input_grads = list(input_grads)
+
+        for i, term in enumerate(input_grads):
+
+                # Disallow Nones
+                if term is None:
+                    # We don't know what None means. in the past it has been
+                    # used to mean undefined, zero, or disconnected.
+                    # We therefore don't allow it because its usage has become
+                    # so muddied.
+                    raise TypeError(
+                        ('%s.grad returned None for' +
+                         ' a gradient term, '
+                         'this is prohibited. Instead of None,'
+                         'return zeros_like(input), disconnected_type(),'
+                         ' or a NullType variable such as those made with '
+                         'the grad_undefined or grad_unimplemented helper '
+                         'functions.') % node.op)
+
+                # Check that the gradient term for this input
+                # has the right shape
+
+                if not isinstance(term.type,
+                                  (NullType)):
+                    if term.type.dtype not in theano.tensor.float_dtypes:
+                        raise TypeError(str(node.op) + '.grad illegally '
+                                        ' returned an integer-valued variable.'
+                                        ' (Input index %d, dtype %s)' % (
+                                            i, term.type.dtype))
+
+        return input_grads
+
+
+
+class CropGrad(Op):
+
+    @staticmethod
+    def out_shape(imgshape,offset):
+        nr=imgshape[2]
+        nc=imgshape[3]
+
+        rval=list(imgshape[:-2]) + [nr-2*offset,nc-2*offset]
+        return rval
+
+    def __init__(self,offset):
+        self.offset=offset
+
+
+    def make_node(self,x,y):
+        if x.type.ndim != 4:
+            raise TypeError()
+        if y.type.ndim != 4:
+            raise TypeError()
+        # TODO: consider restricting the dtype?
+        x = tensor.as_tensor_variable(x)
+        y = tensor.as_tensor_variable(y)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        broad = x.broadcastable[:2] + (False, False)
+        out = tensor.TensorType(x.dtype, broad)
+        return Apply(self, [x,y], [out()])
+
+
+    def perform(self,node,inps,out):
+        x,gz=inps
+        z,=out
+        #z[0]=np.empty(x.shape, dtype=x.dtype)
+        print "hello"
+        zz=np.zeros_like(x)
+        offset=self.offset
+        #print x.shape
+
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(offset,x.shape[2]-offset):
+                    for c in xrange(offset,x.shape[3]-offset):
+                        zz[n,k,r,c]=gz[n,k,r-offset,c-offset]
+
+        z[0]=zz
+
+        #return zz
+
 
 
 class FuseSum(Op):
@@ -256,4 +347,4 @@ class FuseSum(Op):
 
 
     def grad(self,inps,out_grads):
-        return out_grads,out_grads
+        return out_grads[0],out_grads[0]

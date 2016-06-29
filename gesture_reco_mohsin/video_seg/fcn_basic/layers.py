@@ -380,5 +380,15 @@ class FuseSumLayer(object):
 
 class SoftmaxWithLossLayer(object):
 
-    def __init__(self,inputData):
-        
+    def __init__(self,inputData,targetData=None):
+        self.x=inputData
+        self.tar=targetData
+
+        # subtraction adds numerical stability
+        ex=T.exp(self.x-self.x.max(axis=1))
+        self.softmaxOut=ex/ex.sum(axis=1)
+
+        self.output=self.softmaxOut
+
+        #self.CEerror=T.sum(-targetData*T.log(self.softmaxOut))
+        #self.output=self.CEerror

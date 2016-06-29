@@ -262,7 +262,7 @@ class FCN(object):
         upscore2_stride=2
         self.upscore2_Layer=DeConvLayer(rng,upscore2_Layer_input,upscore2_Layer_input_shape,upscore2_Layer_filter,upscore2_Layer_output,upscore2_stride)
         self.upscore2_Layer.assignParams(weights_upscore2)
-        self.params.extend(self.upscore2_Layer.params)
+        self.params.extend([self.upscore2_Layer.params[0]])
 
 
         score_pool4_Layer_input=self.max_pool_layer4.output
@@ -296,7 +296,7 @@ class FCN(object):
         upscore4_stride=2
         self.upscore4_Layer=DeConvLayer(rng,upscore4_Layer_input,upscore4_Layer_input_shape,upscore4_Layer_filter,upscore4_Layer_output,upscore4_stride)
         self.upscore4_Layer.assignParams(weights_upscore4)
-        self.params.extend(self.upscore4_Layer.params)
+        self.params.extend([self.upscore4_Layer.params[0]])
 
 
         score_pool3_Layer_input=self.max_pool_layer3.output
@@ -331,7 +331,7 @@ class FCN(object):
         upscore8_stride=8
         self.upscore8_Layer=DeConvLayer(rng,upscore8_Layer_input,upscore8_Layer_input_shape,upscore8_Layer_filter,upscore8_Layer_output,upscore8_stride)
         self.upscore8_Layer.assignParams(weights_upscore8)
-        self.params.extend(self.upscore8_Layer.params)
+        self.params.extend([self.upscore8_Layer.params[0]])
 
 
         score_Layer_input=self.upscore8_Layer.output
@@ -377,7 +377,45 @@ class FCN(object):
         return np.array(outs)
 
 
-    def train(self,train_set_x):
+    def train(self,train_set_x,learning_rate,train_set_y=None):
+        lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
+        loss=T.sum(lossLayer.output)
+
+        gparams=T.grad(loss,self.params)
+        updates = [
+            (param, param - learning_rate * gparam)
+            for param, gparam in zip(self.params, gparams)
+        ]
+
+        index = T.lscalar()
+        trainDataX=theano.shared(train_set_x)
+
+        batch_size=self.batch_size
+
+        trainDeConvNet=theano.function(
+            inputs=[index],
+            outputs=[loss],
+            updates=updates,
+            on_unused_input='warn',
+            givens={
+                self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
+            },
+        )
+
+        outs=[]
+
+        n_train_batches=int(numpy.floor(len(train_set_x)/batch_size))
+        print n_train_batches
+        for batch_index in range(n_train_batches):
+            out=trainDeConvNet(batch_index)
+            print out
+            #for sam_out in out[0]:
+#                 print sam_out
+            #    outs.append(sam_out)
+
+
+        #print outs
+        #return np.array(outs)
 
 
 
@@ -486,5 +524,27 @@ def processVideo():
     print "elpased time ="+str(time.time()-start_time)
 
 
+def trainImage():
+    im=loadData()
+    print im.shape
+    net=FCN(1,im.shape[1:])
+    print "network loaded"
+    start_time=time.time()
+    out=net.train(np.array([im]),0.1)
+    print "elpased time ="+str(time.time()-start_time)
+    #print out[0][10][0]
+    #print np.unravel_index(out.argmax(),out.shape)
+    #print np.max(out)
+    np.set_printoptions(threshold=np.nan)
+
+    labels=infer(out)
+    print out.shape
+    print np.sum(out[0,:,1,1])
+    #print out[:,1,1]
+    #genImagePlot(labels[0])
+    #saveImage(labels[0],15)
+
+
 if __name__=="__main__":
-    processVideo()
+    #processVideo()
+    trainImage()
