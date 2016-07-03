@@ -7,6 +7,7 @@ from theano.tensor.signal import downsample
 import matplotlib.pyplot as plt
 import time
 from video_support import *
+from theano_raw_utils.raw_theano import *
 
 
 from layers import *

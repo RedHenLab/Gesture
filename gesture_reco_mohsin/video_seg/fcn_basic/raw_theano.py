@@ -128,58 +128,16 @@ class Crop(Op):
     def grad(self,inps,out_grads):
         x,=inps
         gz,=out_grads
-        print x.type
-        #zz=np.zeros_like(x)
-        """
-        print x.shape
 
-
-        for n in xrange(x.shape[0]):
-            for k in xrange(x.shape[1]):
-                for r in xrange(offset,x.shape[2]-offset):
-                    for c in xrange(offset,x.shape[3]-offset):
-                        zz[n,k,r,c]=x[n,k,r-offset,c-offset]
-        """
 
         #return x,
         return np.array([CropGrad(self.offset)(x,gz)])
-        #return [None]
-        #input_grads=[T.zeros_like(x,dtype=x.type())]
-        #input_grads = list(input_grads)
-
-        for i, term in enumerate(input_grads):
-
-                # Disallow Nones
-                if term is None:
-                    # We don't know what None means. in the past it has been
-                    # used to mean undefined, zero, or disconnected.
-                    # We therefore don't allow it because its usage has become
-                    # so muddied.
-                    raise TypeError(
-                        ('%s.grad returned None for' +
-                         ' a gradient term, '
-                         'this is prohibited. Instead of None,'
-                         'return zeros_like(input), disconnected_type(),'
-                         ' or a NullType variable such as those made with '
-                         'the grad_undefined or grad_unimplemented helper '
-                         'functions.') % node.op)
-
-                # Check that the gradient term for this input
-                # has the right shape
-
-                if not isinstance(term.type,
-                                  (NullType)):
-                    if term.type.dtype not in theano.tensor.float_dtypes:
-                        raise TypeError(str(node.op) + '.grad illegally '
-                                        ' returned an integer-valued variable.'
-                                        ' (Input index %d, dtype %s)' % (
-                                            i, term.type.dtype))
-
-        return input_grads
 
 
 
 class CropGrad(Op):
+
+    #TODO to implemet C code
 
     @staticmethod
     def out_shape(imgshape,offset):

@@ -1341,6 +1341,91 @@ class UnPool(Op):
         return [shp]
 
 
+    def grad(self,inps,out_grads):
+        x,sw=inps
+        gz,=out_grads
+
+        return UnPoolGrad(self.ds,self.ignore_border,self.st,self.padding,self.mode)(x,sw,gz)
+
+
+
+class UnPoolGrad(Op):
+
+    def __init__(self, ds, ignore_border=False, st=None, padding=(0, 0),
+                 mode='max'):
+        self.ds = tuple(ds)
+        if not all([isinstance(d, integer_types) for d in ds]):
+            raise ValueError(
+                "Pool downsample parameters must be ints."
+                " Got %s" % str(ds))
+        if st is None:
+            st = ds
+        assert isinstance(st, (tuple, list))
+        self.st = tuple(st)
+        self.ignore_border = ignore_border
+        self.padding = tuple(padding)
+        #self.switch=switch
+        if self.padding != (0, 0) and not ignore_border:
+            raise NotImplementedError(
+                'padding works only with ignore_border=True')
+        if self.padding[0] >= self.ds[0] or self.padding[1] >= self.ds[1]:
+            raise NotImplementedError(
+                'padding_h and padding_w must be smaller than strides')
+        if mode not in ['max', 'average_inc_pad', 'average_exc_pad', 'sum']:
+            raise ValueError(
+                "Pool mode parameter only support 'max', 'sum',"
+                " 'average_inc_pad' and 'average_exc_pad'. Got %s" % mode)
+        self.mode = mode
+
+
+    def make_node(self,x,sw,gz):
+        if x.type.ndim != 4:
+            raise TypeError()
+        if sw.type.ndim != 4:
+            raise TypeError()
+        if gz.type.ndim != 4:
+            raise TypeError()
+        x = tensor.as_tensor_variable(x)
+        sw = tensor.as_tensor_variable(sw)
+        gz = tensor.as_tensor_variable(gz)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        return Apply(self, [x,sw,gz], [x.type(),x.type()])
+
+
+    def perform(self,node,inps,out):
+        x,sw,gz=inps
+        gx,gsw=out
+
+        zz=np.zeros_like(x)
+        zsw=np.zeros_like(sw)
+
+        pr=x.shape[-1]
+        pc=x.shape[-2]
+
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+
+
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(pr):
+                    row_st = r * st0
+                    if not inc_pad:
+                        row_st = builtins.max(row_st, self.padding[0])
+                    for c in xrange(pc):
+                        col_st = c * st1
+                        if not inc_pad:
+                            col_st = builtins.max(col_st, self.padding[1])
+                        max_index=sw[n,k,r,c]
+
+                        row_pos=row_st+max_index // st0
+                        col_pos=col_st+max_index-(max_index// st0)*st0
+                        zz[n, k, r, c] = gz[n,k,row_pos,col_pos]
+
+        gsw[0]=zsw
+        gx[0]=zz
+
+
 
 class PoolGrad(Op):
     __props__ = ('ds', 'ignore_border', 'st', 'padding', 'mode')
