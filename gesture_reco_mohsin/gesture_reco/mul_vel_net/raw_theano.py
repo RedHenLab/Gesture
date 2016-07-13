@@ -18,6 +18,11 @@ def fuse2d(input1,input2):
     output=op(input1,input2)
     return output
 
+def assignVals(var,vals):
+    op=AssignVals()
+    output=op(var,vals)
+    return output
+
 
 class Crop(Op):
     """
@@ -306,3 +311,37 @@ class FuseSum(Op):
 
     def grad(self,inps,out_grads):
         return out_grads[0],out_grads[0]
+
+
+class AssignVals(Op):
+
+    @staticmethod
+    def out_shape(imgshape):
+        nr=imgshape[2]
+        nc=imgshape[3]
+
+        rval=list(imgshape[:-2]) + [nr,nc]
+        return rval
+
+    def __init__(self):
+        pass
+
+    def make_node(self,x,y):
+        if x.type.ndim != 4:
+            raise TypeError()
+        if y.type.ndim != 4:
+            raise TypeError()
+        # TODO: consider restricting the dtype?
+        x = tensor.as_tensor_variable(x)
+        y = tensor.as_tensor_variable(y)
+        return gof.Apply(self, [x,y], [])
+
+
+    def perform(self,node,inp,out):
+        x,y = inp
+
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(x.shape[2]):
+                    for c in xrange(x.shape[3]):
+                        x[n,k,r,c]=y[n,k,r,c]

@@ -10,6 +10,7 @@ from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
 from raw_pool_theano import *
 from raw_theano_conv3d import *
+from raw_theano import *
 
 """
 The output image size of the convolution layer is
@@ -103,7 +104,94 @@ class TemporalConvLayer(object):
 
         self.output=conv_out
 
-        self.params=[self.W,self.b]
+        self.params=[self.W]
+
+
+    def assignParams(self,W,b):
+        updates_W=(self.W,W)
+        updates_b=(self.b,b)
+
+        assignW=theano.function(
+            inputs=[],
+            updates=[updates_W]
+        )
+
+        assignb=theano.function(
+            inputs=[],
+            updates=[updates_b]
+        )
+
+        assignW()
+        assignb()
+
+
+
+class TemporalDeConvLayer(object):
+    """
+    The filter shape is:
+    (num_input_layers,temporal size,num_output_channels,height,width)
+
+
+    """
+
+    def __init__(self,rng,inputData,out_shape,filter_shape,temporal_stride=1,filter_stride=1):
+        self.input=inputData
+
+        fan_in = numpy.prod(filter_shape[1:])
+        fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) )
+
+        # initialize weights with random weights
+        W_bound = numpy.sqrt(6. / (fan_in + fan_out))
+
+        self.W=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=filter_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        self.conv_input=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=out_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        self.conv_input=theano.shared(
+            numpy.asarray(
+                rng.uniform(low=-W_bound,high=W_bound,size=out_shape),
+                dtype=theano.config.floatX
+            ),
+            borrow=True
+        )
+
+        b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        self.b = theano.shared(value=b_values, borrow=True)
+
+        conv_out=conv3d(self.conv_input,self.W)
+        conv_out=conv_out[:,0::temporal_stride,:,:,:]
+
+        back_stride=T.grad(T.sum(conv_out),self.conv_input)
+
+        update_conv=(conv_out,self.input)
+        #assignUpdate=theano.function(
+        #    inputs=[],
+        #    updates=[update_conv]
+        #)
+
+        out_func=theano.function(
+            inputs=[],
+            outputs=[back_stride],
+            #givens={conv_out: self.input.eval()}
+        )
+
+        #assignUpdate()
+        self.output=out_func()[0]
+        #self.output=self.input.eval()
+
+        self.params=[self.W]
 
 
     def assignParams(self,W,b):

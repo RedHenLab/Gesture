@@ -31,9 +31,11 @@ class DeConvBlock(object):
         self.convlayer1=TemporalConvLayer(rng,x,convLayer1_input_shape,convLayer1_filter_shape,2)
         self.params.extend(self.convlayer1.params)
 
+        self.deconvLayer1=TemporalDeConvLayer(rng,self.convlayer1.output,convLayer1_input_shape,convLayer1_filter_shape,2)
+
 
     def test(self,test_set_x):
-        out=self.convlayer1.output
+        out=self.deconvLayer1.output
         batch_size=self.batch_size
 
         index = T.lscalar()
@@ -63,11 +65,11 @@ class DeConvBlock(object):
         #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         #loss=T.sum(lossLayer.output)
 
-        gparams=T.grad(self.convlayer1.output,self.params)
-        updates = [
-            (param, param - learning_rate * gparam)
-            for param, gparam in zip(self.params, gparams)
-        ]
+        gparams=T.grad(T.sum(self.convlayer1.output),self.convlayer1.input)
+        #updates = [
+        #    (param, param - learning_rate * gparam)
+        #    for param, gparam in zip(self.params, gparams)
+        #]
 
         index = T.lscalar()
         trainDataX=theano.shared(train_set_x)
@@ -76,8 +78,8 @@ class DeConvBlock(object):
 
         trainDeConvNet=theano.function(
             inputs=[index],
-            outputs=[loss],
-            updates=updates,
+            outputs=[gparams],
+            #updates=updates,
             on_unused_input='warn',
             givens={
                 self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
@@ -90,7 +92,7 @@ class DeConvBlock(object):
         print n_train_batches
         for batch_index in range(n_train_batches):
             out=trainDeConvNet(batch_index)
-            print out
+            print out[0].shape
 
 
 
@@ -102,6 +104,6 @@ if __name__=="__main__":
     block=DeConvBlock(1)
     x=np.random.rand(1,5,3,50,50)
     out=block.test(x)
-    block.train(x,0.1)
+    #block.train(x,0.1)
 
     print out.shape
