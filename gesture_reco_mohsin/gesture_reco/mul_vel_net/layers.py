@@ -160,10 +160,7 @@ class TemporalDeConvLayer(object):
         )
 
         self.conv_input=theano.shared(
-            numpy.asarray(
-                rng.uniform(low=-W_bound,high=W_bound,size=out_shape),
-                dtype=theano.config.floatX
-            ),
+            numpy.zeros(out_shape,dtype=theano.config.floatX),
             borrow=True
         )
 
@@ -172,24 +169,27 @@ class TemporalDeConvLayer(object):
 
         conv_out=conv3d(self.conv_input,self.W)
         conv_out=conv_out[:,0::temporal_stride,:,:,:]
+        conv_out=T.mul(conv_out,self.input)
 
+        #assignVals(conv_out,self.input)
         back_stride=T.grad(T.sum(conv_out),self.conv_input)
 
-        update_conv=(conv_out,self.input)
+        #update_conv=(conv_out,self.input)
         #assignUpdate=theano.function(
         #    inputs=[],
         #    updates=[update_conv]
         #)
 
-        out_func=theano.function(
-            inputs=[],
-            outputs=[back_stride],
+        #out_func=theano.function(
+        #    inputs=[],
+        #    outputs=[back_stride],
             #givens={conv_out: self.input.eval()}
-        )
+        #)
 
         #assignUpdate()
-        self.output=out_func()[0]
+        #self.output=out_func()[0]
         #self.output=self.input.eval()
+        self.output=back_stride
 
         self.params=[self.W]
 

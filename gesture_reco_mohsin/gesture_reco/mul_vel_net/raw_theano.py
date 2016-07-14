@@ -327,9 +327,7 @@ class AssignVals(Op):
         pass
 
     def make_node(self,x,y):
-        if x.type.ndim != 4:
-            raise TypeError()
-        if y.type.ndim != 4:
+        if x.type.ndim != y.type.ndim:
             raise TypeError()
         # TODO: consider restricting the dtype?
         x = tensor.as_tensor_variable(x)

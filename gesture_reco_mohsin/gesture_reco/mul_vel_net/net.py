@@ -44,6 +44,7 @@ class DeConvBlock(object):
         testDeConvNet=theano.function(
             inputs=[index],
             outputs=out,
+            on_unused_input='warn',
             givens={
                 self.x :testDataX[index * batch_size: (index + 1) * batch_size]
             },
