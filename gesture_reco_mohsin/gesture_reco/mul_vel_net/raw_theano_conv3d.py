@@ -166,7 +166,7 @@ class ProcessTemporalStride(Op):
 
 def conv3d(signals, filters,
            signals_shape=None, filters_shape=None,
-           border_mode='valid',subsample=(1,1,1,1,1)):
+           border_mode='valid'):
     """
     Convolve spatio-temporal filters with a movie.
     It flips the filters.

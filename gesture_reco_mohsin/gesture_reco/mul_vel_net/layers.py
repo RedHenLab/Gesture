@@ -100,7 +100,7 @@ class TemporalConvLayer(object):
         self.b = theano.shared(value=b_values, borrow=True)
 
         conv_out=conv3d(self.input,self.W)
-        conv_out=conv_out[:,0::temporal_stride,:,:,:]
+        conv_out=conv_out[:,0::temporal_stride,:,0::filter_stride,0::filter_stride]
 
         self.output=conv_out
 
@@ -129,7 +129,7 @@ class TemporalConvLayer(object):
 class TemporalDeConvLayer(object):
     """
     The filter shape is:
-    (num_input_layers,temporal size,num_output_channels,height,width)
+    (num_output_layers,temporal size,num_input_channels,height,width)
 
 
     """
@@ -280,8 +280,11 @@ shifted to maintain the effect of non linearity
 """
 class CNNBatchNormLayer(object):
 
-    def __init__(self,inputData,num_out):
+    def __init__(self,inputData,image_shape):
         self.input=inputData
+        num_out=image_shape[-3]
+        epsilon=0.01
+        self.image_shape=image_shape
 
         gamma_values = numpy.ones((num_out,), dtype=theano.config.floatX)
         self.gamma_vals = theano.shared(value=gamma_values, borrow=True)
@@ -289,20 +292,42 @@ class CNNBatchNormLayer(object):
         beta_values = numpy.zeros((num_out,), dtype=theano.config.floatX)
         self.beta_vals = theano.shared(value=beta_values, borrow=True)
 
-        batch_mean=T.mean(self.input,keepdims=True,axis=0)
-        batch_var=T.var(self.input,keepdims=True,axis=0)
+        batch_mean=T.mean(self.input,keepdims=True,axis=(0,-2,-1))
+        batch_var=T.var(self.input,keepdims=True,axis=(0,-2,-1))+epsilon
 
-        self.batch_mean=batch_mean
+        self.batch_mean=self.adjustVals(batch_mean)
+        batch_var=self.adjustVals(batch_var)
         self.batch_var=T.pow(batch_var,0.5)
 
-        batch_normalize=(inputData-batch_mean)/(T.pow(batch_var,0.5))
+        batch_normalize=(inputData-self.batch_mean)/(T.pow(self.batch_var,0.5))
 
-        self.beta = self.beta_vals.dimshuffle('x', 0, 'x', 'x')
-        self.gamma = self.gamma_vals.dimshuffle('x', 0, 'x', 'x')
+        if self.input.ndim==5:
+            self.beta = self.beta_vals.dimshuffle('x','x', 0, 'x', 'x')
+            self.gamma = self.gamma_vals.dimshuffle('x','x', 0, 'x', 'x')
+        else:
+            self.beta = self.beta_vals.dimshuffle('x', 0, 'x', 'x')
+            self.gamma = self.gamma_vals.dimshuffle('x', 0, 'x', 'x')
 
         self.output=batch_normalize*self.gamma+self.beta
+        #self.output=inputData-self.batch_mean
 
         self.params=[self.gamma_vals,self.beta_vals]
+
+
+    def tileMap(self,val,prev):
+        return T.tile(val,(self.image_shape[-2],self.image_shape[-1]))
+
+
+    def adjustVals(self,batch_vals):
+        seq=batch_vals
+        #outputs_info = T.as_tensor_variable(np.asarray(0, seq.dtype))
+        outputs_info=T.zeros_like(self.input[0])
+        scan_result, scan_updates = theano.scan(fn=self.tileMap,
+                                        outputs_info=outputs_info,
+                                        sequences=seq)
+        #filled_vals = theano.function(inputs=[seq], outputs=scan_result)
+        #return filled_vals(seq)
+        return scan_result
 
 
     def assignParams(self,gamma,beta):
