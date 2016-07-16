@@ -107,16 +107,43 @@ class DeConvBlock(object):
         convLayer3_filter_shape,conv3_temporal_stride,conv3_filter_stride)
         self.params.extend(self.convLayer3_1.params)
 
-        NormLayer3_input_shape=[batch_size,2,256,21,21]
+        NormLayer3_input_shape=[batch_size,2,384,10,10]
         self.NormLayer3_1=CNNBatchNormLayer(self.convLayer3_1.output,NormLayer3_input_shape)
         self.params.extend(self.NormLayer3_1.params)
 
 
+        fc1Layer_input=self.NormLayer3_1.output
+        fc1Layer_input_shape=[batch_size,1,384,10,10]
+        fc1Layer_filter_shape=[4096,1,384,10,10]
+        fc1Layer_temporal_stride=1
+        fc1Layer_filter_stride=1
+        self.fc1Layer=TemporalConvLayer(rng,fc1Layer_input,fc1Layer_input_shape,
+        fc1Layer_filter_shape,fc1Layer_temporal_stride,fc1Layer_filter_stride)
+        self.params.extend(self.fc1Layer.params)
+
+
+        fc2Layer_input=self.fc1Layer.output
+        fc2Layer_input_shape=[batch_size,1,4096,1,1]
+        fc2Layer_filter_shape=[4096,1,4096,1,1]
+        fc2Layer_temporal_stride=1
+        fc2Layer_filter_stride=1
+        self.fc2Layer=TemporalConvLayer(rng,fc2Layer_input,fc2Layer_input_shape,
+        fc2Layer_filter_shape,fc2Layer_temporal_stride,fc2Layer_filter_stride)
+        self.params.extend(self.fc2Layer.params)
+
+
         #self.deconvLayer1=TemporalDeConvLayer(rng,self.convlayer1.output,convLayer1_input_shape,convLayer1_filter_shape,2)
+
+        deconvLayer3_1_temporal_stride=1
+        deconvLayer3_1_filter_stride=1
+        self.deconvLayer3_1=TemporalDeConvLayer(rng,self.fc2Layer.output,
+        fc1Layer_input_shape,fc1Layer_filter_shape,deconvLayer3_1_temporal_stride,
+        deconvLayer3_1_filter_stride)
+
 
 
     def test(self,test_set_x):
-        out=self.convLayer3_1.output
+        out=self.deconvLayer3_1.output
         batch_size=self.batch_size
 
         index = T.lscalar()
@@ -150,11 +177,11 @@ class DeConvBlock(object):
         #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         #loss=T.sum(lossLayer.output)
 
-        gparams=T.grad(T.sum(self.convlayer1.output),self.convlayer1.input)
-        #updates = [
-        #    (param, param - learning_rate * gparam)
-        #    for param, gparam in zip(self.params, gparams)
-        #]
+        gparams=T.grad(T.sum(self.deconvLayer3_1.output),self.params)
+        updates = [
+            (param, param - learning_rate * gparam)
+            for param, gparam in zip(self.params, gparams)
+        ]
 
         index = T.lscalar()
         trainDataX=theano.shared(train_set_x)
@@ -163,11 +190,14 @@ class DeConvBlock(object):
 
         trainDeConvNet=theano.function(
             inputs=[index],
-            outputs=[gparams],
-            #updates=updates,
+            outputs=[],
+            updates=updates,
             on_unused_input='warn',
             givens={
-                self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
+                self.x1_1 :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.x1_2 :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.x1_3 :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.x1_4 :trainDataX[index * batch_size: (index + 1) * batch_size],
             },
         )
 
@@ -177,7 +207,7 @@ class DeConvBlock(object):
         print n_train_batches
         for batch_index in range(n_train_batches):
             out=trainDeConvNet(batch_index)
-            print out[0].shape
+            #print out[0].shape
 
 
 
@@ -188,7 +218,7 @@ if __name__=="__main__":
 
     block=DeConvBlock(1)
     x=np.random.rand(1,9,3,145,145)
-    out=block.test(x)
-    #block.train(x,0.1)
+    #out=block.test(x)
+    block.train(x,0.1)
 
     print out.shape

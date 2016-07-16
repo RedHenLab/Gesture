@@ -129,7 +129,7 @@ class TemporalConvLayer(object):
 class TemporalDeConvLayer(object):
     """
     The filter shape is:
-    (num_output_layers,temporal size,num_input_channels,height,width)
+    (num_input_layers,temporal size,num_output_channels,height,width)
 
 
     """
