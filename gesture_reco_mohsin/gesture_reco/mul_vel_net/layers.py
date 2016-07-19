@@ -191,7 +191,7 @@ class TemporalDeConvLayer(object):
         #self.output=self.input.eval()
         self.output=back_stride
 
-        self.params=[self.W,self.b]
+        self.params=[self.W]
 
 
     def assignParams(self,W,b):

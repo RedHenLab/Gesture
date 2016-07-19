@@ -204,19 +204,19 @@ class DeConvBlock(object):
         self.deconvLayer1_2=TemporalDeConvLayer(rng,deconvLayer1_2_input,
         convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
         deconvLayer1_filter_stride)
-        self.params.extend(self.deconvLayer1_2.params)
+        #self.params.extend(self.deconvLayer1_2.params)
 
 
         self.deconvLayer1_3=TemporalDeConvLayer(rng,deconvLayer1_3_input,
         convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
         deconvLayer1_filter_stride)
-        self.params.extend(self.deconvLayer1_3.params)
+        #self.params.extend(self.deconvLayer1_3.params)
 
 
         self.deconvLayer1_4=TemporalDeConvLayer(rng,deconvLayer1_4_input,
         convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
         deconvLayer1_filter_stride)
-        self.params.extend(self.deconvLayer1_4.params)
+        #self.params.extend(self.deconvLayer1_4.params)
 
 
 
@@ -252,8 +252,7 @@ class DeConvBlock(object):
         #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         #loss=T.sum(lossLayer.output)
 
-        gparams=T.grad(T.sum(self.deconvLayer1_1.output+self.deconvLayer1_2.output+
-        self.deconvLayer1_3.output+self.deconvLayer1_4.output),self.params)
+        gparams=T.grad(T.sum(self.deconvLayer1_1.output),self.params)
         updates = [
             (param, param - learning_rate * gparam)
             for param, gparam in zip(self.params, gparams)
@@ -270,7 +269,7 @@ class DeConvBlock(object):
             updates=updates,
             on_unused_input='warn',
             givens={
-                self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
+                self.x :testDataX[index * batch_size: (index + 1) * batch_size]
             },
         )
 
@@ -283,13 +282,9 @@ class DeConvBlock(object):
             #print out[0].shape
 
 
+#class MulVelNet(object):
 
-class MulVelNet(object):
-
-    def __init__(self):
-        block1=DeConvBlock(1)
-        block2=DeConvBlock(1)
-        block3=DeConvBlock(1)
+#    def __init__(self):
 
 
 
@@ -300,7 +295,7 @@ if __name__=="__main__":
 
     block=DeConvBlock(1)
     x=np.random.rand(1,25,3,145,145)
-    #out=block.test(x)
+    out=block.test(x)
     block.train(x,0.1)
 
-    #print out.shape
+    print out.shape
