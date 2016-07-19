@@ -107,7 +107,7 @@ class DeConvBlock(object):
         convLayer3_filter_shape,conv3_temporal_stride,conv3_filter_stride)
         self.params.extend(self.convLayer3_1.params)
 
-        NormLayer3_input_shape=[batch_size,2,384,10,10]
+        NormLayer3_input_shape=[batch_size,1,384,10,10]
         self.NormLayer3_1=CNNBatchNormLayer(self.convLayer3_1.output,NormLayer3_input_shape)
         self.params.extend(self.NormLayer3_1.params)
 
@@ -134,16 +134,89 @@ class DeConvBlock(object):
 
         #self.deconvLayer1=TemporalDeConvLayer(rng,self.convlayer1.output,convLayer1_input_shape,convLayer1_filter_shape,2)
 
+        deconvLayerfc_1_temporal_stride=1
+        deconvLayerfc_1_filter_stride=1
+        self.deconvLayerfc_1=TemporalDeConvLayer(rng,self.fc2Layer.output,
+        fc1Layer_input_shape,fc1Layer_filter_shape,deconvLayerfc_1_temporal_stride,
+        deconvLayerfc_1_filter_stride)
+        self.params.extend(self.deconvLayerfc_1.params)
+
+        NormLayer_dfc_input_shape=[batch_size,1,384,10,10]
+        self.NormLayer_dfc_1=CNNBatchNormLayer(self.deconvLayerfc_1.output,NormLayer_dfc_input_shape)
+        self.params.extend(self.NormLayer_dfc_1.params)
+
+
         deconvLayer3_1_temporal_stride=1
-        deconvLayer3_1_filter_stride=1
-        self.deconvLayer3_1=TemporalDeConvLayer(rng,self.fc2Layer.output,
-        fc1Layer_input_shape,fc1Layer_filter_shape,deconvLayer3_1_temporal_stride,
+        deconvLayer3_1_filter_stride=2
+        self.deconvLayer3_1=TemporalDeConvLayer(rng,self.NormLayer_dfc_1.output,
+        convLayer3_input_shape,convLayer3_filter_shape,deconvLayer3_1_temporal_stride,
         deconvLayer3_1_filter_stride)
+        self.params.extend(self.deconvLayer3_1.params)
+
+        NormLayer_d3_input_shape=[batch_size,2,512,21,21]
+        self.NormLayer_d3_1=CNNBatchNormLayer(self.deconvLayer3_1.output,NormLayer_d3_input_shape)
+        self.params.extend(self.NormLayer_d3_1.params)
+
+
+        deconvLayer2_1_input=self.NormLayer_d3_1.output[:,:,0:256,:,:]
+        deconvLayer2_2_input=self.NormLayer_d3_1.output[:,:,256:,:,:]
+
+        deconvLayer2_temporal_stride=2
+        deconvLayer2_filter_stride=2
+        self.deconvLayer2_1=TemporalDeConvLayer(rng,deconvLayer2_1_input,
+        convLayer2_input_shape,convLayer2_filter_shape,deconvLayer2_temporal_stride,
+        deconvLayer2_filter_stride)
+        self.params.extend(self.deconvLayer2_1.params)
+
+        NormLayer_d2_input_shape=[batch_size,4,192,45,45]
+        self.NormLayer_d2_1=CNNBatchNormLayer(self.deconvLayer2_1.output,NormLayer_d2_input_shape)
+        self.params.extend(self.NormLayer_d2_1.params)
+
+
+        self.deconvLayer2_2=TemporalDeConvLayer(rng,deconvLayer2_2_input,
+        convLayer2_input_shape,convLayer2_filter_shape,deconvLayer2_temporal_stride,
+        deconvLayer2_filter_stride)
+        self.params.extend(self.deconvLayer2_2.params)
+
+        self.NormLayer_d2_2=CNNBatchNormLayer(self.deconvLayer2_2.output,NormLayer_d2_input_shape)
+        self.params.extend(self.NormLayer_d2_2.params)
+
+
+        deconvLayer1_1_input=self.NormLayer_d2_1.output[:,:,0:96,:,:]
+        deconvLayer1_2_input=self.NormLayer_d2_1.output[:,:,96:,:,:]
+        deconvLayer1_3_input=self.NormLayer_d2_2.output[:,:,0:96,:,:]
+        deconvLayer1_4_input=self.NormLayer_d2_2.output[:,:,96:,:,:]
+
+
+        deconvLayer1_temporal_stride=2
+        deconvLayer1_filter_stride=3
+        self.deconvLayer1_1=TemporalDeConvLayer(rng,deconvLayer1_1_input,
+        convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
+        deconvLayer1_filter_stride)
+        self.params.extend(self.deconvLayer1_1.params)
+
+
+        self.deconvLayer1_2=TemporalDeConvLayer(rng,deconvLayer1_2_input,
+        convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
+        deconvLayer1_filter_stride)
+        self.params.extend(self.deconvLayer1_2.params)
+
+
+        self.deconvLayer1_3=TemporalDeConvLayer(rng,deconvLayer1_3_input,
+        convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
+        deconvLayer1_filter_stride)
+        self.params.extend(self.deconvLayer1_3.params)
+
+
+        self.deconvLayer1_4=TemporalDeConvLayer(rng,deconvLayer1_4_input,
+        convLayer1_input_shape,convLayer1_filter_shape,deconvLayer1_temporal_stride,
+        deconvLayer1_filter_stride)
+        self.params.extend(self.deconvLayer1_4.params)
 
 
 
     def test(self,test_set_x):
-        out=self.deconvLayer3_1.output
+        out=self.deconvLayer1_1.output
         batch_size=self.batch_size
 
         index = T.lscalar()
@@ -177,7 +250,7 @@ class DeConvBlock(object):
         #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         #loss=T.sum(lossLayer.output)
 
-        gparams=T.grad(T.sum(self.deconvLayer3_1.output),self.params)
+        gparams=T.grad(T.sum(self.deconvLayer1_1.output),self.params)
         updates = [
             (param, param - learning_rate * gparam)
             for param, gparam in zip(self.params, gparams)
@@ -218,7 +291,7 @@ if __name__=="__main__":
 
     block=DeConvBlock(1)
     x=np.random.rand(1,9,3,145,145)
-    #out=block.test(x)
+    out=block.test(x)
     block.train(x,0.1)
 
     print out.shape

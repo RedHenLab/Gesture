@@ -168,7 +168,7 @@ class TemporalDeConvLayer(object):
         self.b = theano.shared(value=b_values, borrow=True)
 
         conv_out=conv3d(self.conv_input,self.W)
-        conv_out=conv_out[:,0::temporal_stride,:,:,:]
+        conv_out=conv_out[:,0::temporal_stride,:,0::filter_stride,0::filter_stride]
         conv_out=T.mul(conv_out,self.input)
 
         #assignVals(conv_out,self.input)
@@ -191,7 +191,7 @@ class TemporalDeConvLayer(object):
         #self.output=self.input.eval()
         self.output=back_stride
 
-        self.params=[self.W]
+        self.params=[self.W,self.b]
 
 
     def assignParams(self,W,b):
