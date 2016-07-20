@@ -286,16 +286,96 @@ class DeConvBlock(object):
 
 class MulVelNet(object):
 
-    def __init__(self):
-        block1=DeConvBlock(1)
-        block2=DeConvBlock(1)
-        block3=DeConvBlock(1)
+    def __init__(self,batch_size):
+        self.batch_size=batch_size
 
+        self.block1=DeConvBlock(batch_size)
+        self.block2=DeConvBlock(batch_size)
+        self.block3=DeConvBlock(batch_size)
+
+        self.params=[]
+        self.params.extend(self.block1.params)
+        self.params.extend(self.block2.params)
+        self.params.extend(self.block3.params)
+
+        rng = numpy.random.RandomState(23455)
+
+        fc1_supvis_input=T.concatenate([self.block1.fc1Layer.output
+        ,self.block2.fc1Layer.output,self.block3.fc1Layer.output],axis=2)
+        fc1_supvis_input_shape=[batch_size,1,4096*3,1,1]
+        fc1_supvis_filter_shape=[8192,1,4096*3,1,1]
+        fc1_supvis_temporal_stride=1
+        fc1_supvis_filter_stride=1
+        self.fc1_supvis_Layer=TemporalConvLayer(rng,fc1_supvis_input,fc1_supvis_input_shape,
+        fc1_supvis_filter_shape,fc1_supvis_temporal_stride,fc1_supvis_filter_stride)
+        self.params.extend(self.fc1_supvis_Layer.params)
+
+
+        fc2_supvis_input=self.fc1_supvis_Layer.output
+        fc2_supvis_input_shape=[batch_size,1,4096*2,1,1]
+        fc2_supvis_filter_shape=[4096,1,4096*2,1,1]
+        fc2_supvis_temporal_stride=1
+        fc2_supvis_filter_stride=1
+        self.fc2_supvis_Layer=TemporalConvLayer(rng,fc2_supvis_input,fc2_supvis_input_shape,
+        fc2_supvis_filter_shape,fc2_supvis_temporal_stride,fc2_supvis_filter_stride)
+        self.params.extend(self.fc2_supvis_Layer.params)
+
+
+        fc3_supvis_input=self.fc2_supvis_Layer.output
+        fc3_supvis_input_shape=[batch_size,1,4096,1,1]
+        fc3_supvis_filter_shape=[512,1,4096,1,1]
+        fc3_supvis_temporal_stride=1
+        fc3_supvis_filter_stride=1
+        self.fc3_supvis_Layer=TemporalConvLayer(rng,fc3_supvis_input,fc3_supvis_input_shape,
+        fc3_supvis_filter_shape,fc3_supvis_temporal_stride,fc3_supvis_filter_stride)
+        self.params.extend(self.fc3_supvis_Layer.params)
+
+
+        fc4_supvis_input=self.fc3_supvis_Layer.output
+        fc4_supvis_input_shape=[batch_size,1,512,1,1]
+        fc4_supvis_filter_shape=[8,1,512,1,1]
+        fc4_supvis_temporal_stride=1
+        fc4_supvis_filter_stride=1
+        self.fc4_supvis_Layer=TemporalConvLayer(rng,fc4_supvis_input,fc4_supvis_input_shape,
+        fc4_supvis_filter_shape,fc4_supvis_temporal_stride,fc4_supvis_filter_stride)
+        self.params.extend(self.fc4_supvis_Layer.params)
+
+
+
+    def test(self,test_set_x):
+        out=self.fc3_supvis_Layer.output
+        batch_size=self.batch_size
+
+        index = T.lscalar()
+        testDataX=theano.shared(test_set_x)
+
+        testDeConvNet=theano.function(
+            inputs=[index],
+            outputs=out,
+            on_unused_input='warn',
+            givens={
+                self.block1.x :testDataX[index * batch_size: (index + 1) * batch_size],
+                self.block2.x :testDataX[index * batch_size: (index + 1) * batch_size],
+                self.block3.x :testDataX[index * batch_size: (index + 1) * batch_size],
+            },
+        )
+
+        outs=[]
+
+        n_test_batches=int(numpy.floor(len(test_set_x)/batch_size))
+        print n_test_batches
+        for batch_index in range(n_test_batches):
+            out=testDeConvNet(batch_index)
+            #print out
+            outs.append(out)
+
+        return np.array(outs)
 
 
 if __name__=="__main__":
     #dtensor5=T.TensorType('float64',(False,)*5)
 
+    """
     z=dtensor5('z')
 
     block=DeConvBlock(1)
@@ -304,3 +384,11 @@ if __name__=="__main__":
     block.train(x,0.1)
 
     #print out.shape
+    """
+
+    net=MulVelNet(1)
+    x=np.random.rand(1,25,3,145,145)
+    out=net.test(x)
+    #block.train(x,0.1)
+
+    print out.shape
