@@ -1,6 +1,7 @@
 import theano
 import theano.tensor as T
 from layers import *
+from video_support import *
 
 import numpy as np
 
@@ -340,10 +341,14 @@ class MulVelNet(object):
         fc4_supvis_filter_shape,fc4_supvis_temporal_stride,fc4_supvis_filter_stride)
         self.params.extend(self.fc4_supvis_Layer.params)
 
+        self.lossLayer=SoftmaxWithLossLayer(self.fc4_supvis_Layer.output,axis_select=2)
+        #out_label=T.max(y,axis=3)
+
 
 
     def test(self,test_set_x):
-        out=self.fc3_supvis_Layer.output
+        out=self.lossLayer.output
+        #out=out_label
         batch_size=self.batch_size
 
         index = T.lscalar()
@@ -372,6 +377,63 @@ class MulVelNet(object):
         return np.array(outs)
 
 
+
+    def getBlockLoss(self,block1):
+        block1_cost=T.sum(T.pow(block1.x1_1-block1.deconvLayer1_1.output,2))
+        block1_cost+= T.sum(T.pow(block1.x1_2-block1.deconvLayer1_2.output,2))
+        block1_cost+= T.sum(T.pow(block1.x1_3-block1.deconvLayer1_3.output,2))
+        block1_cost+= T.sum(T.pow(block1.x1_4-block1.deconvLayer1_4.output,2))
+        return block1_cost
+
+
+
+    def train(self,train_set_x,learning_rate,train_set_y=None):
+        #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
+        #loss=T.sum(lossLayer.output)
+        alpha=10
+        beta=1000
+
+        block1_cost=self.getBlockLoss(self.block1)
+        block2_cost=self.getBlockLoss(self.block2)
+        block3_cost=self.getBlockLoss(self.block3)
+
+        block_cost=block1_cost+block2_cost+block3_cost
+
+        loss=alpha*block_cost+alpha*self.lossLayer.output
+
+        gparams=T.grad(loss,self.params)
+        updates = [
+            (param, param - learning_rate * gparam)
+            for param, gparam in zip(self.params, gparams)
+        ]
+
+        index = T.lscalar()
+        trainDataX=theano.shared(train_set_x)
+
+        batch_size=self.batch_size
+
+        trainDeConvNet=theano.function(
+            inputs=[index],
+            outputs=[],
+            updates=updates,
+            on_unused_input='warn',
+            givens={
+                self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
+            },
+        )
+
+        outs=[]
+
+        n_train_batches=int(numpy.floor(len(train_set_x)/batch_size))
+        print n_train_batches
+        for batch_index in range(n_train_batches):
+            out=trainDeConvNet(batch_index)
+            #print out[0].shape
+
+
+
+
+
 if __name__=="__main__":
     #dtensor5=T.TensorType('float64',(False,)*5)
 
@@ -388,7 +450,7 @@ if __name__=="__main__":
 
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
-    out=net.test(x)
-    #block.train(x,0.1)
+    #out=net.test(x)
+    net.train(x,0.1)
 
-    print out.shape
+    #print out.shape
