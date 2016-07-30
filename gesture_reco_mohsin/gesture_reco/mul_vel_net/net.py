@@ -289,6 +289,8 @@ class MulVelNet(object):
 
     def __init__(self,batch_size):
         self.batch_size=batch_size
+        self.y=dtensor5('y')
+
 
         self.block1=DeConvBlock(batch_size)
         self.block2=DeConvBlock(batch_size)
@@ -342,6 +344,7 @@ class MulVelNet(object):
         self.params.extend(self.fc4_supvis_Layer.params)
 
         self.lossLayer=SoftmaxWithLossLayer(self.fc4_supvis_Layer.output,axis_select=2)
+        self.fc_cost=T.sum(T.log(self.lossLayer.output)*self.y)
         #out_label=T.max(y,axis=3)
 
 
@@ -398,8 +401,9 @@ class MulVelNet(object):
         block3_cost=self.getBlockLoss(self.block3)
 
         block_cost=block1_cost+block2_cost+block3_cost
+        #fc_cost=T.sum(T.log(self.lossLayer.output)*train_set_y)
 
-        loss=alpha*block_cost+alpha*self.lossLayer.output
+        loss=alpha*block_cost+alpha*self.fc_cost
 
         gparams=T.grad(loss,self.params)
         updates = [
@@ -409,6 +413,7 @@ class MulVelNet(object):
 
         index = T.lscalar()
         trainDataX=theano.shared(train_set_x)
+        trainDataY=theano.shared(train_set_y)
 
         batch_size=self.batch_size
 
@@ -418,7 +423,10 @@ class MulVelNet(object):
             updates=updates,
             on_unused_input='warn',
             givens={
-                self.x :trainDataX[index * batch_size: (index + 1) * batch_size]
+                self.block1.x :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.block2.x :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.block3.x :trainDataX[index * batch_size: (index + 1) * batch_size],
+                self.y: trainDataY[index * batch_size: (index + 1) * batch_size]
             },
         )
 
@@ -450,7 +458,8 @@ if __name__=="__main__":
 
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
+    y=np.random.rand(1,1,8,1,1)
     #out=net.test(x)
-    net.train(x,0.1)
+    net.train(x,0.1,y)
 
     #print out.shape
