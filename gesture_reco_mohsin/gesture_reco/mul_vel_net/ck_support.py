@@ -48,9 +48,13 @@ class CKDataLoader(object):
         return int(label[:-1][3])
 
 
-    def getSeqs(self,size):
+    def getSeqs(self,size,ret_same=False):
         seqs=[]
         labels=[]
+
+        if ret_same:
+            return self.cached_frames
+
 
         for i in range(size):
             file_path=self.data_dir+"/"+self.subject_dir+"/"+self.subject_vids[self.count_vid]
@@ -97,6 +101,7 @@ class CKDataLoader(object):
 
             seqs.append(frames)
 
+        self.cached_frames=np.array(seqs)
 
         return np.array(seqs)#,labels
 
@@ -125,4 +130,4 @@ if __name__=="__main__":
     loader=CKDataLoader(data_dir,label_dir)
     print loader.getSeqs(1).shape
     for i in range(200):
-        print loader.getSeqs(1).shape
+        print loader.getSeqs(1,True).shape

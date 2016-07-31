@@ -351,6 +351,7 @@ class MulVelNet(object):
 
 
     def test(self,test_set_x):
+
         out=self.lossLayer.output
         #out=out_label
         batch_size=self.batch_size
@@ -360,14 +361,16 @@ class MulVelNet(object):
         loader=self.getLoaderCKData()
         #print loader.getSeqs(batch_size).shape
 
+
         testDeConvNet=theano.function(
             inputs=[index],
             outputs=out,
             on_unused_input='warn',
             givens={
+                #self.block_inp: theano.shared(loader.getSeqs(batch_size)),
                 self.block1.x :theano.shared(loader.getSeqs(batch_size)),
-                self.block2.x :theano.shared(loader.getSeqs(batch_size)),
-                self.block3.x :theano.shared(loader.getSeqs(batch_size))
+                self.block2.x :theano.shared(loader.getSeqs(batch_size,True)),
+                self.block3.x :theano.shared(loader.getSeqs(batch_size,True))
             },
         )
 
