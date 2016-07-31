@@ -2,6 +2,7 @@ import theano
 import theano.tensor as T
 from layers import *
 from video_support import *
+from ck_support import *
 
 import numpy as np
 
@@ -26,9 +27,9 @@ class DeConvBlock(object):
         # assuming that initial video is of size 25 frames
         video_frag_size=9
         x1_1_start=0
-        x1_2_start=5
-        x1_3_start=11
-        x1_4_start=16
+        x1_2_start=1
+        x1_3_start=2
+        x1_4_start=3
         self.x1_1=self.x[:,x1_1_start:x1_1_start+video_frag_size,:,:,:]
         self.x1_2=self.x[:,x1_2_start:x1_2_start+video_frag_size,:,:,:]
         self.x1_3=self.x[:,x1_3_start:x1_3_start+video_frag_size,:,:,:]
@@ -356,15 +357,17 @@ class MulVelNet(object):
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
+        loader=self.getLoaderCKData()
+        #print loader.getSeqs(batch_size).shape
 
         testDeConvNet=theano.function(
             inputs=[index],
             outputs=out,
             on_unused_input='warn',
             givens={
-                self.block1.x :testDataX[index * batch_size: (index + 1) * batch_size],
-                self.block2.x :testDataX[index * batch_size: (index + 1) * batch_size],
-                self.block3.x :testDataX[index * batch_size: (index + 1) * batch_size],
+                self.block1.x :theano.shared(loader.getSeqs(batch_size)),
+                self.block2.x :theano.shared(loader.getSeqs(batch_size)),
+                self.block3.x :theano.shared(loader.getSeqs(batch_size))
             },
         )
 
@@ -439,6 +442,12 @@ class MulVelNet(object):
             #print out[0].shape
 
 
+    def getLoaderCKData(self):
+        data_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/cohn-kanade-images"
+        label_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/Emotion"
+        loader=CKDataLoader(data_dir,label_dir)
+        return loader
+
 
 
 
@@ -459,7 +468,7 @@ if __name__=="__main__":
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
-    #out=net.test(x)
-    net.train(x,0.1,y)
+    out=net.test(x)
+    #net.train(x,0.1,y)
 
-    #print out.shape
+    print out.shape
