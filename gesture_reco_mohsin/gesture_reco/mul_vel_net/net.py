@@ -368,9 +368,9 @@ class MulVelNet(object):
             on_unused_input='warn',
             givens={
                 #self.block_inp: theano.shared(loader.getSeqs(batch_size)),
-                self.block1.x :theano.shared(loader.getSeqs(batch_size)),
-                self.block2.x :theano.shared(loader.getSeqs(batch_size,True)),
-                self.block3.x :theano.shared(loader.getSeqs(batch_size,True))
+                self.block1.x :theano.shared(loader.getSeqs(batch_size,False,True)[0]),
+                self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
             },
         )
 
@@ -393,6 +393,19 @@ class MulVelNet(object):
         block1_cost+= T.sum(T.pow(block1.x1_3-block1.deconvLayer1_3.output,2))
         block1_cost+= T.sum(T.pow(block1.x1_4-block1.deconvLayer1_4.output,2))
         return block1_cost
+
+
+    def processLabels(self,labels):
+        prs_labels=[]
+        for label in labels:
+            prs_label=np.zeros((1,8,1,1))
+
+            if not label==-1:
+                prs_label[0,label-1,0,0]=1
+
+            prs_labels.append(prs_label)
+
+        return np.array(prs_labels)
 
 
 
@@ -421,6 +434,8 @@ class MulVelNet(object):
         trainDataX=theano.shared(train_set_x)
         trainDataY=theano.shared(train_set_y)
 
+        loader=self.getLoaderCKData()
+
         batch_size=self.batch_size
 
         trainDeConvNet=theano.function(
@@ -429,10 +444,10 @@ class MulVelNet(object):
             updates=updates,
             on_unused_input='warn',
             givens={
-                self.block1.x :trainDataX[index * batch_size: (index + 1) * batch_size],
-                self.block2.x :trainDataX[index * batch_size: (index + 1) * batch_size],
-                self.block3.x :trainDataX[index * batch_size: (index + 1) * batch_size],
-                self.y: trainDataY[index * batch_size: (index + 1) * batch_size]
+                self.block1.x :theano.shared(loader.getSeqs(batch_size,False,True)[0]),
+                self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.y: theano.shared(self.processLabels(loader.getSeqs(batch_size,True,True)[1]))
             },
         )
 
@@ -471,7 +486,7 @@ if __name__=="__main__":
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
-    out=net.test(x)
-    #net.train(x,0.1,y)
+    #out=net.test(x)
+    net.train(x,0.1,y)
 
-    print out.shape
+    #print out.shape

@@ -48,12 +48,15 @@ class CKDataLoader(object):
         return int(label[:-1][3])
 
 
-    def getSeqs(self,size,ret_same=False):
+    def getSeqs(self,size,ret_same=False,get_lab=False):
         seqs=[]
         labels=[]
 
         if ret_same:
-            return self.cached_frames
+            if not get_lab:
+                return self.cached_frames
+            else:
+                return self.cached_frames,self.cached_labels
 
 
         for i in range(size):
@@ -97,13 +100,23 @@ class CKDataLoader(object):
             allowed_len=self.allowed_len
             if len(frames)<allowed_len:
                 print "aww..."
-                frames=self.getSeqs(1)[0]
+                if not get_lab:
+                    frames=self.getSeqs(1,ret_same,get_lab)[0]
+                else:
+                    frames,label=self.getSeqs(1,ret_same,get_lab)
+                    frames=frames[0]
+                    label=label[0]
 
             seqs.append(frames)
+            labels.append(label)
 
         self.cached_frames=np.array(seqs)
+        self.cached_labels=np.array(labels)
 
-        return np.array(seqs)#,labels
+        if not get_lab:
+            return np.array(seqs)#,labels
+        else:
+            return np.array(seqs),np.array(labels)
 
 
     def processSeq(self,seq):
@@ -120,6 +133,17 @@ class CKDataLoader(object):
         return seq
 
 
+def processLabels(labels):
+    prs_labels=[]
+    for label in labels:
+        prs_label=np.zeros((1,8,1,1))
+
+        if not label==-1:
+            prs_label[0,label-1,0,0]=1
+
+        prs_labels.append(prs_label)
+
+    return np.array(prs_labels)
 
 
 
@@ -130,4 +154,6 @@ if __name__=="__main__":
     loader=CKDataLoader(data_dir,label_dir)
     print loader.getSeqs(1).shape
     for i in range(200):
-        print loader.getSeqs(1,True).shape
+        frames,labels= loader.getSeqs(1,False,True)
+        print frames.shape
+        print processLabels(labels).shape
