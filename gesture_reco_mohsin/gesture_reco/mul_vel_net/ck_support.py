@@ -133,6 +133,12 @@ class CKDataLoader(object):
         return seq
 
 
+    def reset(self):
+        self.count_vid=0
+        self.count_sub=0
+        self.updateDirs()
+
+
 def processLabels(labels):
     prs_labels=[]
     for label in labels:
@@ -153,7 +159,9 @@ if __name__=="__main__":
     label_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/Emotion"
     loader=CKDataLoader(data_dir,label_dir)
     print loader.getSeqs(1).shape
-    for i in range(200):
-        frames,labels= loader.getSeqs(1,False,True)
-        print frames.shape
-        print processLabels(labels).shape
+    for j in range(2):
+        for i in range(400):
+            frames,labels= loader.getSeqs(1,False,True)
+            print frames.shape
+        loader.reset()
+        #print processLabels(labels).shape

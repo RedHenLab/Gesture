@@ -4,6 +4,7 @@ from layers import *
 from video_support import *
 from ck_support import *
 
+import pickle
 import numpy as np
 
 # This class will be used for making three blocks in
@@ -409,7 +410,7 @@ class MulVelNet(object):
 
 
 
-    def train(self,train_set_x,learning_rate,train_set_y=None):
+    def train(self,learning_rate,training_epochs,len_train_data):
         #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         #loss=T.sum(lossLayer.output)
         alpha=10
@@ -431,8 +432,6 @@ class MulVelNet(object):
         ]
 
         index = T.lscalar()
-        trainDataX=theano.shared(train_set_x)
-        trainDataY=theano.shared(train_set_y)
 
         loader=self.getLoaderCKData()
 
@@ -453,10 +452,13 @@ class MulVelNet(object):
 
         outs=[]
 
-        n_train_batches=int(numpy.floor(len(train_set_x)/batch_size))
+        n_train_batches=int(numpy.floor(len_train_data/batch_size))
         print n_train_batches
-        for batch_index in range(n_train_batches):
-            out=trainDeConvNet(batch_index)
+
+        for epoch in range(training_epochs):
+            for batch_index in range(n_train_batches):
+                out=trainDeConvNet(batch_index)
+            loader.reset()
             #print out[0].shape
 
 
@@ -465,6 +467,14 @@ class MulVelNet(object):
         label_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/Emotion"
         loader=CKDataLoader(data_dir,label_dir)
         return loader
+
+
+    def saveModel(self,file_name):
+        pickle.dump(self.params,open(file_name,"wb"))
+
+
+    def loadModel(self,file_name):
+        self.params=pickle.load(open(file_name,"rb"))
 
 
 
@@ -487,6 +497,6 @@ if __name__=="__main__":
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
     #out=net.test(x)
-    net.train(x,0.1,y)
+    net.train(0.1,2,400)
 
     #print out.shape
