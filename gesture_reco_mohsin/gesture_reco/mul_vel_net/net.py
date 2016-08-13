@@ -17,7 +17,7 @@ import numpy as np
 # 3) The size and stride in the temporal domain
 # 4) The factors by which to slow down the video
 
-dtensor5=T.TensorType('float64',(False,)*5)
+dtensor5=T.TensorType('float32',(False,)*5)
 
 
 class DeConvBlock(object):
@@ -406,7 +406,7 @@ class MulVelNet(object):
 
             prs_labels.append(prs_label)
 
-        return np.array(prs_labels)
+        return np.array(prs_labels ,dtype= np.float32)
 
 
 
@@ -497,6 +497,6 @@ if __name__=="__main__":
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
     #out=net.test(x)
-    net.train(0.1,2,400)
+    net.train(0.1,1,4)
 
     #print out.shape

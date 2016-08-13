@@ -78,7 +78,7 @@ class CKDataLoader(object):
                 #cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
                 #print frame.shape
 
-                in_ = np.array(frame, dtype=np.float64)
+                in_ = np.array(frame, dtype=np.float32)
 
                 in_ = in_[:,:,::-1]
                 in_ -= np.array((104.00698793,116.66876762,122.67891434))

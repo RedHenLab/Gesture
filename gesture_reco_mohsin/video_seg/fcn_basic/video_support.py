@@ -12,7 +12,7 @@ def loadVideo(file_name,max_frames=10**10):
         if not ret:
             break
 
-        in_ = np.array(frame, dtype=np.float64)
+        in_ = np.array(frame, dtype=np.float32)
         in_ = in_[:,:,::-1]
         in_ -= np.array((104.00698793,116.66876762,122.67891434))
         in_ = in_.transpose((2,0,1))
@@ -74,6 +74,23 @@ def saveVideo(data,class_label):
 
 
     out.release()
+
+
+def genLabelData(data,class_label,out_shape):
+    height=data.shape[0]
+    width=data.shape[1]
+    human_labels=[]
+    height_diff = np.ceil((out_shape[2]-height)/2)
+    width_diff = np.ceil((out_shape[3]-width)/2)
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if data[i][j]==class_label:
+                #print "hello"
+                human_labels.append([i-height_diff,j-width_diff])
+
+    return human_labels
+
 
 
 if __name__=="__main__":

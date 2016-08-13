@@ -7,7 +7,8 @@ from theano.tensor.signal import downsample
 import matplotlib.pyplot as plt
 import time
 from video_support import *
-from theano_raw_utils.raw_theano import *
+from raw_theano import *
+from pipeline import *
 
 
 from layers import *
@@ -420,8 +421,8 @@ class FCN(object):
 
 
 
-def loadData():
-    im = Image.open('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_006559.jpg')
+def loadData(im_path):
+    im = Image.open(im_path)
     in_ = np.array(im, dtype=np.float64)
     in_ = in_[:,:,::-1]
     in_ -= np.array((104.00698793,116.66876762,122.67891434))
@@ -487,8 +488,16 @@ def genImagePlot(data):
     plt.show()
 
 
+def feedtoPipeline(human_labels,img_path):
+    person_sep=PersonSeperator(img_path)
+    cluster_labels = person_sep.clusterPersons(human_labels)
+    person_sep.plotCluster(human_labels,cluster_labels)
+
+
+
 def processImage():
-    im=loadData()
+    im_path = '/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg'
+    im=loadData(im_path)
     print im.shape
     net=FCN(1,im.shape[1:])
     print "network loaded"
@@ -502,8 +511,11 @@ def processImage():
 
     labels=infer(out)
     print out.shape
-    genImagePlot(labels[0])
+    #genImagePlot(labels[0])
     saveImage(labels[0],15)
+
+    human_labels = genLabelData(labels[0],15,out.shape)
+    feedtoPipeline(human_labels ,im_path)
 
 
 def processVideo():
@@ -548,4 +560,5 @@ def trainImage():
 
 if __name__=="__main__":
     #processVideo()
-    trainImage()
+    #trainImage()
+    processImage()
