@@ -498,5 +498,6 @@ if __name__=="__main__":
     y=np.random.rand(1,1,8,1,1)
     #out=net.test(x)
     net.train(0.1,1,4)
+    net.saveModel("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/mul_vel_net_weights.p")
 
     #print out.shape

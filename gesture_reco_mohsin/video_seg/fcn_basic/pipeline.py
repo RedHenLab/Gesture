@@ -22,13 +22,125 @@ def check_cascade(img_path):
 
 
 
+class PersonFeeder(object):
+
+    def __init__(self,diff_seqs):
+        self.persons_data=[]
+        self.diff_seqs = diff_seqs
+        self.num_seq=0
+        self.persons_center =[]
+
+
+    def readImg(self,new_img_path,new_img):
+        if not img_path==None:
+            self.img = cv2.imread(img_path)
+            return
+
+        if img == None:
+            raise TypeError("No input")
+
+        self.img = img
+
+
+    def track(self,human_labels,new_img_path=None,new_img=None):
+        self.person_sep = PersonSeperator(new_img_path,new_img)
+        new_face_centers = self.person_sep.getFaceCentre()
+
+    #    self.readImg(new_img_path,img)
+
+        if len(self.persons_center) == 0:
+            self.persons_center = new_face_centers
+    #        self.__genPersonsData()
+
+        self.weighted_centers = self.getWeightedCenters()
+
+        if not len(new_face_centers) == len(self.weighted_centers):
+            self.num_seq = 0
+            self.persons_center =[]
+            self.persons_data = []
+        else:
+            self.getAndAssignData(new_face_centers,human_labels)
+
+
+    """
+    def __genPersonsData(self):
+        for i in range(len(self.persons_center)):
+    """
+
+
+    def plotNewImages(self):
+        for person_data in self.persons_data:
+            for image in person_data:
+                cv2.imshow("cluster",image)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+
+
+
+    def getAndAssignData(self,new_face_centers,human_labels):
+        self.assignFaceCentres(new_face_centers,self.weighted_centers)
+        self.num_seq+=1
+        cluster_labels = self.person_sep.clusterPersons(human_labels)
+        sep_images = self.person_sep.createNewImages(human_labels,cluster_labels,len(new_face_centers))
+        for i in range(len(new_face_centers)):
+            label_index = int(self.new_face_labels[i])
+            (self.persons_center[label_index]).append(new_face_centers[i])
+            if label_index >= len(self.persons_data):
+                self.persons_data.append([sep_images[i]])
+            else:
+                (self.persons_data[label_index]).append(sep_images[i])
+
+
+    def assignFaceCentres(self,new_face_centers,weighted_centers):
+        self.new_face_labels = np.zeros(len(new_face_centers))
+        for i in range(len(new_face_centers)):
+            face_center = new_face_centers[i]
+            min_index = 0
+            min_dist = 100000000
+
+            for j in range(len(weighted_centers)):
+                weighted_center = weighted_centers[j]
+                dist=np.linalg.norm(weighted_center-face_center)
+                if dist < min_dist:
+                    min_dist = dist
+                    min_index = j
+
+            self.new_face_labels[i] = j
+
+
+    def getWeightedCenters(self):
+        weights = np.zeros((len(self.persons_center[0]),1))
+        weighted_sum = 0
+        for i in range(len(self.persons_center[0])):
+            weights[i][0] = i
+            weighted_sum+=i
+        return weights * self.persons_center / weighted_sum
+
+
+
 
 class PersonSeperator(object):
 
-    def __init__(self,img_path,max_iter=1):
+    def __init__(self,img_path=None,img=None,max_iter=1):
         self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_default.xml')
         self.max_iter = max_iter
+
+        if not img_path==None:
+            self.img = cv2.imread(img_path)
+            return
+
+        if img == None:
+            raise TypeError("No input")
+
+        self.img = img
+
+
+    def updateImagePath(self,img_path):
         self.img = cv2.imread(img_path)
+
+
+    def updateImage(self,img):
+        self.img = img
 
 
     def getFaceCentre(self):
@@ -58,6 +170,28 @@ class PersonSeperator(object):
         Km.compute(self.max_iter)
         self.Km=Km
         return Km.labels
+
+
+    def createNewImages(self,human_labels,cluster_labels,num_persons):
+        img = self.img
+        print img.shape
+        height=img.shape[0]
+        width=img.shape[1]
+        blank_images=[]
+
+        for i in range(num_persons):
+            blank_image = np.zeros((height+1,width+1,3), np.uint8)
+            blank_images.append(blank_image)
+
+        for j in range(len(human_labels)):
+            person_label = cluster_labels[j]
+            blank_image = blank_images[int(person_label)]
+            x = human_labels[j][0]
+            y = human_labels[j][1]
+            if x < height and y<width:
+                blank_image[x,y] = img[x,y]
+
+        return blank_images
 
 
     def plotCluster(self,human_labels,cluster_labels):

@@ -489,9 +489,14 @@ def genImagePlot(data):
 
 
 def feedtoPipeline(human_labels,img_path):
-    person_sep=PersonSeperator(img_path)
-    cluster_labels = person_sep.clusterPersons(human_labels)
-    person_sep.plotCluster(human_labels,cluster_labels)
+    #person_sep=PersonSeperator(img_path)
+    #cluster_labels = person_sep.clusterPersons(human_labels)
+    #print "cluster label " + str(cluster_labels[0])
+    #person_sep.plotCluster(human_labels,cluster_labels)
+
+    person_feeder = PersonFeeder(12)
+    person_feeder.track(human_labels,img_path)
+    person_feeder.plotNewImages()
 
 
 
