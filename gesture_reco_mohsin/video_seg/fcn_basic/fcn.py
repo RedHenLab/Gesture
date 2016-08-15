@@ -423,7 +423,7 @@ class FCN(object):
 
 def loadData(im_path):
     im = Image.open(im_path)
-    in_ = np.array(im, dtype=np.float64)
+    in_ = np.array(im, dtype=np.float32)
     in_ = in_[:,:,::-1]
     in_ -= np.array((104.00698793,116.66876762,122.67891434))
     in_ = in_.transpose((2,0,1))
@@ -488,14 +488,14 @@ def genImagePlot(data):
     plt.show()
 
 
-def feedtoPipeline(human_labels,img_path):
+def feedtoPipeline(person_feeder,human_labels,img_path,img):
     #person_sep=PersonSeperator(img_path)
     #cluster_labels = person_sep.clusterPersons(human_labels)
     #print "cluster label " + str(cluster_labels[0])
     #person_sep.plotCluster(human_labels,cluster_labels)
 
-    person_feeder = PersonFeeder(12)
-    person_feeder.track(human_labels,img_path)
+    person_feeder.track(human_labels,img_path,img)
+    print "tracked"
     person_feeder.plotNewImages()
 
 
@@ -520,22 +520,31 @@ def processImage():
     saveImage(labels[0],15)
 
     human_labels = genLabelData(labels[0],15,out.shape)
-    feedtoPipeline(human_labels ,im_path)
+    feedtoPipeline(human_labels , None, cv2.imread(im_path))
 
 
 def processVideo():
-    inp_frames=loadVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news_01.mp4")
+    inp_frames=loadVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4",10)
+    raw_inp_frames=loadRawVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4",10)
     out_frames=[]
     net=FCN(1,inp_frames[0].shape[1:])
     print "network loaded"
     start_time=time.time()
 
-    for i in range(1000):
+    person_feeder = PersonFeeder(12)
+
+
+    for i in range(10):
         if not i%3==0:
             continue
         im=inp_frames[i]
         out=net.test(np.array([im]))
         labels=infer(out)
+        human_labels = genLabelData(labels[0],15,out.shape)
+        #cv2.imshow("img",raw_inp_frames[i])
+        #cv2.waitKey(0)
+        print str(i)+" feeding"
+        feedtoPipeline(person_feeder,human_labels,None,raw_inp_frames[i])
         out_frames.append(labels[0])
 
     saveVideo(out_frames,15)
@@ -564,6 +573,6 @@ def trainImage():
 
 
 if __name__=="__main__":
-    #processVideo()
+    processVideo()
     #trainImage()
-    processImage()
+    #processImage()

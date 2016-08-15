@@ -38,6 +38,33 @@ def loadVideo(file_name,max_frames=10**10):
     return frames_np
 
 
+
+def loadRawVideo(file_name,max_frames=10**10):
+    cap=cv2.VideoCapture(file_name)
+    frames_np=[]
+    frame_num=0
+
+    while(cap.isOpened()):
+        ret,frame=cap.read()
+
+        if not ret:
+            break
+
+        frames_np.append(frame)
+
+        frame_num+=1
+        if frame_num>max_frames:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    print len(frames_np)
+
+    return frames_np
+
+
+
 def saveImage(data,class_label):
     height=data.shape[0]
     width=data.shape[1]
@@ -50,7 +77,7 @@ def saveImage(data,class_label):
                 blank_image[i][j][0]=255
 
     cv2.imshow("test",blank_image)
-    cv2.waitKey(0)
+    #cv2.waitKey(0)
 
 
 def saveVideo(data,class_label):

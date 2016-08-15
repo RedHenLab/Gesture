@@ -29,6 +29,7 @@ class PersonFeeder(object):
         self.diff_seqs = diff_seqs
         self.num_seq=0
         self.persons_center =[]
+        self.between_jump=0
 
 
     def readImg(self,new_img_path,new_img):
@@ -42,19 +43,42 @@ class PersonFeeder(object):
         self.img = img
 
 
+    def checkProceed(self,human_labels,new_face_centers):
+        if len(new_face_centers) ==0:
+            self.between_jump +=1
+            return False
+
+        if len(human_labels) ==0:
+            self.between_jump+=1
+            return False
+
+        return True
+
+
     def track(self,human_labels,new_img_path=None,new_img=None):
         self.person_sep = PersonSeperator(new_img_path,new_img)
         new_face_centers = self.person_sep.getFaceCentre()
 
+        print "len_human "+str(len(human_labels))
+
+        if not self.checkProceed(human_labels,new_face_centers):
+            print "failed proceed"
+            return
+
     #    self.readImg(new_img_path,img)
 
         if len(self.persons_center) == 0:
-            self.persons_center = new_face_centers
+            print "zero len persons_center"
+            for face_center in new_face_centers:
+                self.persons_center.append([face_center])
     #        self.__genPersonsData()
 
         self.weighted_centers = self.getWeightedCenters()
+        print "weighted centers"
+        print self.weighted_centers
 
         if not len(new_face_centers) == len(self.weighted_centers):
+            print "not equal len of weighted and new face centres"
             self.num_seq = 0
             self.persons_center =[]
             self.persons_data = []
@@ -69,52 +93,94 @@ class PersonFeeder(object):
 
 
     def plotNewImages(self):
-        for person_data in self.persons_data:
+        print "num_persons" + str(len(self.persons_data))
+        for i in range(len(self.persons_data)):
+            person_data = self.persons_data[i]
             for image in person_data:
-                cv2.imshow("cluster",image)
+                cv2.imshow("cluster "+str(i),image)
                 cv2.waitKey(0)
-                cv2.destroyAllWindows()
+
+        if len(self.persons_data)>0:
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
 
 
     def getAndAssignData(self,new_face_centers,human_labels):
         self.assignFaceCentres(new_face_centers,self.weighted_centers)
         self.num_seq+=1
+
         cluster_labels = self.person_sep.clusterPersons(human_labels)
         sep_images = self.person_sep.createNewImages(human_labels,cluster_labels,len(new_face_centers))
+
+        print "face_labels"
+        print self.new_face_labels
+
         for i in range(len(new_face_centers)):
             label_index = int(self.new_face_labels[i])
+            print "appending"
             (self.persons_center[label_index]).append(new_face_centers[i])
+
             if label_index >= len(self.persons_data):
                 self.persons_data.append([sep_images[i]])
             else:
                 (self.persons_data[label_index]).append(sep_images[i])
+
+        print "persons centre after assigning"
+        print self.persons_center
 
 
     def assignFaceCentres(self,new_face_centers,weighted_centers):
         self.new_face_labels = np.zeros(len(new_face_centers))
         for i in range(len(new_face_centers)):
             face_center = new_face_centers[i]
+            #print "computing distance for face center"
+            #print face_center
             min_index = 0
             min_dist = 100000000
 
             for j in range(len(weighted_centers)):
-                weighted_center = weighted_centers[j]
+                weighted_center = weighted_centers[j][0]
+                #print "weighted center to check"
+                #print weighted_center
                 dist=np.linalg.norm(weighted_center-face_center)
                 if dist < min_dist:
                     min_dist = dist
                     min_index = j
 
-            self.new_face_labels[i] = j
+            self.new_face_labels[i] = min_index
 
 
     def getWeightedCenters(self):
-        weights = np.zeros((len(self.persons_center[0]),1))
+        weights = np.zeros((1,len(self.persons_center[0])))
         weighted_sum = 0
+        """
         for i in range(len(self.persons_center[0])):
-            weights[i][0] = i
-            weighted_sum+=i
+            weights[i][0] = i+1
+            weighted_sum+=i+1
+
+        print "persons_center "
+        print self.persons_center
+
+        print "weighted_sum" + str(weighted_sum)
+        print "weights"
+        print weights
+
         return weights * self.persons_center / weighted_sum
+        """
+
+        for i in range(len(self.persons_center[0])):
+            weights[0][i] = i+1
+            weighted_sum+=i+1
+
+        weighted_center = np.zeros((len(self.persons_center),1,2))
+
+        for i in range(len(self.persons_center)):
+            person_centers = self.persons_center[i]
+            weighted_center[i][0] = np.dot(weights,person_centers) / weighted_sum
+
+        return weighted_center
+
 
 
 
@@ -122,7 +188,7 @@ class PersonFeeder(object):
 class PersonSeperator(object):
 
     def __init__(self,img_path=None,img=None,max_iter=1):
-        self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_default.xml')
+        self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt2.xml')
         self.max_iter = max_iter
 
         if not img_path==None:
@@ -133,6 +199,8 @@ class PersonSeperator(object):
             raise TypeError("No input")
 
         self.img = img
+        #cv2.imshow("img",self.img)
+        #cv2.waitKey(0)
 
 
     def updateImagePath(self,img_path):
@@ -157,7 +225,7 @@ class PersonSeperator(object):
 
         cv2.imshow('img',img)
         cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
         return face_centres
 
@@ -165,7 +233,7 @@ class PersonSeperator(object):
     def clusterPersons(self,human_labels):
         img = self.img
         face_centres = self.getFaceCentre()
-        print face_centres
+        #print face_centres
         Km = KMeans(human_labels,face_centres)
         Km.compute(self.max_iter)
         self.Km=Km
@@ -215,7 +283,7 @@ class PersonSeperator(object):
                 blank_image[human_label[0],human_label[1]][cluster_labels[i]]=255
 
         cv2.imshow("cluster",blank_image)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
 
 
