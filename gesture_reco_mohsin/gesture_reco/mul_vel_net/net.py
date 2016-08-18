@@ -351,14 +351,14 @@ class MulVelNet(object):
 
 
 
-    def test(self,test_set_x):
+    def test(self,len_test_set_x):
 
         out=self.lossLayer.output
         #out=out_label
         batch_size=self.batch_size
 
         index = T.lscalar()
-        testDataX=theano.shared(test_set_x)
+        #testDataX=theano.shared(test_set_x)
         loader=self.getLoaderCKData()
         #print loader.getSeqs(batch_size).shape
 
@@ -377,7 +377,7 @@ class MulVelNet(object):
 
         outs=[]
 
-        n_test_batches=int(numpy.floor(len(test_set_x)/batch_size))
+        n_test_batches=int(numpy.floor(len_test_set_x/batch_size))
         print n_test_batches
         for batch_index in range(n_test_batches):
             out=testDeConvNet(batch_index)
@@ -496,8 +496,9 @@ if __name__=="__main__":
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
-    #out=net.test(x)
-    net.train(0.1,1,4)
-    net.saveModel("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/mul_vel_net_weights.p")
+    out=net.test(2)
+    #net.train(0.1,1,4)
+    #net.saveModel("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/mul_vel_net_weights.p")
 
     #print out.shape
+    print out

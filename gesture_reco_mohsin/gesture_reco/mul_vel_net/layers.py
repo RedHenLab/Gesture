@@ -522,14 +522,17 @@ class SoftmaxWithLossLayer(object):
         self.tar=targetData
 
         # subtraction adds numerical stability
-        #ex=T.exp(self.x-self.x.max(axis=axis_select))
+        ex=T.exp(self.x-self.x.max(axis=axis_select,keepdims=True))
         #self.softmaxOut=ex/ex.sum(axis=axis_select)
 
-        ex=T.max(self.x,axis=axis_select,keepdims=True)
-        ex=T.extra_ops.repeat(ex,8,axis=axis_select)
+        #ex=T.max(self.x,axis=axis_select,keepdims=True)
+        #ex=T.extra_ops.repeat(ex,8,axis=axis_select)
 
-        ex=T.exp(self.x-ex)
-        ex_sum=T.sum(self.x,axis=axis_select,keepdims=True)
+        # ex=T.exp(self.x-ex)
+        ex_sum=T.sum(ex,axis=axis_select,keepdims=True)
         ex_sum=T.extra_ops.repeat(ex_sum,8,axis=axis_select)
-        
+
+        #loss = self.tar *ex/ex_sum
+        self.ex =ex
+
         self.output=ex/ex_sum

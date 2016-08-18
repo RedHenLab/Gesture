@@ -77,7 +77,23 @@ def saveImage(data,class_label):
                 blank_image[i][j][0]=255
 
     cv2.imshow("test",blank_image)
+    cv2.imwrite("fcn_out.png",blank_image)
     #cv2.waitKey(0)
+
+
+def saveRawVideo(data,name):
+    height=data[0].shape[0]
+    width=data[1].shape[1]
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(name+'.mp4',fourcc, 20.0, (width,height))
+
+    for frame in data:
+        out.write(frame)
+        print "saving frame"
+
+    out.release()
+
 
 
 def saveVideo(data,class_label):

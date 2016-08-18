@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from video_support import *
 
 
 
@@ -17,11 +18,17 @@ def check_cascade(img_path):
         roi_color = img[y:y+h, x:x+w]
 
     cv2.imshow('img',img)
+    cv2.imwrite("face_detect.png",img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 
+"""
+This algorithm works for a video. It clusters the persons
+in each frame and also keeps a track of them using the algorihtm
+presented in the report.
+"""
 class PersonFeeder(object):
 
     def __init__(self,diff_seqs):
@@ -43,7 +50,17 @@ class PersonFeeder(object):
         self.img = img
 
 
+    def CheckIfReset(self):
+        if self.between_jump >= self.diff_seqs:
+            print "had to reset"
+            self.num_seq = 0
+            self.persons_center =[]
+            self.persons_data = []
+            self.between_jump = 0
+
+
     def checkProceed(self,human_labels,new_face_centers):
+
         if len(new_face_centers) ==0:
             self.between_jump +=1
             return False
@@ -59,7 +76,7 @@ class PersonFeeder(object):
         self.person_sep = PersonSeperator(new_img_path,new_img)
         new_face_centers = self.person_sep.getFaceCentre()
 
-        print "len_human "+str(len(human_labels))
+        #print "len_human "+str(len(human_labels))
 
         if not self.checkProceed(human_labels,new_face_centers):
             print "failed proceed"
@@ -74,22 +91,16 @@ class PersonFeeder(object):
     #        self.__genPersonsData()
 
         self.weighted_centers = self.getWeightedCenters()
-        print "weighted centers"
-        print self.weighted_centers
+        #print "weighted centers"
+        #print self.weighted_centers
 
         if not len(new_face_centers) == len(self.weighted_centers):
             print "not equal len of weighted and new face centres"
-            self.num_seq = 0
-            self.persons_center =[]
-            self.persons_data = []
+            self.between_jump+=1
         else:
             self.getAndAssignData(new_face_centers,human_labels)
 
-
-    """
-    def __genPersonsData(self):
-        for i in range(len(self.persons_center)):
-    """
+        self.CheckIfReset()
 
 
     def plotNewImages(self):
@@ -98,11 +109,18 @@ class PersonFeeder(object):
             person_data = self.persons_data[i]
             for image in person_data:
                 cv2.imshow("cluster "+str(i),image)
-                cv2.waitKey(0)
+                cv2.waitKey(33)
 
         if len(self.persons_data)>0:
-            cv2.waitKey(0)
+            #cv2.waitKey(0)
             cv2.destroyAllWindows()
+
+
+    def saveFrames(self):
+        for i in range(len(self.persons_data)):
+            person_data = self.persons_data[i]
+            saveRawVideo(person_data,"out_"+str(i))
+
 
 
 
@@ -113,12 +131,12 @@ class PersonFeeder(object):
         cluster_labels = self.person_sep.clusterPersons(human_labels)
         sep_images = self.person_sep.createNewImages(human_labels,cluster_labels,len(new_face_centers))
 
-        print "face_labels"
-        print self.new_face_labels
+        #print "face_labels"
+        #print self.new_face_labels
 
         for i in range(len(new_face_centers)):
             label_index = int(self.new_face_labels[i])
-            print "appending"
+            #print "appending"
             (self.persons_center[label_index]).append(new_face_centers[i])
 
             if label_index >= len(self.persons_data):
@@ -126,8 +144,8 @@ class PersonFeeder(object):
             else:
                 (self.persons_data[label_index]).append(sep_images[i])
 
-        print "persons centre after assigning"
-        print self.persons_center
+        #print "persons centre after assigning"
+        #print self.persons_center
 
 
     def assignFaceCentres(self,new_face_centers,weighted_centers):
@@ -184,11 +202,15 @@ class PersonFeeder(object):
 
 
 
-
+"""
+Given a image, it first computes the face centre
+using Viola and Jones descriptor and then cluster out
+the persons using K-means clustering
+"""
 class PersonSeperator(object):
 
     def __init__(self,img_path=None,img=None,max_iter=1):
-        self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_alt2.xml')
+        self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_default.xml')
         self.max_iter = max_iter
 
         if not img_path==None:
@@ -223,8 +245,8 @@ class PersonSeperator(object):
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = img[y:y+h, x:x+w]
 
-        cv2.imshow('img',img)
-        cv2.waitKey(0)
+        #cv2.imshow('img',img)
+        #cv2.waitKey(0)
         cv2.destroyAllWindows()
 
         return face_centres
@@ -242,7 +264,7 @@ class PersonSeperator(object):
 
     def createNewImages(self,human_labels,cluster_labels,num_persons):
         img = self.img
-        print img.shape
+        #print img.shape
         height=img.shape[0]
         width=img.shape[1]
         blank_images=[]
@@ -266,14 +288,14 @@ class PersonSeperator(object):
         img = self.img
         height=img.shape[0]
         width=img.shape[1]
-        print img.shape
+        #print img.shape
         blank_image = np.zeros((height+1,width+1,3), np.uint8)
-        print blank_image.shape
-        print len(human_labels)
-        print len(cluster_labels)
+        #print blank_image.shape
+        #print len(human_labels)
+        #print len(cluster_labels)
 
         for i in range(len(self.Km.centroids)):
-            print self.Km.centroids[i]
+            #print self.Km.centroids[i]
             cv2.circle(blank_image,(self.Km.centroids[i][1],self.Km.centroids[i][0]),5,(255,255,255),-1)
 
 
@@ -283,10 +305,12 @@ class PersonSeperator(object):
                 blank_image[human_label[0],human_label[1]][cluster_labels[i]]=255
 
         cv2.imshow("cluster",blank_image)
-        #cv2.waitKey(0)
+        cv2.waitKey(0)
 
 
-
+"""
+The K-means clustering algorithm
+"""
 class KMeans(object):
 
     def __init__(self,dataset,init_centroids):
@@ -336,4 +360,5 @@ class KMeans(object):
 
 if __name__=="__main__":
     img = cv2.imread('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_001430.jpg')
-    check_cascade('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2007_004000.jpg')
+    im_path = '/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg'
+    check_cascade(im_path)

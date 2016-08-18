@@ -13,6 +13,12 @@ from pipeline import *
 
 from layers import *
 
+
+
+"""
+The class is FCN-8. It loads with the trained weights
+and can directly be used with for forward pass.
+"""
 class FCN(object):
 
     def __init__(self,batch_size,input_size):
@@ -343,11 +349,7 @@ class FCN(object):
 
 
     def test(self,test_set_x):
-        #out=self.relu_layer7_1.output
-        #out=self.max_pool_layer3.output
         out=self.score_Layer.output
-
-
 
         index = T.lscalar()
         testDataX=theano.shared(test_set_x)
@@ -411,16 +413,12 @@ class FCN(object):
         for batch_index in range(n_train_batches):
             out=trainDeConvNet(batch_index)
             print out
-            #for sam_out in out[0]:
-#                 print sam_out
-            #    outs.append(sam_out)
 
 
-        #print outs
-        #return np.array(outs)
-
-
-
+"""
+For FCN to work, it is required that the image be
+mean subtracted
+"""
 def loadData(im_path):
     im = Image.open(im_path)
     in_ = np.array(im, dtype=np.float32)
@@ -430,78 +428,30 @@ def loadData(im_path):
     return in_
 
 
+"""
+Generate segmentation labels
+"""
 def infer(outs):
     res=[]
     for out in outs:
         res.append(out.argmax(axis=0))
     return res
 
-def genImage(data):
-    img_shape=data.shape#+(3,)
-    class_label=15
 
-    img_vals=numpy.zeros(img_shape)
-
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            if data[i][j]==class_label:
-                #print "hello"
-                try:
-                    img_vals[i][j]=255
-                    img_vals[i-1][j-1]=255
-                    img_vals[i-1][j]=255
-                    img_vals[i][j-1]=255
-                    img_vals[i][j+1]=255
-                    img_vals[i+1][j]=255
-                    img_vals[i+1][j+1]=255
-                except IndexError:
-                    pass
-                #img_vals[i][j][2]=255
-        #print img_vals
-
-    img=Image.fromarray(img_vals,'L')
-    img.show(title="class")
-
-
-def genImagePlot(data):
-
-    class_label=2
-    class_label2=15
-
-    plotY=[]
-    plotX=[]
-    plotY2=[]
-    plotX2=[]
-
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            if data[i][j]==class_label:
-
-                plotX.append(j)
-                plotY.append(data.shape[0]-i)
-            if data[i][j]==class_label2:
-
-                plotX2.append(j)
-                plotY2.append(data.shape[0]-i)
-    plt.plot(plotX,plotY,"ro")
-    plt.plot(plotX2,plotY2,"bo")
-    plt.show()
-
-
-def feedtoPipeline(person_feeder,human_labels,img_path,img):
-    #person_sep=PersonSeperator(img_path)
-    #cluster_labels = person_sep.clusterPersons(human_labels)
-    #print "cluster label " + str(cluster_labels[0])
-    #person_sep.plotCluster(human_labels,cluster_labels)
-
+def feedtoPipeline(person_feeder,human_labels,img_path,img,isImg=False):
     person_feeder.track(human_labels,img_path,img)
     print "tracked"
-    person_feeder.plotNewImages()
+    cluster_labels = person_feeder.person_sep.clusterPersons(human_labels)
+
+    if isImg:
+        person_feeder.person_sep.plotCluster(human_labels,cluster_labels)
+
+
+    #person_feeder.plotNewImages()
 
 
 
-def processImage():
-    im_path = '/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg'
+def processImage(im_path):
     im=loadData(im_path)
     print im.shape
     net=FCN(1,im.shape[1:])
@@ -509,45 +459,40 @@ def processImage():
     start_time=time.time()
     out=net.test(np.array([im]))
     print "elpased time ="+str(time.time()-start_time)
-    #print out[0][10][0]
-    #print np.unravel_index(out.argmax(),out.shape)
-    #print np.max(out)
     np.set_printoptions(threshold=np.nan)
 
     labels=infer(out)
     print out.shape
-    #genImagePlot(labels[0])
     saveImage(labels[0],15)
 
     human_labels = genLabelData(labels[0],15,out.shape)
-    feedtoPipeline(human_labels , None, cv2.imread(im_path))
+    person_feeder = PersonFeeder(12)
+
+    feedtoPipeline(person_feeder, human_labels , None, cv2.imread(im_path),True)
 
 
-def processVideo():
-    inp_frames=loadVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4",10)
-    raw_inp_frames=loadRawVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4",10)
+def processVideo(vid_path):
+    inp_frames=loadVideo(vid_path,10000)
+    raw_inp_frames=loadRawVideo(vid_path,10000)
     out_frames=[]
     net=FCN(1,inp_frames[0].shape[1:])
     print "network loaded"
     start_time=time.time()
 
-    person_feeder = PersonFeeder(12)
+    person_feeder = PersonFeeder(50)
 
 
-    for i in range(10):
-        if not i%3==0:
-            continue
+    for i in range(len(inp_frames)):
         im=inp_frames[i]
         out=net.test(np.array([im]))
         labels=infer(out)
         human_labels = genLabelData(labels[0],15,out.shape)
-        #cv2.imshow("img",raw_inp_frames[i])
-        #cv2.waitKey(0)
         print str(i)+" feeding"
         feedtoPipeline(person_feeder,human_labels,None,raw_inp_frames[i])
         out_frames.append(labels[0])
 
-    saveVideo(out_frames,15)
+    #saveVideo(out_frames,15)
+    person_feeder.saveFrames()
     print "elpased time ="+str(time.time()-start_time)
 
 
@@ -559,20 +504,13 @@ def trainImage():
     start_time=time.time()
     out=net.train(np.array([im]),0.1)
     print "elpased time ="+str(time.time()-start_time)
-    #print out[0][10][0]
-    #print np.unravel_index(out.argmax(),out.shape)
-    #print np.max(out)
     np.set_printoptions(threshold=np.nan)
 
     labels=infer(out)
     print out.shape
     print np.sum(out[0,:,1,1])
-    #print out[:,1,1]
-    #genImagePlot(labels[0])
-    #saveImage(labels[0],15)
 
 
 if __name__=="__main__":
-    processVideo()
-    #trainImage()
-    #processImage()
+    processVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4")
+    #processImage('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg')
