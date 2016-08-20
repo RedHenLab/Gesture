@@ -225,12 +225,12 @@ def getHand(thresh):
 ################################################################################# Main Loop ##################################################################################################
 
 # Starting the camera/video capture
-# if (len(sys.argv)>1): camera = cv2.VideoCapture(sys.argv[1])
-# else: 
+if (len(sys.argv)>1): camera = cv2.VideoCapture(sys.argv[1])
+else: 
 camera= cv2.VideoCapture(0)
 
-if(len(sys.argv)>1):
-    data1 = open(sys.argv[1],"w")
+#if(len(sys.argv)>1):
+#    data1 = open(sys.argv[1],"w")
 data = []
 
 # making all the windows
