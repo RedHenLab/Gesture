@@ -536,7 +536,7 @@ def trainImage():
     """
     This computes the back propagation for the single image for FCN
     """
-    im_path = "/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4"
+    im_path = "/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news02.mp4"
     im=loadData(im_path)
     print im.shape
     net=FCN(1,im.shape[1:])
@@ -552,5 +552,5 @@ def trainImage():
 
 
 if __name__=="__main__":
-    processVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4")
+    processVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news02.mp4")
     #processImage('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg')

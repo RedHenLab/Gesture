@@ -14,6 +14,8 @@ The module pipeline.py contains the code for detecting and clustering faces.
 
 The detail help for the files can be found in the docs.
 
+The sample output with segmentation can be found in the sample_out directory.
+
 ## Pre-requisite
 
 To run the network, it is required to have pickle and Theano installed. For the code to be GPU compatible, it is required that the floatX flag be set to float32.
