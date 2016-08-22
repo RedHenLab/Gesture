@@ -608,6 +608,7 @@ class Pool(Op):
         return (0, 6, 8, 3)
 
 
+
 class SwitchedPool(Op):
     """
     For N-dimensional tensors, consider that the last two dimensions span
@@ -815,6 +816,164 @@ class SwitchedPool(Op):
                         zz[n, k, r, c] = numpy.argmax(y[
                             n, k, row_st:row_end, col_st:col_end])
 
+    def c_headers(self):
+        return ['<algorithm>']
+
+    def c_code(self, node, name, inp, out, sub):
+        if self.mode not in ('max', 'sum', 'average_exc_pad', 'average_inc_pad'):
+            raise theano.gof.utils.MethodNotDefined()
+        x, = inp
+        z, = out
+        fail = sub['fail']
+        ignore_border = int(self.ignore_border)
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+        pd0, pd1 = self.padding
+        ccode = """
+        int typenum = PyArray_ObjectType((PyObject*)%(x)s, 0);
+        int z_r, z_c; // shape of the output
+        int r, c; // shape of the padded_input
+        if(PyArray_NDIM(%(x)s)!=4)
+        {
+            PyErr_SetString(PyExc_ValueError, "x must be a 4d ndarray");
+            %(fail)s;
+        }
+        r = PyArray_DIMS(%(x)s)[2];
+        c = PyArray_DIMS(%(x)s)[3];
+        r += %(pd0)s * 2;
+        c += %(pd1)s * 2;
+        if (%(pd0)s != 0 && %(pd1)s != 0 && !%(ignore_border)s)
+            {
+              PyErr_SetString(PyExc_ValueError,
+                "padding must be (0,0) when ignore border is False");
+              %(fail)s;
+            }
+        if (%(ignore_border)s)
+        {
+            // '/' in C is different from '/' in python
+            if (r - %(ds0)s < 0)
+            {
+              z_r = 0;
+            }
+            else
+            {
+              z_r = (r - %(ds0)s) / %(st0)s + 1;
+            }
+            if (c - %(ds1)s < 0)
+            {
+              z_c = 0;
+            }
+            else
+            {
+              z_c = (c - %(ds1)s) / %(st1)s + 1;
+            }
+        }
+        else
+        {
+            // decide how many rows the output has
+            if (%(st0)s >= %(ds0)s)
+            {
+                z_r = (r - 1) / %(st0)s + 1;
+            }
+            else
+            {
+                z_r = std::max(0, (r - 1 - %(ds0)s) / %(st0)s + 1) + 1;
+            }
+            // decide how many columns the output has
+            if (%(st1)s >= %(ds1)s)
+            {
+                z_c = (c - 1) / %(st1)s + 1;
+            }
+            else
+            {
+                z_c = std::max(0, (c - 1 - %(ds1)s) / %(st1)s + 1) + 1;
+            }
+        }
+        // memory allocation of z if necessary
+        if ((!%(z)s)
+          || *PyArray_DIMS(%(z)s)!=4
+          ||(PyArray_DIMS(%(z)s)[0] != PyArray_DIMS(%(x)s)[0])
+          ||(PyArray_DIMS(%(z)s)[1] != PyArray_DIMS(%(x)s)[1])
+          ||(PyArray_DIMS(%(z)s)[2] != z_r)
+          ||(PyArray_DIMS(%(z)s)[3] != z_c)
+          )
+        {
+          if (%(z)s) Py_XDECREF(%(z)s);
+          npy_intp dims[4] = {0,0,0,0};
+          dims[0]=PyArray_DIMS(%(x)s)[0];
+          dims[1]=PyArray_DIMS(%(x)s)[1];
+          dims[2]=z_r;
+          dims[3]=z_c;
+          //TODO: zeros not necessary
+          %(z)s = (PyArrayObject*) PyArray_ZEROS(4, dims, typenum,0);
+        }
+        // used for indexing a pool region inside the input
+        int r_st, r_end, c_st, c_end;
+        dtype_%(x)s collector; // temp var for the value in a region
+        if (z_r && z_c)
+        {
+            for(int b=0; b<PyArray_DIMS(%(x)s)[0]; b++){
+              for(int k=0; k<PyArray_DIMS(%(x)s)[1]; k++){
+                for(int i=0; i< z_r; i++){
+                  r_st = i * %(st0)s;
+                  r_end = r_st + %(ds0)s;
+                  // skip the padding
+                  r_st = r_st < %(pd0)s ? %(pd0)s : r_st;
+                  r_end = r_end > (r - %(pd0)s) ? r - %(pd0)s : r_end;
+                  // from padded_img space to img space
+                  r_st -= %(pd0)s;
+                  r_end -= %(pd0)s;
+                  // handle the case where no padding, ignore border is True
+                  if (%(ignore_border)s)
+                  {
+                    r_end = r_end > r ? r : r_end;
+                  }
+                  for(int j=0; j<z_c; j++){
+                    c_st = j * %(st1)s;
+                    c_end = c_st + %(ds1)s;
+                    // skip the padding
+                    c_st = c_st < %(pd1)s ? %(pd1)s : c_st;
+                    c_end = c_end > (c - %(pd1)s) ? c - %(pd1)s : c_end;
+                    dtype_%(z)s * z = (
+                          (dtype_%(z)s*)(PyArray_GETPTR4(%(z)s, b, k, i, j)));
+                    // change coordinates from padding_img space into img space
+                    c_st -= %(pd1)s;
+                    c_end -= %(pd1)s;
+                    // handle the case where no padding, ignore border is True
+                    if (%(ignore_border)s)
+                    {
+                      c_end = c_end > c ? c : c_end;
+                    }
+        """
+        if self.mode == 'max':
+            ccode += """
+                    // use the first element as the initial value of collector
+                    collector = ((dtype_%(x)s*)(PyArray_GETPTR4(%(x)s,b,k,r_st,c_st)))[0];
+                    // go through the pooled region in the unpadded input
+                    dtype_%(x)s max_val=collector;
+                    collector=0;
+                    for(int m=r_st; m<r_end; m++)
+                    {
+                      for(int n=c_st; n<c_end; n++)
+                      {
+                        dtype_%(x)s a = ((dtype_%(x)s*)(PyArray_GETPTR4(%(x)s,b,k,m,n)))[0];
+                        // collector = (a > collector) ? a : collector;
+                        if(a>=max_val){
+                            max_val=a;
+                            collector=(r_end-r_st)*(m-r_st)+(n-c_st);
+                        }
+                      }
+                    }
+                    z[0] = collector;
+            """
+        ccode += """
+                  }
+                }
+              }
+            }
+        }
+        """
+        return ccode % locals()
 
 
 
@@ -992,7 +1151,6 @@ class UnPool(Op):
         return gof.Apply(self, [x,y], [out()])
 
     def perform(self, node, inp, out):
-        x = inp
         x= inp[0]
         sw=inp[1]
         #raise ValueError("%s" % str(len(sw.shape)))
@@ -1061,6 +1219,119 @@ class UnPool(Op):
                         zz[n, k, row_pos, col_pos] = y[n,k,r,c]
                         #zz[n,k,r,c]=y[n,k,r,c]
 
+    def c_headers(self):
+        return ['<algorithm>']
+
+    def c_code(self, node, name, inp, out, sub):
+        if self.mode not in ('max', 'sum', 'average_exc_pad', 'average_inc_pad'):
+            raise theano.gof.utils.MethodNotDefined()
+        x= inp[0]
+        sw=inp[1]
+        z, = out
+        fail = sub['fail']
+        ignore_border = int(self.ignore_border)
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+        pd0, pd1 = self.padding
+        ccode = """
+        int typenum = PyArray_ObjectType((PyObject*)%(x)s, 0);
+        int z_r, z_c; // shape of the output
+        int r, c; // shape of the padded_input
+        if(PyArray_NDIM(%(x)s)!=4)
+        {
+            PyErr_SetString(PyExc_ValueError, "x must be a 4d ndarray");
+            %(fail)s;
+        }
+        r = PyArray_DIMS(%(x)s)[2];
+        c = PyArray_DIMS(%(x)s)[3];
+        r += %(pd0)s * 2;
+        c += %(pd1)s * 2;
+        if (%(pd0)s != 0 && %(pd1)s != 0 && !%(ignore_border)s)
+            {
+              PyErr_SetString(PyExc_ValueError,
+                "padding must be (0,0) when ignore border is False");
+              %(fail)s;
+            }
+        z_r=r* %(st0)s;
+        z_c=c* %(st1)s;
+        // memory allocation of z if necessary
+        if ((!%(z)s)
+          || *PyArray_DIMS(%(z)s)!=4
+          ||(PyArray_DIMS(%(z)s)[0] != PyArray_DIMS(%(x)s)[0])
+          ||(PyArray_DIMS(%(z)s)[1] != PyArray_DIMS(%(x)s)[1])
+          ||(PyArray_DIMS(%(z)s)[2] != z_r)
+          ||(PyArray_DIMS(%(z)s)[3] != z_c)
+          )
+        {
+          if (%(z)s) Py_XDECREF(%(z)s);
+          npy_intp dims[4] = {0,0,0,0};
+          dims[0]=PyArray_DIMS(%(x)s)[0];
+          dims[1]=PyArray_DIMS(%(x)s)[1];
+          dims[2]=z_r;
+          dims[3]=z_c;
+          //TODO: zeros not necessary
+          %(z)s = (PyArrayObject*) PyArray_ZEROS(4, dims, typenum,0);
+        }
+        // used for indexing a pool region inside the input
+        int r_st, r_end, c_st, c_end;
+        dtype_%(x)s collector; // temp var for the value in a region
+        if (z_r && z_c)
+        {
+            for(int b=0; b<PyArray_DIMS(%(x)s)[0]; b++){
+              for(int k=0; k<PyArray_DIMS(%(x)s)[1]; k++){
+                for(int i=0; i< r; i++){
+                  r_st = i * %(st0)s;
+                  r_end = r_st + %(ds0)s;
+                  // skip the padding
+                  r_st = r_st < %(pd0)s ? %(pd0)s : r_st;
+                  r_end = r_end > (r - %(pd0)s) ? r - %(pd0)s : r_end;
+                  // from padded_img space to img space
+                  r_st -= %(pd0)s;
+                  r_end -= %(pd0)s;
+                  // handle the case where no padding, ignore border is True
+                  if (%(ignore_border)s)
+                  {
+                    r_end = r_end > r ? r : r_end;
+                  }
+                  for(int j=0; j<c; j++){
+                    c_st = j * %(st1)s;
+                    c_end = c_st + %(ds1)s;
+                    // skip the padding
+                    c_st = c_st < %(pd1)s ? %(pd1)s : c_st;
+                    c_end = c_end > (c - %(pd1)s) ? c - %(pd1)s : c_end;
+                    //dtype_%(z)s * z = (
+                    //      (dtype_%(z)s*)(PyArray_GETPTR4(%(z)s, b, k, i, j)));
+                    // change coordinates from padding_img space into img space
+                    c_st -= %(pd1)s;
+                    c_end -= %(pd1)s;
+                    // handle the case where no padding, ignore border is True
+                    if (%(ignore_border)s)
+                    {
+                      c_end = c_end > c ? c : c_end;
+                    }
+        """
+        if self.mode == 'max':
+            ccode += """
+                    // use the first element as the initial value of collector
+                    collector = ((dtype_%(x)s*)(PyArray_GETPTR4(%(x)s,b,k,i,j)))[0];
+                    // go through the pooled region in the unpadded input
+                    dtype_%(x)s max_index_val=((dtype_%(sw)s*)(PyArray_GETPTR4(%(sw)s,b,k,i,j)))[0];
+                    int max_index=(int)max_index_val;
+                    int row_pos=r_st+max_index / %(st0)s;
+                    int col_pos=c_st+max_index-(max_index/%(st0)s)*%(st0)s;
+                    dtype_%(z)s * z = (
+                          (dtype_%(z)s*)(PyArray_GETPTR4(%(z)s, b, k, row_pos, col_pos)));
+                    z[0] = collector;
+            """
+        ccode += """
+                  }
+                }
+              }
+            }
+        }
+        """
+        return ccode % locals()
+
 
 
 
@@ -1068,6 +1339,91 @@ class UnPool(Op):
         shp = self.out_shape(in_shapes[0], self.ds,
                              self.ignore_border, self.st, self.padding)
         return [shp]
+
+
+    def grad(self,inps,out_grads):
+        x,sw=inps
+        gz,=out_grads
+
+        return UnPoolGrad(self.ds,self.ignore_border,self.st,self.padding,self.mode)(x,sw,gz)
+
+
+
+class UnPoolGrad(Op):
+
+    def __init__(self, ds, ignore_border=False, st=None, padding=(0, 0),
+                 mode='max'):
+        self.ds = tuple(ds)
+        if not all([isinstance(d, integer_types) for d in ds]):
+            raise ValueError(
+                "Pool downsample parameters must be ints."
+                " Got %s" % str(ds))
+        if st is None:
+            st = ds
+        assert isinstance(st, (tuple, list))
+        self.st = tuple(st)
+        self.ignore_border = ignore_border
+        self.padding = tuple(padding)
+        #self.switch=switch
+        if self.padding != (0, 0) and not ignore_border:
+            raise NotImplementedError(
+                'padding works only with ignore_border=True')
+        if self.padding[0] >= self.ds[0] or self.padding[1] >= self.ds[1]:
+            raise NotImplementedError(
+                'padding_h and padding_w must be smaller than strides')
+        if mode not in ['max', 'average_inc_pad', 'average_exc_pad', 'sum']:
+            raise ValueError(
+                "Pool mode parameter only support 'max', 'sum',"
+                " 'average_inc_pad' and 'average_exc_pad'. Got %s" % mode)
+        self.mode = mode
+
+
+    def make_node(self,x,sw,gz):
+        if x.type.ndim != 4:
+            raise TypeError()
+        if sw.type.ndim != 4:
+            raise TypeError()
+        if gz.type.ndim != 4:
+            raise TypeError()
+        x = tensor.as_tensor_variable(x)
+        sw = tensor.as_tensor_variable(sw)
+        gz = tensor.as_tensor_variable(gz)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        return Apply(self, [x,sw,gz], [x.type(),x.type()])
+
+
+    def perform(self,node,inps,out):
+        x,sw,gz=inps
+        gx,gsw=out
+
+        zz=np.zeros_like(x)
+        zsw=np.zeros_like(sw)
+
+        pr=x.shape[-1]
+        pc=x.shape[-2]
+
+        ds0, ds1 = self.ds
+        st0, st1 = self.st
+
+
+        for n in xrange(x.shape[0]):
+            for k in xrange(x.shape[1]):
+                for r in xrange(pr):
+                    row_st = r * st0
+                    if not inc_pad:
+                        row_st = builtins.max(row_st, self.padding[0])
+                    for c in xrange(pc):
+                        col_st = c * st1
+                        if not inc_pad:
+                            col_st = builtins.max(col_st, self.padding[1])
+                        max_index=sw[n,k,r,c]
+
+                        row_pos=row_st+max_index // st0
+                        col_pos=col_st+max_index-(max_index// st0)*st0
+                        zz[n, k, r, c] = gz[n,k,row_pos,col_pos]
+
+        gsw[0]=zsw
+        gx[0]=zz
 
 
 
