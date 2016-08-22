@@ -502,8 +502,8 @@ def processVideo(vid_path):
     pipeline. The seperated frames for each person are saved
     in the end.
     """
-    inp_frames=loadVideo(vid_path,100)
-    raw_inp_frames=loadRawVideo(vid_path,100)
+    inp_frames=loadVideo(vid_path,1000)
+    raw_inp_frames=loadRawVideo(vid_path,1000)
     out_frames=[]
     net=FCN(1,inp_frames[0].shape[1:])
     print "network loaded"
