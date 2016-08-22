@@ -1,9 +1,12 @@
 import cv2
 import numpy as np
-#from layers import *
 import theano
 
 def loadVideo(file_name,max_frames=10**10):
+    """
+    Load a video file and do a mean subtraction from it to get.
+    Process all the frames or do only till the maximum number of frames.
+    """
     cap=cv2.VideoCapture(file_name)
     frames_np=[]
     frame_num=0
@@ -18,15 +21,8 @@ def loadVideo(file_name,max_frames=10**10):
         in_ = in_[:,:,::-1]
         in_ -= np.array((104.00698793,116.66876762,122.67891434))
         in_ = in_.transpose((2,0,1))
-        #print in_.shape
 
         frames_np.append(in_)
-
-        # code to show the video
-        #
-        #cv2.imshow('frame',frame)
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
 
         frame_num+=1
         if frame_num>max_frames:
@@ -41,6 +37,9 @@ def loadVideo(file_name,max_frames=10**10):
 
 
 def saveImage(data,class_label):
+    """
+    Saves the video with only the frames given in the data.
+    """
     height=data.shape[0]
     width=data.shape[1]
     blank_image = np.zeros((height,width,3), np.uint8)
@@ -56,6 +55,10 @@ def saveImage(data,class_label):
 
 
 def saveVideo(data,class_label):
+    """
+    Given the raw segmentation labels, it only saves the
+    data for the given class label as an image.
+    """
     height=data[0].shape[0]
     width=data[1].shape[1]
 
@@ -76,9 +79,13 @@ def saveVideo(data,class_label):
 
 
 
-# the input data is 3D vector with the zeroth dimension represnting
-# the index of frame and
 def sampleVideo(data,factor,num_new_frames=0):
+    """
+    generates a new video with the sampled rate.
+    The number of required output frames can be specified.
+    If not specified the output number of frames are the same
+    as the input video.
+    """
     n=len(data)-1
     n_r=num_new_frames
     if num_new_frames==0:
@@ -126,4 +133,4 @@ if __name__=="__main__":
     #loadVideo("output.avi")
 
     W=sampleVideo(range(3),0.99999)
-    print np.dot(W,[0,3,9])
+    print np.dot(W,[[[0,1],[3,4],[8,9]],[[0,1],[3,4],[8,9]],[[0,1],[3,4],[8,9]]])

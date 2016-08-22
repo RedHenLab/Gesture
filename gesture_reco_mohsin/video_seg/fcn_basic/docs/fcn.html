@@ -1,0 +1,109 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module fcn</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>fcn</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/fcn.py">/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/fcn.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="PIL.Image.html">PIL.Image</a><br>
+<a href="theano.tensor.html">theano.tensor</a><br>
+<a href="cv2.html">cv2</a><br>
+</td><td width="25%" valign=top><a href="theano.tensor.signal.downsample.html">theano.tensor.signal.downsample</a><br>
+<a href="theano.gof.html">theano.gof</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+<a href="pickle.html">pickle</a><br>
+<a href="pylab.html">pylab</a><br>
+</td><td width="25%" valign=top><a href="theano.tensor.html">theano.tensor</a><br>
+<a href="theano.html">theano</a><br>
+<a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="fcn.html#FCN">FCN</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FCN">class <strong>FCN</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;class&nbsp;is&nbsp;<a href="#FCN">FCN</a>-8.&nbsp;It&nbsp;loads&nbsp;with&nbsp;the&nbsp;trained&nbsp;weights<br>
+and&nbsp;can&nbsp;directly&nbsp;be&nbsp;used&nbsp;with&nbsp;for&nbsp;forward&nbsp;pass.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="FCN-__init__"><strong>__init__</strong></a>(self, batch_size, input_size)</dt><dd><tt>The&nbsp;inputs&nbsp;are&nbsp;the&nbsp;batch&nbsp;size&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;training&nbsp;and<br>
+the&nbsp;input&nbsp;size&nbsp;of&nbsp;the&nbsp;image.&nbsp;<a href="#FCN">FCN</a>&nbsp;can&nbsp;accept&nbsp;images&nbsp;of&nbsp;varying&nbsp;size.</tt></dd></dl>
+
+<dl><dt><a name="FCN-test"><strong>test</strong></a>(self, test_set_x)</dt><dd><tt>This&nbsp;function&nbsp;computes&nbsp;the&nbsp;forawrd&nbsp;pass&nbsp;for&nbsp;the&nbsp;test&nbsp;set&nbsp;in&nbsp;batches<br>
+with&nbsp;the&nbsp;batch&nbsp;size&nbsp;specified&nbsp;while&nbsp;making&nbsp;the&nbsp;<a href="#FCN">FCN</a>&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;The&nbsp;test<br>
+set&nbsp;is&nbsp;required&nbsp;to&nbsp;be&nbsp;a&nbsp;multiple&nbsp;of&nbsp;the&nbsp;batch&nbsp;size</tt></dd></dl>
+
+<dl><dt><a name="FCN-train"><strong>train</strong></a>(self, train_set_x, learning_rate, train_set_y<font color="#909090">=None</font>)</dt><dd><tt>This&nbsp;function&nbsp;computes&nbsp;the&nbsp;back&nbsp;propagation&nbsp;given&nbsp;the&nbsp;test<br>
+set&nbsp;x.&nbsp;This&nbsp;module&nbsp;is&nbsp;still&nbsp;not&nbsp;tested&nbsp;as&nbsp;the&nbsp;trained&nbsp;weights<br>
+were&nbsp;directly&nbsp;used.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-feedtoPipeline"><strong>feedtoPipeline</strong></a>(person_feeder, human_labels, img_path, img, isImg<font color="#909090">=False</font>)</dt><dd><tt>This&nbsp;function&nbsp;takes&nbsp;a&nbsp;person_feeder&nbsp;class&nbsp;in&nbsp;the&nbsp;pipeline.py<br>
+It&nbsp;passes&nbsp;the&nbsp;raw&nbsp;image&nbsp;for&nbsp;face&nbsp;detection&nbsp;and&nbsp;the&nbsp;human&nbsp;labels<br>
+for&nbsp;clustering.</tt></dd></dl>
+ <dl><dt><a name="-infer"><strong>infer</strong></a>(outs)</dt><dd><tt>Generate&nbsp;segmentation&nbsp;labels</tt></dd></dl>
+ <dl><dt><a name="-loadData"><strong>loadData</strong></a>(im_path)</dt><dd><tt>This&nbsp;module&nbsp;opens&nbsp;the&nbsp;image&nbsp;given&nbsp;the&nbsp;image&nbsp;path.<br>
+For&nbsp;<a href="#FCN">FCN</a>&nbsp;to&nbsp;work,&nbsp;it&nbsp;is&nbsp;required&nbsp;that&nbsp;the&nbsp;image&nbsp;be<br>
+mean&nbsp;subtracted.</tt></dd></dl>
+ <dl><dt><a name="-processImage"><strong>processImage</strong></a>(im_path)</dt><dd><tt>This&nbsp;function&nbsp;loads&nbsp;the&nbsp;<a href="#FCN">FCN</a>&nbsp;,&nbsp;abd&nbsp;runs&nbsp;a&nbsp;forward&nbsp;pass<br>
+for&nbsp;the&nbsp;image&nbsp;in&nbsp;the&nbsp;path.&nbsp;The&nbsp;output&nbsp;is&nbsp;then&nbsp;fed&nbsp;to&nbsp;the<br>
+pipeline</tt></dd></dl>
+ <dl><dt><a name="-processVideo"><strong>processVideo</strong></a>(vid_path)</dt><dd><tt>This&nbsp;function&nbsp;loads&nbsp;the&nbsp;<a href="#FCN">FCN</a>&nbsp;,&nbsp;abd&nbsp;runs&nbsp;a&nbsp;forward&nbsp;pass<br>
+for&nbsp;the&nbsp;video&nbsp;in&nbsp;the&nbsp;path.&nbsp;The&nbsp;output&nbsp;is&nbsp;then&nbsp;fed&nbsp;to&nbsp;the<br>
+pipeline.&nbsp;The&nbsp;seperated&nbsp;frames&nbsp;for&nbsp;each&nbsp;person&nbsp;are&nbsp;saved<br>
+in&nbsp;the&nbsp;end.</tt></dd></dl>
+ <dl><dt><a name="-trainImage"><strong>trainImage</strong></a>()</dt><dd><tt>This&nbsp;computes&nbsp;the&nbsp;back&nbsp;propagation&nbsp;for&nbsp;the&nbsp;single&nbsp;image&nbsp;for&nbsp;<a href="#FCN">FCN</a></tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>cl</strong> = &lt;ufunc 'ceil'&gt;<br>
+<strong>null_type</strong> = &lt;theano.gof.null_type.NullType object&gt;</td></tr></table>
+</body></html>

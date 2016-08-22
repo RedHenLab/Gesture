@@ -1,0 +1,328 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module layers</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>layers</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/gesture_reco/mul_vel_net/layers.py">/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/gesture_reco/mul_vel_net/layers.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="PIL.Image.html">PIL.Image</a><br>
+<a href="theano.tensor.html">theano.tensor</a><br>
+<a href="__builtin__.html">__builtin__</a><br>
+<a href="theano.sandbox.cuda.html">theano.sandbox.cuda</a><br>
+</td><td width="25%" valign=top><a href="theano.tensor.signal.downsample.html">theano.tensor.signal.downsample</a><br>
+<a href="theano.gof.html">theano.gof</a><br>
+<a href="numpy.html">numpy</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="pickle.html">pickle</a><br>
+<a href="pylab.html">pylab</a><br>
+<a href="theano.tensor.html">theano.tensor</a><br>
+<a href="theano.html">theano</a><br>
+</td><td width="25%" valign=top><a href="warnings.html">warnings</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="layers.html#CNNBatchNormLayer">CNNBatchNormLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#ConvLayer">ConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#DeConvLayer">DeConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#MaxPoolLayer">MaxPoolLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#PaddedConvLayer">PaddedConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#PaddedDeConvLayer">PaddedDeConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#ReLuLayer">ReLuLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#SoftmaxWithLossLayer">SoftmaxWithLossLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#SwitchedMaxPoolLayer">SwitchedMaxPoolLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#TemporalConvLayer">TemporalConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#TemporalDeConvLayer">TemporalDeConvLayer</a>
+</font></dt><dt><font face="helvetica, arial"><a href="layers.html#UnPoolLayer">UnPoolLayer</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CNNBatchNormLayer">class <strong>CNNBatchNormLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="CNNBatchNormLayer-__init__"><strong>__init__</strong></a>(self, inputData, image_shape)</dt></dl>
+
+<dl><dt><a name="CNNBatchNormLayer-adjustVals"><strong>adjustVals</strong></a>(self, batch_vals)</dt></dl>
+
+<dl><dt><a name="CNNBatchNormLayer-assignParams"><strong>assignParams</strong></a>(self, gamma, beta)</dt></dl>
+
+<dl><dt><a name="CNNBatchNormLayer-tileMap"><strong>tileMap</strong></a>(self, val, prev)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ConvLayer">class <strong>ConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, image_shape, filter_shape)</dt><dd><tt>rng&nbsp;:&nbsp;Random&nbsp;number&nbsp;generator<br>
+input&nbsp;:&nbsp;tensor4(batch_size,num_input_feature_maps,height,width)<br>
+filter_shape:tensor4(num_features,num_input_feature_maps,filter&nbsp;height,&nbsp;filter_width)<br>
+out_features_shape=tensor4(batch_size,num)</tt></dd></dl>
+
+<dl><dt><a name="ConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt><dd><tt>assign&nbsp;loaded&nbsp;paramters</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DeConvLayer">class <strong>DeConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="DeConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, image_shape, filter_shape, output_shape)</dt></dl>
+
+<dl><dt><a name="DeConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MaxPoolLayer">class <strong>MaxPoolLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="MaxPoolLayer-__init__"><strong>__init__</strong></a>(self, inputData, poolsize<font color="#909090">=(2, 2)</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PaddedConvLayer">class <strong>PaddedConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;output&nbsp;image&nbsp;size&nbsp;of&nbsp;the&nbsp;convolution&nbsp;layer&nbsp;is<br>
+the&nbsp;same&nbsp;as&nbsp;the&nbsp;input.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PaddedConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, image_shape, filter_shape)</dt><dd><tt>rng&nbsp;:&nbsp;Random&nbsp;number&nbsp;generator<br>
+input&nbsp;:&nbsp;tensor4(batch_size,num_input_feature_maps,height,width)<br>
+filter_shape:tensor4(num_features,num_input_feature_maps,filter&nbsp;height,&nbsp;filter_width)<br>
+out_features_shape=tensor4(batch_size,num)</tt></dd></dl>
+
+<dl><dt><a name="PaddedConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PaddedDeConvLayer">class <strong>PaddedDeConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PaddedDeConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, image_shape, filter_shape, output_shape)</dt></dl>
+
+<dl><dt><a name="PaddedDeConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ReLuLayer">class <strong>ReLuLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ReLuLayer-__init__"><strong>__init__</strong></a>(self, inputData)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SoftmaxWithLossLayer">class <strong>SoftmaxWithLossLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SoftmaxWithLossLayer-__init__"><strong>__init__</strong></a>(self, inputData, targetData<font color="#909090">=None</font>, axis_select<font color="#909090">=1</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SwitchedMaxPoolLayer">class <strong>SwitchedMaxPoolLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SwitchedMaxPoolLayer-__init__"><strong>__init__</strong></a>(self, inputData, poolsize<font color="#909090">=(2, 2)</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TemporalConvLayer">class <strong>TemporalConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Work&nbsp;the&nbsp;5d&nbsp;data&nbsp;and&nbsp;apply&nbsp;stride&nbsp;later.&nbsp;This&nbsp;is&nbsp;not&nbsp;efficient<br>
+but&nbsp;it&nbsp;is&nbsp;done&nbsp;because&nbsp;the&nbsp;conv3d&nbsp;assumes&nbsp;the&nbsp;last&nbsp;one&nbsp;to&nbsp;be&nbsp;the<br>
+temporal&nbsp;layer&nbsp;but&nbsp;in&nbsp;the&nbsp;deep&nbsp;learning&nbsp;DeconvNet&nbsp;literature<br>
+the&nbsp;second&nbsp;channel&nbsp;is&nbsp;the&nbsp;temporal&nbsp;one.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TemporalConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, image_shape, filter_shape, temporal_stride<font color="#909090">=1</font>, filter_stride<font color="#909090">=1</font>)</dt><dd><tt>The&nbsp;input&nbsp;shape&nbsp;is&nbsp;(batch,temporal,channels,x,y)<br>
+filter&nbsp;shape&nbsp;is&nbsp;(num_out_channels,window&nbsp;size&nbsp;in&nbsp;temporal&nbsp;domain,num_in_channels,&nbsp;filter&nbsp;size&nbsp;in&nbsp;x,&nbsp;size&nbsp;in&nbsp;y)<br>
+The&nbsp;strides&nbsp;in&nbsp;the&nbsp;temporal&nbsp;and&nbsp;the&nbsp;spatial&nbsp;domain.</tt></dd></dl>
+
+<dl><dt><a name="TemporalConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt><dd><tt>assign&nbsp;loaded&nbsp;paramters</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TemporalDeConvLayer">class <strong>TemporalDeConvLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>This&nbsp;reverses&nbsp;the&nbsp;backward&nbsp;and&nbsp;forward&nbsp;pass&nbsp;of&nbsp;the&nbsp;convolution.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TemporalDeConvLayer-__init__"><strong>__init__</strong></a>(self, rng, inputData, out_shape, filter_shape, temporal_stride<font color="#909090">=1</font>, filter_stride<font color="#909090">=1</font>)</dt><dd><tt>The&nbsp;input&nbsp;shape&nbsp;is&nbsp;(batch,temporal,channels,x,y)<br>
+The&nbsp;filter&nbsp;shape&nbsp;is:<br>
+(num_input_layers,temporal&nbsp;size,num_output_channels,height,width)</tt></dd></dl>
+
+<dl><dt><a name="TemporalDeConvLayer-assignParams"><strong>assignParams</strong></a>(self, W, b)</dt><dd><tt>assign&nbsp;loaded&nbsp;paramters</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="UnPoolLayer">class <strong>UnPoolLayer</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="UnPoolLayer-__init__"><strong>__init__</strong></a>(self, inputData, switchedData, poolsize<font color="#909090">=(2, 2)</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (3, 0, 0, 'alpha', 0), 16384)<br>
+<strong>diagonal_subtensor</strong> = &lt;raw_theano_conv3d.DiagonalSubtensor object&gt;<br>
+<strong>division</strong> = _Feature((2, 2, 0, 'alpha', 2), (3, 0, 0, 'alpha', 0), 8192)<br>
+<strong>inc_diagonal_subtensor</strong> = &lt;raw_theano_conv3d.IncDiagonalSubtensor object&gt;<br>
+<strong>integer_types</strong> = (&lt;type 'int'&gt;, &lt;type 'long'&gt;)<br>
+<strong>null_type</strong> = &lt;theano.gof.null_type.NullType object&gt;<br>
+<strong>print_function</strong> = _Feature((2, 6, 0, 'alpha', 2), (3, 0, 0, 'alpha', 0), 65536)</td></tr></table>
+</body></html>

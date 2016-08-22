@@ -17,10 +17,18 @@ import numpy as np
 # 3) The size and stride in the temporal domain
 # 4) The factors by which to slow down the video
 
+
+"""
+As we need a 5d tensor, [batch,temporal,channel,x,y]
+"""
 dtensor5=T.TensorType('float32',(False,)*5)
 
 
+
 class DeConvBlock(object):
+    """
+    The deconvolution block for each sequence
+    """
 
     def __init__(self,batch_size):
 
@@ -286,8 +294,12 @@ class DeConvBlock(object):
             #print out[0].shape
 
 
-
 class MulVelNet(object):
+    """
+    The class for the final network. It combines
+    the three blocks and implements the MLP
+    for classification.
+    """
 
     def __init__(self,batch_size):
         self.batch_size=batch_size
@@ -350,9 +362,28 @@ class MulVelNet(object):
         #out_label=T.max(y,axis=3)
 
 
+    def sampleDVideo(self,data,sample_fac):
+        """
+        This function makes the video faster or slower. It gets the weight from the
+        video support and applies it to the sequence.
+        """
+        weight = sampleVideo(data[0],sample_fac)
+        seq_sampled = np.zeros(data.shape, dtype=np.float32)
+
+        for i in range(data.shape[2]):
+            for j in range(data.shape[3]):
+                for k in range(data.shape[4]):
+                    seq = data[0,:,i,j,k]
+                    #print seq.shape
+                    seq_sampled[0,:,i,j,k] = np.dot(weight,seq)
+
+        return seq_sampled
+
 
     def test(self,len_test_set_x):
-
+        """
+        This function tests the model for the test set in the CK database
+        """
         out=self.lossLayer.output
         #out=out_label
         batch_size=self.batch_size
@@ -368,10 +399,11 @@ class MulVelNet(object):
             outputs=out,
             on_unused_input='warn',
             givens={
-                #self.block_inp: theano.shared(loader.getSeqs(batch_size)),
                 self.block1.x :theano.shared(loader.getSeqs(batch_size,False,True)[0]),
-                self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
-                self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block2.x :theano.shared(self.sampleDVideo(loader.getSeqs(batch_size,True,True)[0],0.66)),
+                #self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block3.x :theano.shared(self.sampleDVideo(loader.getSeqs(batch_size,True,True)[0],0.33)),
+                #self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
             },
         )
 
@@ -389,6 +421,10 @@ class MulVelNet(object):
 
 
     def getBlockLoss(self,block1):
+        """
+        This module computes the loss for a given block which is the sum of
+        reconstruction error across the four inputs to the block
+        """
         block1_cost=T.sum(T.pow(block1.x1_1-block1.deconvLayer1_1.output,2))
         block1_cost+= T.sum(T.pow(block1.x1_2-block1.deconvLayer1_2.output,2))
         block1_cost+= T.sum(T.pow(block1.x1_3-block1.deconvLayer1_3.output,2))
@@ -397,6 +433,10 @@ class MulVelNet(object):
 
 
     def processLabels(self,labels):
+        """
+        This function processes the labels to match it with the shape
+        required by the network for training
+        """
         prs_labels=[]
         for label in labels:
             prs_label=np.zeros((1,8,1,1))
@@ -411,8 +451,10 @@ class MulVelNet(object):
 
 
     def train(self,learning_rate,training_epochs,len_train_data):
-        #lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
-        #loss=T.sum(lossLayer.output)
+        """
+        This module computes the back prop. The weight importance to the
+        reconstruction error and classification error are specified below
+        """
         alpha=10
         beta=1000
 
@@ -444,8 +486,10 @@ class MulVelNet(object):
             on_unused_input='warn',
             givens={
                 self.block1.x :theano.shared(loader.getSeqs(batch_size,False,True)[0]),
-                self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
-                self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block2.x :theano.shared(self.sampleDVideo(loader.getSeqs(batch_size,True,True)[0],0.66)),
+                #self.block2.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
+                self.block3.x :theano.shared(self.sampleDVideo(loader.getSeqs(batch_size,True,True)[0],0.33)),
+                #self.block3.x :theano.shared(loader.getSeqs(batch_size,True,True)[0]),
                 self.y: theano.shared(self.processLabels(loader.getSeqs(batch_size,True,True)[1]))
             },
         )
@@ -463,6 +507,9 @@ class MulVelNet(object):
 
 
     def getLoaderCKData(self):
+        """
+        This function loads the CK database loader.
+        """
         data_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/cohn-kanade-images"
         label_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/Emotion"
         loader=CKDataLoader(data_dir,label_dir)
@@ -470,10 +517,16 @@ class MulVelNet(object):
 
 
     def saveModel(self,file_name):
+        """
+        To save the learned weights
+        """
         pickle.dump(self.params,open(file_name,"wb"))
 
 
     def loadModel(self,file_name):
+        """
+        To load a learned model.
+        """
         self.params=pickle.load(open(file_name,"rb"))
 
 
@@ -482,23 +535,14 @@ class MulVelNet(object):
 if __name__=="__main__":
     #dtensor5=T.TensorType('float64',(False,)*5)
 
-    """
-    z=dtensor5('z')
-
-    block=DeConvBlock(1)
-    x=np.random.rand(1,25,3,145,145)
-    #out=block.test(x)
-    block.train(x,0.1)
-
-    #print out.shape
-    """
+    test=True
 
     net=MulVelNet(1)
     x=np.random.rand(1,25,3,145,145)
     y=np.random.rand(1,1,8,1,1)
-    out=net.test(2)
-    #net.train(0.1,1,4)
-    #net.saveModel("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/mul_vel_net_weights.p")
 
-    #print out.shape
-    print out
+    if test:
+        out=net.test(2)
+    else:
+        net.train(0.1,1,4)
+        net.saveModel("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/mul_vel_net_weights.p")

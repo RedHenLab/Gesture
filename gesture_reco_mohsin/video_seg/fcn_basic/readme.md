@@ -12,13 +12,17 @@ The file video_support.py contains the functionalities required to load and save
 
 The module pipeline.py contains the code for detecting and clustering faces.
 
+The detail help for the files can be found in the docs.
+
 ## Pre-requisite
 
 To run the network, it is required to have pickle and Theano installed. For the code to be GPU compatible, it is required that the floatX flag be set to float32.
 
 ## setup the paths
 
-The module supports both image and video processing. The path for the input filecan be given in calling the module at the end of the file fcn.py.
+The module supports both image and video processing. The path for the input file can be given in calling the module at the end of the file fcn.py.
+
+Some weight files need to be downloaded from https://drive.google.com/drive/folders/0Bzb-U-Y7f243eWdyN0VhNC1TSDA?usp=sharing. Download the files in the fcn folder and place them in the weights folder in this directory.
 
 ## To run
 

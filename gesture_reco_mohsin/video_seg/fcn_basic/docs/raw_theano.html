@@ -1,0 +1,1421 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module raw_theano</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>raw_theano</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/raw_theano.py">/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/raw_theano.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="theano.tensor.html">theano.tensor</a><br>
+<a href="theano.tensor.signal.downsample.html">theano.tensor.signal.downsample</a><br>
+</td><td width="25%" valign=top><a href="theano.gof.html">theano.gof</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="theano.tensor.html">theano.tensor</a><br>
+<a href="theano.html">theano</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="theano.gof.op.html#Op">theano.gof.op.Op</a>(<a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a>, <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>, <a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="raw_theano.html#Crop">Crop</a>
+</font></dt><dt><font face="helvetica, arial"><a href="raw_theano.html#CropGrad">CropGrad</a>
+</font></dt><dt><font face="helvetica, arial"><a href="raw_theano.html#FuseSum">FuseSum</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Crop">class <strong>Crop</strong></a>(<a href="theano.gof.op.html#Op">theano.gof.op.Op</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Implement&nbsp;centre&nbsp;cropping<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="raw_theano.html#Crop">Crop</a></dd>
+<dd><a href="theano.gof.op.html#Op">theano.gof.op.Op</a></dd>
+<dd><a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a></dd>
+<dd><a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Crop-__init__"><strong>__init__</strong></a>(self, offset)</dt></dl>
+
+<dl><dt><a name="Crop-c_code"><strong>c_code</strong></a>(self, node, name, inp, out, sub)</dt><dd><tt>C&nbsp;code&nbsp;to&nbsp;perform&nbsp;the&nbsp;op.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_headers"><strong>c_headers</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Crop-grad"><strong>grad</strong></a>(self, inps, out_grads)</dt><dd><tt>Called&nbsp;by&nbsp;theano&nbsp;back&nbsp;prop.</tt></dd></dl>
+
+<dl><dt><a name="Crop-make_node"><strong>make_node</strong></a>(self, x)</dt><dd><tt>This&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;node&nbsp;for&nbsp;theano&nbsp;compilation.</tt></dd></dl>
+
+<dl><dt><a name="Crop-perform"><strong>perform</strong></a>(self, node, inp, out)</dt><dd><tt>Python&nbsp;code&nbsp;for&nbsp;performing&nbsp;the&nbsp;op</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Crop-out_shape"><strong>out_shape</strong></a>(imgshape, offset)</dt><dd><tt>computes&nbsp;the&nbsp;output&nbsp;shape&nbsp;given&nbsp;the&nbsp;image&nbsp;shape&nbsp;and&nbsp;the&nbsp;offset.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="Crop-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="Crop-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Crop-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Crop-make_c_thunk"><strong>make_c_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Like&nbsp;make_thunk,&nbsp;but&nbsp;will&nbsp;only&nbsp;try&nbsp;to&nbsp;make&nbsp;a&nbsp;C&nbsp;thunk.</tt></dd></dl>
+
+<dl><dt><a name="Crop-make_py_thunk"><strong>make_py_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling, debug<font color="#909090">=False</font>)</dt><dd><tt>Like&nbsp;<a href="#Crop-make_thunk">make_thunk</a>()&nbsp;but&nbsp;only&nbsp;makes&nbsp;python&nbsp;thunks.</tt></dd></dl>
+
+<dl><dt><a name="Crop-make_thunk"><strong>make_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Parameters<br>
+----------<br>
+node<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Something&nbsp;previously&nbsp;returned&nbsp;by&nbsp;self.<strong>make_node</strong>.<br>
+storage_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;computed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;for&nbsp;this&nbsp;variable&nbsp;may&nbsp;be&nbsp;found.<br>
+compute_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;boolean<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;will&nbsp;be&nbsp;found.&nbsp;The&nbsp;boolean&nbsp;indicates&nbsp;whether&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;variable's&nbsp;storage_map&nbsp;container&nbsp;contains&nbsp;a&nbsp;valid&nbsp;value&nbsp;(True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;if&nbsp;it&nbsp;has&nbsp;not&nbsp;been&nbsp;computed&nbsp;yet&nbsp;(False).<br>
+no_recycling<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;variables&nbsp;for&nbsp;which&nbsp;it&nbsp;is&nbsp;forbidden&nbsp;to&nbsp;reuse&nbsp;memory<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allocated&nbsp;by&nbsp;a&nbsp;previous&nbsp;call.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+If&nbsp;the&nbsp;thunk&nbsp;consults&nbsp;the&nbsp;storage_map&nbsp;on&nbsp;every&nbsp;call,&nbsp;it&nbsp;is&nbsp;safe<br>
+for&nbsp;it&nbsp;to&nbsp;ignore&nbsp;the&nbsp;no_recycling&nbsp;argument,&nbsp;because&nbsp;elements&nbsp;of&nbsp;the<br>
+no_recycling&nbsp;list&nbsp;will&nbsp;have&nbsp;a&nbsp;value&nbsp;of&nbsp;None&nbsp;in&nbsp;the&nbsp;storage&nbsp;map.&nbsp;&nbsp;If<br>
+the&nbsp;thunk&nbsp;can&nbsp;potentially&nbsp;cache&nbsp;return&nbsp;values&nbsp;(like&nbsp;CLinker&nbsp;does),<br>
+then&nbsp;it&nbsp;must&nbsp;not&nbsp;do&nbsp;so&nbsp;for&nbsp;variables&nbsp;in&nbsp;the&nbsp;no_recycling&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="Crop-prepare_node"><strong>prepare_node</strong></a>(self, node, storage_map, compute_map)</dt><dd><tt>Make&nbsp;any&nbsp;special&nbsp;modifications&nbsp;that&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;needs&nbsp;before&nbsp;doing<br>
+<a href="#Crop-make_thunk">make_thunk</a>().<br>
+&nbsp;<br>
+This&nbsp;can&nbsp;either&nbsp;modify&nbsp;the&nbsp;node&nbsp;inplace&nbsp;or&nbsp;return&nbsp;a&nbsp;new&nbsp;one.</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="Crop-__new__"><strong>__new__</strong></a>(cls, *args, **kwargs)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a>:<br>
+<dl><dt><a name="Crop-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="Crop-R_op"><strong>R_op</strong></a>(self, inputs, eval_points)</dt><dd><tt>This&nbsp;method&nbsp;is&nbsp;primarily&nbsp;used&nbsp;by&nbsp;tensor.Rop<br>
+&nbsp;<br>
+Suppose&nbsp;the&nbsp;op&nbsp;outputs<br>
+&nbsp;<br>
+[&nbsp;f_1(inputs),&nbsp;...,&nbsp;f_n(inputs)&nbsp;]<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs&nbsp;:&nbsp;a&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables<br>
+eval_points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables&nbsp;with&nbsp;the&nbsp;same&nbsp;length&nbsp;as&nbsp;inputs.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;element&nbsp;of&nbsp;eval_points&nbsp;specifies&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;input&nbsp;at&nbsp;the&nbsp;point&nbsp;where&nbsp;the&nbsp;R&nbsp;op&nbsp;is&nbsp;to&nbsp;be&nbsp;evaluated.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+list&nbsp;of&nbsp;n&nbsp;elements<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rval[i]&nbsp;should&nbsp;be&nbsp;Rop(f=f_i(inputs),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrt=inputs,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eval_points=eval_points)</tt></dd></dl>
+
+<dl><dt><a name="Crop-__call__"><strong>__call__</strong></a>(self, *inputs, **kwargs)</dt><dd><tt>Optional:&nbsp;return&nbsp;some&nbsp;or&nbsp;all&nbsp;output[s]&nbsp;of&nbsp;`make_node`.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;called&nbsp;by&nbsp;code&nbsp;such&nbsp;as:<br>
+&nbsp;<br>
+..&nbsp;python::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;tensor.matrix()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;tensor.exp&nbsp;is&nbsp;an&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;instance,&nbsp;calls<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<a href="#Crop-__call__">__call__</a>(self=&lt;instance&nbsp;of&nbsp;exp&gt;,&nbsp;inputs=(x,))<br>
+&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;tensor.exp(x)<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;implements&nbsp;a&nbsp;convenience&nbsp;function&nbsp;(for&nbsp;graph-building)&nbsp;which<br>
+uses&nbsp;`default_output`,&nbsp;but&nbsp;subclasses&nbsp;are&nbsp;free&nbsp;to&nbsp;override&nbsp;this&nbsp;function<br>
+and&nbsp;ignore&nbsp;`default_output`.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="theano.gof.op.html#Op">Op</a>'s&nbsp;inputs,&nbsp;forwarded&nbsp;to&nbsp;the&nbsp;call&nbsp;to&nbsp;`<a href="#Crop-make_node">make_node</a>()`.<br>
+kwargs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Additional&nbsp;keyword&nbsp;arguments&nbsp;to&nbsp;be&nbsp;forwarded&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`<a href="#Crop-make_node">make_node</a>()`&nbsp;*except*&nbsp;for&nbsp;optional&nbsp;argument&nbsp;`return_list`&nbsp;(which<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;False).&nbsp;If&nbsp;`return_list`&nbsp;is&nbsp;True,&nbsp;then&nbsp;the&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;is&nbsp;always&nbsp;a&nbsp;list.&nbsp;Otherwise&nbsp;it&nbsp;is&nbsp;either&nbsp;a&nbsp;single&nbsp;Variable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;output&nbsp;of&nbsp;`<a href="#Crop-make_node">make_node</a>()`&nbsp;contains&nbsp;a&nbsp;single&nbsp;element,&nbsp;or&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;(unchanged)&nbsp;when&nbsp;it&nbsp;contains&nbsp;multiple&nbsp;elements.</tt></dd></dl>
+
+<dl><dt><a name="Crop-do_constant_folding"><strong>do_constant_folding</strong></a>(self, node)</dt><dd><tt>This&nbsp;allows&nbsp;each&nbsp;op&nbsp;to&nbsp;determine&nbsp;if&nbsp;it&nbsp;wants&nbsp;to&nbsp;be&nbsp;constant<br>
+folded&nbsp;when&nbsp;all&nbsp;its&nbsp;inputs&nbsp;are&nbsp;constant.&nbsp;This&nbsp;allows&nbsp;it&nbsp;to<br>
+choose&nbsp;where&nbsp;it&nbsp;puts&nbsp;its&nbsp;memory/speed&nbsp;trade-off.&nbsp;Also,&nbsp;it<br>
+could&nbsp;make&nbsp;things&nbsp;faster&nbsp;as&nbsp;constants&nbsp;can't&nbsp;be&nbsp;used&nbsp;for&nbsp;inplace<br>
+operations&nbsp;(see&nbsp;*IncSubtensor).</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="Crop-add_tag_trace"><strong>add_tag_trace</strong></a>(thing, user_line<font color="#909090">=None</font>)</dt><dd><tt>Add&nbsp;tag.trace&nbsp;to&nbsp;an&nbsp;node&nbsp;or&nbsp;variable.<br>
+&nbsp;<br>
+The&nbsp;argument&nbsp;is&nbsp;returned&nbsp;after&nbsp;being&nbsp;affected&nbsp;(inplace).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+thing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;object&nbsp;where&nbsp;we&nbsp;add&nbsp;.tag.trace.<br>
+user_line<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;max&nbsp;number&nbsp;of&nbsp;user&nbsp;line&nbsp;to&nbsp;keep.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+We&nbsp;alse&nbsp;use&nbsp;config.traceback.limit&nbsp;for&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;stack&nbsp;level<br>
+we&nbsp;look.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><strong>default_output</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a>:<br>
+<dl><dt><a name="Crop-c_cleanup_code_struct"><strong>c_cleanup_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply&nbsp;to&nbsp;be<br>
+inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;cleanup&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_code_cache_version_apply"><strong>c_code_cache_version_apply</strong></a>(self, node)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be<br>
+cached&nbsp;between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been<br>
+superceded&nbsp;by&nbsp;newer&nbsp;versions.&nbsp;&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#Crop-c_code_cache_version">c_code_cache_version</a>()<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;overrides&nbsp;`c_code_cache_version`&nbsp;unless&nbsp;it&nbsp;explicitly<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`.&nbsp;The&nbsp;default&nbsp;implementation&nbsp;simply<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`&nbsp;and&nbsp;ignores&nbsp;the&nbsp;`node`&nbsp;argument.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_code_cleanup"><strong>c_code_cleanup</strong></a>(self, node, name, inputs, outputs, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;C&nbsp;code&nbsp;to&nbsp;run&nbsp;after&nbsp;c_code,&nbsp;whether&nbsp;it&nbsp;failed&nbsp;or&nbsp;not.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;convenient&nbsp;place&nbsp;to&nbsp;clean&nbsp;up&nbsp;things&nbsp;allocated&nbsp;by&nbsp;<a href="#Crop-c_code">c_code</a>().<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;Apply&nbsp;instance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;name&nbsp;that&nbsp;is&nbsp;automatically&nbsp;assigned&nbsp;and&nbsp;guaranteed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unique.<br>
+inputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;string&nbsp;for&nbsp;each&nbsp;input&nbsp;of&nbsp;the&nbsp;function,&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;pointing&nbsp;to&nbsp;that&nbsp;input.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;type&nbsp;of&nbsp;the&nbsp;variable&nbsp;depends&nbsp;on&nbsp;the&nbsp;declared&nbsp;type&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;input.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding&nbsp;python&nbsp;variable&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to&nbsp;the&nbsp;name&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list.<br>
+outputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;correspoinding&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;of&nbsp;the&nbsp;outputs&nbsp;of&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>.&nbsp;The&nbsp;type&nbsp;depends&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;declared&nbsp;type&nbsp;of&nbsp;the&nbsp;output.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;python&nbsp;variable&nbsp;that&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;in&nbsp;the&nbsp;list.<br>
+sub&nbsp;:&nbsp;dict&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;symbols&nbsp;defined&nbsp;in&nbsp;`CLinker`&nbsp;sub&nbsp;symbols&nbsp;(such&nbsp;as&nbsp;'fail').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_init_code_apply"><strong>c_init_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;module&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_init_code&nbsp;and&nbsp;will&nbsp;supplement<br>
+whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_init_code_struct"><strong>c_init_code_struct</strong></a>(self, node, name, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+sub<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;values&nbsp;to&nbsp;substitute&nbsp;in&nbsp;the&nbsp;code.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Most&nbsp;notably&nbsp;it&nbsp;contains&nbsp;a&nbsp;'fail'&nbsp;entry&nbsp;that&nbsp;you&nbsp;should&nbsp;place&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;your&nbsp;code&nbsp;after&nbsp;setting&nbsp;a&nbsp;python&nbsp;exception&nbsp;to&nbsp;indicate&nbsp;an&nbsp;error.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_support_code_apply"><strong>c_support_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;global&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_support_code&nbsp;and&nbsp;will<br>
+supplement&nbsp;whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_support_code_struct"><strong>c_support_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;struct&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;you&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a>:<br>
+<dl><dt><a name="Crop-c_code_cache_version"><strong>c_code_cache_version</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be&nbsp;cached<br>
+between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been&nbsp;superceded<br>
+by&nbsp;newer&nbsp;versions.&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#Crop-c_code_cache_version_apply">c_code_cache_version_apply</a>()</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_compile_args"><strong>c_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;compile&nbsp;args&nbsp;recommended&nbsp;to&nbsp;compile&nbsp;the<br>
+code&nbsp;returned&nbsp;by&nbsp;other&nbsp;methods&nbsp;in&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+return&nbsp;['-ffast-math']<br>
+&nbsp;<br>
+Compiler&nbsp;arguments&nbsp;related&nbsp;to&nbsp;headers,&nbsp;libraries&nbsp;and&nbsp;search&nbsp;paths&nbsp;should<br>
+be&nbsp;provided&nbsp;via&nbsp;the&nbsp;functions&nbsp;`c_headers`,&nbsp;`c_libraries`,<br>
+`c_header_dirs`,&nbsp;and&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_header_dirs"><strong>c_header_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;header&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/include',&nbsp;'/opt/weirdpath/src/include']<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;headers,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any&nbsp;relevant<br>
+environment&nbsp;variables.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-I'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_init_code"><strong>c_init_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;code&nbsp;snippets&nbsp;to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;module<br>
+initialization.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_lib_dirs"><strong>c_lib_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;library&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/lib',&nbsp;'/opt/weirdpath/build/libs'].<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;libraries,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any<br>
+relevant&nbsp;environment&nbsp;variables&nbsp;(e.g.&nbsp;LD_LIBRARY_PATH).<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-L'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_libraries"><strong>c_libraries</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;libraries&nbsp;required&nbsp;by&nbsp;code&nbsp;returned&nbsp;by<br>
+this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['gsl',&nbsp;'gslcblas',&nbsp;'m',&nbsp;'fftw3',&nbsp;'g2c'].<br>
+&nbsp;<br>
+The&nbsp;compiler&nbsp;will&nbsp;search&nbsp;the&nbsp;directories&nbsp;specified&nbsp;by&nbsp;the&nbsp;environment<br>
+variable&nbsp;LD_LIBRARY_PATH&nbsp;in&nbsp;addition&nbsp;to&nbsp;any&nbsp;returned&nbsp;by&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-l'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_no_compile_args"><strong>c_no_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;incompatible&nbsp;gcc&nbsp;compiler&nbsp;arguments.<br>
+&nbsp;<br>
+We&nbsp;will&nbsp;remove&nbsp;those&nbsp;arguments&nbsp;from&nbsp;the&nbsp;command&nbsp;line&nbsp;of&nbsp;gcc.&nbsp;So&nbsp;if<br>
+another&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;adds&nbsp;a&nbsp;compile&nbsp;arg&nbsp;in&nbsp;the&nbsp;graph&nbsp;that&nbsp;is&nbsp;incompatible<br>
+with&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>,&nbsp;the&nbsp;incompatible&nbsp;arg&nbsp;will&nbsp;not&nbsp;be&nbsp;used.<br>
+Useful&nbsp;for&nbsp;instance&nbsp;to&nbsp;remove&nbsp;-ffast-math.<br>
+&nbsp;<br>
+EXAMPLE<br>
+&nbsp;<br>
+WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Crop-c_support_code"><strong>c_support_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;a&nbsp;`Variable`&nbsp;or&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;to&nbsp;be<br>
+included&nbsp;at&nbsp;global&nbsp;scope&nbsp;prior&nbsp;to&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;code&nbsp;for&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+QUESTION:&nbsp;How&nbsp;many&nbsp;times&nbsp;will&nbsp;this&nbsp;support&nbsp;code&nbsp;be&nbsp;emitted&nbsp;for&nbsp;a&nbsp;graph<br>
+with&nbsp;many&nbsp;instances&nbsp;of&nbsp;the&nbsp;same&nbsp;type?<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CropGrad">class <strong>CropGrad</strong></a>(<a href="theano.gof.op.html#Op">theano.gof.op.Op</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Called&nbsp;by&nbsp;crop&nbsp;grad.&nbsp;Implemented&nbsp;in&nbsp;C&nbsp;for&nbsp;speed.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="raw_theano.html#CropGrad">CropGrad</a></dd>
+<dd><a href="theano.gof.op.html#Op">theano.gof.op.Op</a></dd>
+<dd><a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a></dd>
+<dd><a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CropGrad-__init__"><strong>__init__</strong></a>(self, offset)</dt></dl>
+
+<dl><dt><a name="CropGrad-make_node"><strong>make_node</strong></a>(self, x, y)</dt></dl>
+
+<dl><dt><a name="CropGrad-perform"><strong>perform</strong></a>(self, node, inps, out)</dt></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="CropGrad-out_shape"><strong>out_shape</strong></a>(imgshape, offset)</dt></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="CropGrad-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="CropGrad-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CropGrad-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="CropGrad-make_c_thunk"><strong>make_c_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Like&nbsp;make_thunk,&nbsp;but&nbsp;will&nbsp;only&nbsp;try&nbsp;to&nbsp;make&nbsp;a&nbsp;C&nbsp;thunk.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-make_py_thunk"><strong>make_py_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling, debug<font color="#909090">=False</font>)</dt><dd><tt>Like&nbsp;<a href="#CropGrad-make_thunk">make_thunk</a>()&nbsp;but&nbsp;only&nbsp;makes&nbsp;python&nbsp;thunks.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-make_thunk"><strong>make_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Parameters<br>
+----------<br>
+node<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Something&nbsp;previously&nbsp;returned&nbsp;by&nbsp;self.<strong>make_node</strong>.<br>
+storage_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;computed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;for&nbsp;this&nbsp;variable&nbsp;may&nbsp;be&nbsp;found.<br>
+compute_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;boolean<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;will&nbsp;be&nbsp;found.&nbsp;The&nbsp;boolean&nbsp;indicates&nbsp;whether&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;variable's&nbsp;storage_map&nbsp;container&nbsp;contains&nbsp;a&nbsp;valid&nbsp;value&nbsp;(True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;if&nbsp;it&nbsp;has&nbsp;not&nbsp;been&nbsp;computed&nbsp;yet&nbsp;(False).<br>
+no_recycling<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;variables&nbsp;for&nbsp;which&nbsp;it&nbsp;is&nbsp;forbidden&nbsp;to&nbsp;reuse&nbsp;memory<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allocated&nbsp;by&nbsp;a&nbsp;previous&nbsp;call.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+If&nbsp;the&nbsp;thunk&nbsp;consults&nbsp;the&nbsp;storage_map&nbsp;on&nbsp;every&nbsp;call,&nbsp;it&nbsp;is&nbsp;safe<br>
+for&nbsp;it&nbsp;to&nbsp;ignore&nbsp;the&nbsp;no_recycling&nbsp;argument,&nbsp;because&nbsp;elements&nbsp;of&nbsp;the<br>
+no_recycling&nbsp;list&nbsp;will&nbsp;have&nbsp;a&nbsp;value&nbsp;of&nbsp;None&nbsp;in&nbsp;the&nbsp;storage&nbsp;map.&nbsp;&nbsp;If<br>
+the&nbsp;thunk&nbsp;can&nbsp;potentially&nbsp;cache&nbsp;return&nbsp;values&nbsp;(like&nbsp;CLinker&nbsp;does),<br>
+then&nbsp;it&nbsp;must&nbsp;not&nbsp;do&nbsp;so&nbsp;for&nbsp;variables&nbsp;in&nbsp;the&nbsp;no_recycling&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-prepare_node"><strong>prepare_node</strong></a>(self, node, storage_map, compute_map)</dt><dd><tt>Make&nbsp;any&nbsp;special&nbsp;modifications&nbsp;that&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;needs&nbsp;before&nbsp;doing<br>
+<a href="#CropGrad-make_thunk">make_thunk</a>().<br>
+&nbsp;<br>
+This&nbsp;can&nbsp;either&nbsp;modify&nbsp;the&nbsp;node&nbsp;inplace&nbsp;or&nbsp;return&nbsp;a&nbsp;new&nbsp;one.</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="CropGrad-__new__"><strong>__new__</strong></a>(cls, *args, **kwargs)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a>:<br>
+<dl><dt><a name="CropGrad-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="CropGrad-R_op"><strong>R_op</strong></a>(self, inputs, eval_points)</dt><dd><tt>This&nbsp;method&nbsp;is&nbsp;primarily&nbsp;used&nbsp;by&nbsp;tensor.Rop<br>
+&nbsp;<br>
+Suppose&nbsp;the&nbsp;op&nbsp;outputs<br>
+&nbsp;<br>
+[&nbsp;f_1(inputs),&nbsp;...,&nbsp;f_n(inputs)&nbsp;]<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs&nbsp;:&nbsp;a&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables<br>
+eval_points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables&nbsp;with&nbsp;the&nbsp;same&nbsp;length&nbsp;as&nbsp;inputs.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;element&nbsp;of&nbsp;eval_points&nbsp;specifies&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;input&nbsp;at&nbsp;the&nbsp;point&nbsp;where&nbsp;the&nbsp;R&nbsp;op&nbsp;is&nbsp;to&nbsp;be&nbsp;evaluated.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+list&nbsp;of&nbsp;n&nbsp;elements<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rval[i]&nbsp;should&nbsp;be&nbsp;Rop(f=f_i(inputs),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrt=inputs,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eval_points=eval_points)</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-__call__"><strong>__call__</strong></a>(self, *inputs, **kwargs)</dt><dd><tt>Optional:&nbsp;return&nbsp;some&nbsp;or&nbsp;all&nbsp;output[s]&nbsp;of&nbsp;`make_node`.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;called&nbsp;by&nbsp;code&nbsp;such&nbsp;as:<br>
+&nbsp;<br>
+..&nbsp;python::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;tensor.matrix()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;tensor.exp&nbsp;is&nbsp;an&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;instance,&nbsp;calls<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<a href="#CropGrad-__call__">__call__</a>(self=&lt;instance&nbsp;of&nbsp;exp&gt;,&nbsp;inputs=(x,))<br>
+&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;tensor.exp(x)<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;implements&nbsp;a&nbsp;convenience&nbsp;function&nbsp;(for&nbsp;graph-building)&nbsp;which<br>
+uses&nbsp;`default_output`,&nbsp;but&nbsp;subclasses&nbsp;are&nbsp;free&nbsp;to&nbsp;override&nbsp;this&nbsp;function<br>
+and&nbsp;ignore&nbsp;`default_output`.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="theano.gof.op.html#Op">Op</a>'s&nbsp;inputs,&nbsp;forwarded&nbsp;to&nbsp;the&nbsp;call&nbsp;to&nbsp;`<a href="#CropGrad-make_node">make_node</a>()`.<br>
+kwargs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Additional&nbsp;keyword&nbsp;arguments&nbsp;to&nbsp;be&nbsp;forwarded&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`<a href="#CropGrad-make_node">make_node</a>()`&nbsp;*except*&nbsp;for&nbsp;optional&nbsp;argument&nbsp;`return_list`&nbsp;(which<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;False).&nbsp;If&nbsp;`return_list`&nbsp;is&nbsp;True,&nbsp;then&nbsp;the&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;is&nbsp;always&nbsp;a&nbsp;list.&nbsp;Otherwise&nbsp;it&nbsp;is&nbsp;either&nbsp;a&nbsp;single&nbsp;Variable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;output&nbsp;of&nbsp;`<a href="#CropGrad-make_node">make_node</a>()`&nbsp;contains&nbsp;a&nbsp;single&nbsp;element,&nbsp;or&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;(unchanged)&nbsp;when&nbsp;it&nbsp;contains&nbsp;multiple&nbsp;elements.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-do_constant_folding"><strong>do_constant_folding</strong></a>(self, node)</dt><dd><tt>This&nbsp;allows&nbsp;each&nbsp;op&nbsp;to&nbsp;determine&nbsp;if&nbsp;it&nbsp;wants&nbsp;to&nbsp;be&nbsp;constant<br>
+folded&nbsp;when&nbsp;all&nbsp;its&nbsp;inputs&nbsp;are&nbsp;constant.&nbsp;This&nbsp;allows&nbsp;it&nbsp;to<br>
+choose&nbsp;where&nbsp;it&nbsp;puts&nbsp;its&nbsp;memory/speed&nbsp;trade-off.&nbsp;Also,&nbsp;it<br>
+could&nbsp;make&nbsp;things&nbsp;faster&nbsp;as&nbsp;constants&nbsp;can't&nbsp;be&nbsp;used&nbsp;for&nbsp;inplace<br>
+operations&nbsp;(see&nbsp;*IncSubtensor).</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="CropGrad-add_tag_trace"><strong>add_tag_trace</strong></a>(thing, user_line<font color="#909090">=None</font>)</dt><dd><tt>Add&nbsp;tag.trace&nbsp;to&nbsp;an&nbsp;node&nbsp;or&nbsp;variable.<br>
+&nbsp;<br>
+The&nbsp;argument&nbsp;is&nbsp;returned&nbsp;after&nbsp;being&nbsp;affected&nbsp;(inplace).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+thing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;object&nbsp;where&nbsp;we&nbsp;add&nbsp;.tag.trace.<br>
+user_line<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;max&nbsp;number&nbsp;of&nbsp;user&nbsp;line&nbsp;to&nbsp;keep.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+We&nbsp;alse&nbsp;use&nbsp;config.traceback.limit&nbsp;for&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;stack&nbsp;level<br>
+we&nbsp;look.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><strong>default_output</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a>:<br>
+<dl><dt><a name="CropGrad-c_cleanup_code_struct"><strong>c_cleanup_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply&nbsp;to&nbsp;be<br>
+inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;cleanup&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_code"><strong>c_code</strong></a>(self, node, name, inputs, outputs, sub)</dt><dd><tt>Required:&nbsp;return&nbsp;the&nbsp;C&nbsp;implementation&nbsp;of&nbsp;an&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+Returns&nbsp;C&nbsp;code&nbsp;that&nbsp;does&nbsp;the&nbsp;computation&nbsp;associated&nbsp;to&nbsp;this&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`,<br>
+given&nbsp;names&nbsp;for&nbsp;the&nbsp;inputs&nbsp;and&nbsp;outputs.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;Apply&nbsp;instance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;node&nbsp;for&nbsp;which&nbsp;we&nbsp;are&nbsp;compiling&nbsp;the&nbsp;current&nbsp;c_code.<br>
+&nbsp;&nbsp;&nbsp;The&nbsp;same&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;may&nbsp;be&nbsp;used&nbsp;in&nbsp;more&nbsp;than&nbsp;one&nbsp;node.<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;name&nbsp;that&nbsp;is&nbsp;automatically&nbsp;assigned&nbsp;and&nbsp;guaranteed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unique.<br>
+inputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;string&nbsp;for&nbsp;each&nbsp;input&nbsp;of&nbsp;the&nbsp;function,&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;pointing&nbsp;to&nbsp;that&nbsp;input.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;type&nbsp;of&nbsp;the&nbsp;variable&nbsp;depends&nbsp;on&nbsp;the&nbsp;declared&nbsp;type&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;input.&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding&nbsp;python&nbsp;variable&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to&nbsp;the&nbsp;name&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list.<br>
+outputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;where&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;should<br>
+&nbsp;&nbsp;&nbsp;&nbsp;store&nbsp;its&nbsp;output.&nbsp;&nbsp;The&nbsp;type&nbsp;depends&nbsp;on&nbsp;the&nbsp;declared&nbsp;type&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;output.&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding&nbsp;python&nbsp;variable&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to&nbsp;the&nbsp;name&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list.&nbsp;&nbsp;In&nbsp;some&nbsp;cases&nbsp;the&nbsp;outputs&nbsp;will&nbsp;be&nbsp;preallocated&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;variable&nbsp;may&nbsp;be&nbsp;pre-filled.&nbsp;&nbsp;The&nbsp;value&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;unallocated&nbsp;output&nbsp;is&nbsp;type-dependent.<br>
+sub&nbsp;:&nbsp;dict&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Extra&nbsp;symbols&nbsp;defined&nbsp;in&nbsp;`CLinker`&nbsp;sub&nbsp;symbols&nbsp;(such&nbsp;as&nbsp;'fail').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_code_cache_version_apply"><strong>c_code_cache_version_apply</strong></a>(self, node)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be<br>
+cached&nbsp;between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been<br>
+superceded&nbsp;by&nbsp;newer&nbsp;versions.&nbsp;&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#CropGrad-c_code_cache_version">c_code_cache_version</a>()<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;overrides&nbsp;`c_code_cache_version`&nbsp;unless&nbsp;it&nbsp;explicitly<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`.&nbsp;The&nbsp;default&nbsp;implementation&nbsp;simply<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`&nbsp;and&nbsp;ignores&nbsp;the&nbsp;`node`&nbsp;argument.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_code_cleanup"><strong>c_code_cleanup</strong></a>(self, node, name, inputs, outputs, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;C&nbsp;code&nbsp;to&nbsp;run&nbsp;after&nbsp;c_code,&nbsp;whether&nbsp;it&nbsp;failed&nbsp;or&nbsp;not.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;convenient&nbsp;place&nbsp;to&nbsp;clean&nbsp;up&nbsp;things&nbsp;allocated&nbsp;by&nbsp;<a href="#CropGrad-c_code">c_code</a>().<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;Apply&nbsp;instance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;name&nbsp;that&nbsp;is&nbsp;automatically&nbsp;assigned&nbsp;and&nbsp;guaranteed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unique.<br>
+inputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;string&nbsp;for&nbsp;each&nbsp;input&nbsp;of&nbsp;the&nbsp;function,&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;pointing&nbsp;to&nbsp;that&nbsp;input.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;type&nbsp;of&nbsp;the&nbsp;variable&nbsp;depends&nbsp;on&nbsp;the&nbsp;declared&nbsp;type&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;input.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding&nbsp;python&nbsp;variable&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to&nbsp;the&nbsp;name&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list.<br>
+outputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;correspoinding&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;of&nbsp;the&nbsp;outputs&nbsp;of&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>.&nbsp;The&nbsp;type&nbsp;depends&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;declared&nbsp;type&nbsp;of&nbsp;the&nbsp;output.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;python&nbsp;variable&nbsp;that&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;in&nbsp;the&nbsp;list.<br>
+sub&nbsp;:&nbsp;dict&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;symbols&nbsp;defined&nbsp;in&nbsp;`CLinker`&nbsp;sub&nbsp;symbols&nbsp;(such&nbsp;as&nbsp;'fail').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_init_code_apply"><strong>c_init_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;module&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_init_code&nbsp;and&nbsp;will&nbsp;supplement<br>
+whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_init_code_struct"><strong>c_init_code_struct</strong></a>(self, node, name, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+sub<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;values&nbsp;to&nbsp;substitute&nbsp;in&nbsp;the&nbsp;code.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Most&nbsp;notably&nbsp;it&nbsp;contains&nbsp;a&nbsp;'fail'&nbsp;entry&nbsp;that&nbsp;you&nbsp;should&nbsp;place&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;your&nbsp;code&nbsp;after&nbsp;setting&nbsp;a&nbsp;python&nbsp;exception&nbsp;to&nbsp;indicate&nbsp;an&nbsp;error.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_support_code_apply"><strong>c_support_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;global&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_support_code&nbsp;and&nbsp;will<br>
+supplement&nbsp;whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_support_code_struct"><strong>c_support_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;struct&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;you&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a>:<br>
+<dl><dt><a name="CropGrad-c_code_cache_version"><strong>c_code_cache_version</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be&nbsp;cached<br>
+between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been&nbsp;superceded<br>
+by&nbsp;newer&nbsp;versions.&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#CropGrad-c_code_cache_version_apply">c_code_cache_version_apply</a>()</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_compile_args"><strong>c_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;compile&nbsp;args&nbsp;recommended&nbsp;to&nbsp;compile&nbsp;the<br>
+code&nbsp;returned&nbsp;by&nbsp;other&nbsp;methods&nbsp;in&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+return&nbsp;['-ffast-math']<br>
+&nbsp;<br>
+Compiler&nbsp;arguments&nbsp;related&nbsp;to&nbsp;headers,&nbsp;libraries&nbsp;and&nbsp;search&nbsp;paths&nbsp;should<br>
+be&nbsp;provided&nbsp;via&nbsp;the&nbsp;functions&nbsp;`c_headers`,&nbsp;`c_libraries`,<br>
+`c_header_dirs`,&nbsp;and&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_header_dirs"><strong>c_header_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;header&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/include',&nbsp;'/opt/weirdpath/src/include']<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;headers,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any&nbsp;relevant<br>
+environment&nbsp;variables.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-I'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_headers"><strong>c_headers</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;header&nbsp;files&nbsp;required&nbsp;by&nbsp;code&nbsp;returned&nbsp;by<br>
+this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['&lt;iostream&gt;',&nbsp;'&lt;math.h&gt;',&nbsp;'/full/path/to/header.h']<br>
+&nbsp;<br>
+These&nbsp;strings&nbsp;will&nbsp;be&nbsp;prefixed&nbsp;with&nbsp;"#include&nbsp;"&nbsp;and&nbsp;inserted&nbsp;at&nbsp;the<br>
+beginning&nbsp;of&nbsp;the&nbsp;c&nbsp;source&nbsp;code.<br>
+&nbsp;<br>
+Strings&nbsp;in&nbsp;this&nbsp;list&nbsp;that&nbsp;start&nbsp;neither&nbsp;with&nbsp;'&lt;'&nbsp;nor&nbsp;'"'&nbsp;will&nbsp;be<br>
+enclosed&nbsp;in&nbsp;double-quotes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_init_code"><strong>c_init_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;code&nbsp;snippets&nbsp;to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;module<br>
+initialization.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_lib_dirs"><strong>c_lib_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;library&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/lib',&nbsp;'/opt/weirdpath/build/libs'].<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;libraries,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any<br>
+relevant&nbsp;environment&nbsp;variables&nbsp;(e.g.&nbsp;LD_LIBRARY_PATH).<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-L'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_libraries"><strong>c_libraries</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;libraries&nbsp;required&nbsp;by&nbsp;code&nbsp;returned&nbsp;by<br>
+this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['gsl',&nbsp;'gslcblas',&nbsp;'m',&nbsp;'fftw3',&nbsp;'g2c'].<br>
+&nbsp;<br>
+The&nbsp;compiler&nbsp;will&nbsp;search&nbsp;the&nbsp;directories&nbsp;specified&nbsp;by&nbsp;the&nbsp;environment<br>
+variable&nbsp;LD_LIBRARY_PATH&nbsp;in&nbsp;addition&nbsp;to&nbsp;any&nbsp;returned&nbsp;by&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-l'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_no_compile_args"><strong>c_no_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;incompatible&nbsp;gcc&nbsp;compiler&nbsp;arguments.<br>
+&nbsp;<br>
+We&nbsp;will&nbsp;remove&nbsp;those&nbsp;arguments&nbsp;from&nbsp;the&nbsp;command&nbsp;line&nbsp;of&nbsp;gcc.&nbsp;So&nbsp;if<br>
+another&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;adds&nbsp;a&nbsp;compile&nbsp;arg&nbsp;in&nbsp;the&nbsp;graph&nbsp;that&nbsp;is&nbsp;incompatible<br>
+with&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>,&nbsp;the&nbsp;incompatible&nbsp;arg&nbsp;will&nbsp;not&nbsp;be&nbsp;used.<br>
+Useful&nbsp;for&nbsp;instance&nbsp;to&nbsp;remove&nbsp;-ffast-math.<br>
+&nbsp;<br>
+EXAMPLE<br>
+&nbsp;<br>
+WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="CropGrad-c_support_code"><strong>c_support_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;a&nbsp;`Variable`&nbsp;or&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;to&nbsp;be<br>
+included&nbsp;at&nbsp;global&nbsp;scope&nbsp;prior&nbsp;to&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;code&nbsp;for&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+QUESTION:&nbsp;How&nbsp;many&nbsp;times&nbsp;will&nbsp;this&nbsp;support&nbsp;code&nbsp;be&nbsp;emitted&nbsp;for&nbsp;a&nbsp;graph<br>
+with&nbsp;many&nbsp;instances&nbsp;of&nbsp;the&nbsp;same&nbsp;type?<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FuseSum">class <strong>FuseSum</strong></a>(<a href="theano.gof.op.html#Op">theano.gof.op.Op</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Implement&nbsp;addition&nbsp;of&nbsp;two&nbsp;frames&nbsp;with&nbsp;the&nbsp;same&nbsp;size.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="raw_theano.html#FuseSum">FuseSum</a></dd>
+<dd><a href="theano.gof.op.html#Op">theano.gof.op.Op</a></dd>
+<dd><a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a></dd>
+<dd><a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a></dd>
+<dd><a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FuseSum-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FuseSum-c_code"><strong>c_code</strong></a>(self, node, name, inp, out, sub)</dt></dl>
+
+<dl><dt><a name="FuseSum-c_headers"><strong>c_headers</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FuseSum-grad"><strong>grad</strong></a>(self, inps, out_grads)</dt></dl>
+
+<dl><dt><a name="FuseSum-make_node"><strong>make_node</strong></a>(self, x, y)</dt></dl>
+
+<dl><dt><a name="FuseSum-perform"><strong>perform</strong></a>(self, node, inp, out)</dt></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="FuseSum-out_shape"><strong>out_shape</strong></a>(imgshape)</dt></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="FuseSum-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="FuseSum-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FuseSum-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FuseSum-make_c_thunk"><strong>make_c_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Like&nbsp;make_thunk,&nbsp;but&nbsp;will&nbsp;only&nbsp;try&nbsp;to&nbsp;make&nbsp;a&nbsp;C&nbsp;thunk.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-make_py_thunk"><strong>make_py_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling, debug<font color="#909090">=False</font>)</dt><dd><tt>Like&nbsp;<a href="#FuseSum-make_thunk">make_thunk</a>()&nbsp;but&nbsp;only&nbsp;makes&nbsp;python&nbsp;thunks.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-make_thunk"><strong>make_thunk</strong></a>(self, node, storage_map, compute_map, no_recycling)</dt><dd><tt>Parameters<br>
+----------<br>
+node<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Something&nbsp;previously&nbsp;returned&nbsp;by&nbsp;self.<strong>make_node</strong>.<br>
+storage_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;computed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;for&nbsp;this&nbsp;variable&nbsp;may&nbsp;be&nbsp;found.<br>
+compute_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;variable&nbsp;-&gt;&nbsp;one-element-list&nbsp;where&nbsp;a&nbsp;boolean<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;will&nbsp;be&nbsp;found.&nbsp;The&nbsp;boolean&nbsp;indicates&nbsp;whether&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;variable's&nbsp;storage_map&nbsp;container&nbsp;contains&nbsp;a&nbsp;valid&nbsp;value&nbsp;(True)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;if&nbsp;it&nbsp;has&nbsp;not&nbsp;been&nbsp;computed&nbsp;yet&nbsp;(False).<br>
+no_recycling<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;variables&nbsp;for&nbsp;which&nbsp;it&nbsp;is&nbsp;forbidden&nbsp;to&nbsp;reuse&nbsp;memory<br>
+&nbsp;&nbsp;&nbsp;&nbsp;allocated&nbsp;by&nbsp;a&nbsp;previous&nbsp;call.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+If&nbsp;the&nbsp;thunk&nbsp;consults&nbsp;the&nbsp;storage_map&nbsp;on&nbsp;every&nbsp;call,&nbsp;it&nbsp;is&nbsp;safe<br>
+for&nbsp;it&nbsp;to&nbsp;ignore&nbsp;the&nbsp;no_recycling&nbsp;argument,&nbsp;because&nbsp;elements&nbsp;of&nbsp;the<br>
+no_recycling&nbsp;list&nbsp;will&nbsp;have&nbsp;a&nbsp;value&nbsp;of&nbsp;None&nbsp;in&nbsp;the&nbsp;storage&nbsp;map.&nbsp;&nbsp;If<br>
+the&nbsp;thunk&nbsp;can&nbsp;potentially&nbsp;cache&nbsp;return&nbsp;values&nbsp;(like&nbsp;CLinker&nbsp;does),<br>
+then&nbsp;it&nbsp;must&nbsp;not&nbsp;do&nbsp;so&nbsp;for&nbsp;variables&nbsp;in&nbsp;the&nbsp;no_recycling&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-prepare_node"><strong>prepare_node</strong></a>(self, node, storage_map, compute_map)</dt><dd><tt>Make&nbsp;any&nbsp;special&nbsp;modifications&nbsp;that&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;needs&nbsp;before&nbsp;doing<br>
+<a href="#FuseSum-make_thunk">make_thunk</a>().<br>
+&nbsp;<br>
+This&nbsp;can&nbsp;either&nbsp;modify&nbsp;the&nbsp;node&nbsp;inplace&nbsp;or&nbsp;return&nbsp;a&nbsp;new&nbsp;one.</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><a name="FuseSum-__new__"><strong>__new__</strong></a>(cls, *args, **kwargs)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="theano.gof.op.html#Op">theano.gof.op.Op</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="theano.gof.utils.html#object2">theano.gof.utils.object2</a>:<br>
+<dl><dt><a name="FuseSum-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="FuseSum-R_op"><strong>R_op</strong></a>(self, inputs, eval_points)</dt><dd><tt>This&nbsp;method&nbsp;is&nbsp;primarily&nbsp;used&nbsp;by&nbsp;tensor.Rop<br>
+&nbsp;<br>
+Suppose&nbsp;the&nbsp;op&nbsp;outputs<br>
+&nbsp;<br>
+[&nbsp;f_1(inputs),&nbsp;...,&nbsp;f_n(inputs)&nbsp;]<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs&nbsp;:&nbsp;a&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables<br>
+eval_points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Variable&nbsp;or&nbsp;list&nbsp;of&nbsp;Variables&nbsp;with&nbsp;the&nbsp;same&nbsp;length&nbsp;as&nbsp;inputs.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;element&nbsp;of&nbsp;eval_points&nbsp;specifies&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;input&nbsp;at&nbsp;the&nbsp;point&nbsp;where&nbsp;the&nbsp;R&nbsp;op&nbsp;is&nbsp;to&nbsp;be&nbsp;evaluated.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+list&nbsp;of&nbsp;n&nbsp;elements<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rval[i]&nbsp;should&nbsp;be&nbsp;Rop(f=f_i(inputs),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrt=inputs,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eval_points=eval_points)</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-__call__"><strong>__call__</strong></a>(self, *inputs, **kwargs)</dt><dd><tt>Optional:&nbsp;return&nbsp;some&nbsp;or&nbsp;all&nbsp;output[s]&nbsp;of&nbsp;`make_node`.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;called&nbsp;by&nbsp;code&nbsp;such&nbsp;as:<br>
+&nbsp;<br>
+..&nbsp;python::<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;tensor.matrix()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;tensor.exp&nbsp;is&nbsp;an&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;instance,&nbsp;calls<br>
+&nbsp;&nbsp;&nbsp;#&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<a href="#FuseSum-__call__">__call__</a>(self=&lt;instance&nbsp;of&nbsp;exp&gt;,&nbsp;inputs=(x,))<br>
+&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;tensor.exp(x)<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;implements&nbsp;a&nbsp;convenience&nbsp;function&nbsp;(for&nbsp;graph-building)&nbsp;which<br>
+uses&nbsp;`default_output`,&nbsp;but&nbsp;subclasses&nbsp;are&nbsp;free&nbsp;to&nbsp;override&nbsp;this&nbsp;function<br>
+and&nbsp;ignore&nbsp;`default_output`.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+inputs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="theano.gof.op.html#Op">Op</a>'s&nbsp;inputs,&nbsp;forwarded&nbsp;to&nbsp;the&nbsp;call&nbsp;to&nbsp;`<a href="#FuseSum-make_node">make_node</a>()`.<br>
+kwargs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Additional&nbsp;keyword&nbsp;arguments&nbsp;to&nbsp;be&nbsp;forwarded&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`<a href="#FuseSum-make_node">make_node</a>()`&nbsp;*except*&nbsp;for&nbsp;optional&nbsp;argument&nbsp;`return_list`&nbsp;(which<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;False).&nbsp;If&nbsp;`return_list`&nbsp;is&nbsp;True,&nbsp;then&nbsp;the&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;is&nbsp;always&nbsp;a&nbsp;list.&nbsp;Otherwise&nbsp;it&nbsp;is&nbsp;either&nbsp;a&nbsp;single&nbsp;Variable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;output&nbsp;of&nbsp;`<a href="#FuseSum-make_node">make_node</a>()`&nbsp;contains&nbsp;a&nbsp;single&nbsp;element,&nbsp;or&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output&nbsp;(unchanged)&nbsp;when&nbsp;it&nbsp;contains&nbsp;multiple&nbsp;elements.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-do_constant_folding"><strong>do_constant_folding</strong></a>(self, node)</dt><dd><tt>This&nbsp;allows&nbsp;each&nbsp;op&nbsp;to&nbsp;determine&nbsp;if&nbsp;it&nbsp;wants&nbsp;to&nbsp;be&nbsp;constant<br>
+folded&nbsp;when&nbsp;all&nbsp;its&nbsp;inputs&nbsp;are&nbsp;constant.&nbsp;This&nbsp;allows&nbsp;it&nbsp;to<br>
+choose&nbsp;where&nbsp;it&nbsp;puts&nbsp;its&nbsp;memory/speed&nbsp;trade-off.&nbsp;Also,&nbsp;it<br>
+could&nbsp;make&nbsp;things&nbsp;faster&nbsp;as&nbsp;constants&nbsp;can't&nbsp;be&nbsp;used&nbsp;for&nbsp;inplace<br>
+operations&nbsp;(see&nbsp;*IncSubtensor).</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><a name="FuseSum-add_tag_trace"><strong>add_tag_trace</strong></a>(thing, user_line<font color="#909090">=None</font>)</dt><dd><tt>Add&nbsp;tag.trace&nbsp;to&nbsp;an&nbsp;node&nbsp;or&nbsp;variable.<br>
+&nbsp;<br>
+The&nbsp;argument&nbsp;is&nbsp;returned&nbsp;after&nbsp;being&nbsp;affected&nbsp;(inplace).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+thing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;object&nbsp;where&nbsp;we&nbsp;add&nbsp;.tag.trace.<br>
+user_line<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;max&nbsp;number&nbsp;of&nbsp;user&nbsp;line&nbsp;to&nbsp;keep.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+We&nbsp;alse&nbsp;use&nbsp;config.traceback.limit&nbsp;for&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;stack&nbsp;level<br>
+we&nbsp;look.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="theano.gof.op.html#PureOp">theano.gof.op.PureOp</a>:<br>
+<dl><dt><strong>default_output</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerOp">theano.gof.op.CLinkerOp</a>:<br>
+<dl><dt><a name="FuseSum-c_cleanup_code_struct"><strong>c_cleanup_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply&nbsp;to&nbsp;be<br>
+inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;cleanup&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_code_cache_version_apply"><strong>c_code_cache_version_apply</strong></a>(self, node)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be<br>
+cached&nbsp;between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been<br>
+superceded&nbsp;by&nbsp;newer&nbsp;versions.&nbsp;&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#FuseSum-c_code_cache_version">c_code_cache_version</a>()<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;overrides&nbsp;`c_code_cache_version`&nbsp;unless&nbsp;it&nbsp;explicitly<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`.&nbsp;The&nbsp;default&nbsp;implementation&nbsp;simply<br>
+&nbsp;&nbsp;&nbsp;&nbsp;calls&nbsp;`c_code_cache_version`&nbsp;and&nbsp;ignores&nbsp;the&nbsp;`node`&nbsp;argument.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_code_cleanup"><strong>c_code_cleanup</strong></a>(self, node, name, inputs, outputs, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;C&nbsp;code&nbsp;to&nbsp;run&nbsp;after&nbsp;c_code,&nbsp;whether&nbsp;it&nbsp;failed&nbsp;or&nbsp;not.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;convenient&nbsp;place&nbsp;to&nbsp;clean&nbsp;up&nbsp;things&nbsp;allocated&nbsp;by&nbsp;<a href="#FuseSum-c_code">c_code</a>().<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;Apply&nbsp;instance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;name&nbsp;that&nbsp;is&nbsp;automatically&nbsp;assigned&nbsp;and&nbsp;guaranteed&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unique.<br>
+inputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;There&nbsp;is&nbsp;a&nbsp;string&nbsp;for&nbsp;each&nbsp;input&nbsp;of&nbsp;the&nbsp;function,&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;pointing&nbsp;to&nbsp;that&nbsp;input.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;type&nbsp;of&nbsp;the&nbsp;variable&nbsp;depends&nbsp;on&nbsp;the&nbsp;declared&nbsp;type&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;input.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding&nbsp;python&nbsp;variable&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to&nbsp;the&nbsp;name&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list.<br>
+outputs&nbsp;:&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;string&nbsp;is&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;C&nbsp;variable&nbsp;correspoinding&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;of&nbsp;the&nbsp;outputs&nbsp;of&nbsp;the&nbsp;<a href="theano.gof.op.html#Op">Op</a>.&nbsp;The&nbsp;type&nbsp;depends&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;declared&nbsp;type&nbsp;of&nbsp;the&nbsp;output.&nbsp;There&nbsp;is&nbsp;a&nbsp;corresponding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;python&nbsp;variable&nbsp;that&nbsp;can&nbsp;be&nbsp;accessed&nbsp;by&nbsp;prepending&nbsp;"py_"&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;name&nbsp;in&nbsp;the&nbsp;list.<br>
+sub&nbsp;:&nbsp;dict&nbsp;of&nbsp;strings<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;symbols&nbsp;defined&nbsp;in&nbsp;`CLinker`&nbsp;sub&nbsp;symbols&nbsp;(such&nbsp;as&nbsp;'fail').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_init_code_apply"><strong>c_init_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;module&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_init_code&nbsp;and&nbsp;will&nbsp;supplement<br>
+whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_init_code_struct"><strong>c_init_code_struct</strong></a>(self, node, name, sub)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;code&nbsp;string&nbsp;specific&nbsp;to&nbsp;the&nbsp;apply<br>
+to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;struct&nbsp;initialization&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other&nbsp;nodes.<br>
+sub<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;values&nbsp;to&nbsp;substitute&nbsp;in&nbsp;the&nbsp;code.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Most&nbsp;notably&nbsp;it&nbsp;contains&nbsp;a&nbsp;'fail'&nbsp;entry&nbsp;that&nbsp;you&nbsp;should&nbsp;place&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;your&nbsp;code&nbsp;after&nbsp;setting&nbsp;a&nbsp;python&nbsp;exception&nbsp;to&nbsp;indicate&nbsp;an&nbsp;error.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_support_code_apply"><strong>c_support_code_apply</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;global&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;or&nbsp;number&nbsp;that&nbsp;serves&nbsp;to&nbsp;uniquely&nbsp;identify&nbsp;this&nbsp;node.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Symbol&nbsp;names&nbsp;defined&nbsp;by&nbsp;this&nbsp;support&nbsp;code&nbsp;should&nbsp;include&nbsp;the&nbsp;name,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;that&nbsp;they&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;the&nbsp;c_code,&nbsp;and&nbsp;so&nbsp;that&nbsp;they&nbsp;do&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cause&nbsp;name&nbsp;collisions.<br>
+&nbsp;<br>
+Notes<br>
+-----<br>
+This&nbsp;function&nbsp;is&nbsp;called&nbsp;in&nbsp;addition&nbsp;to&nbsp;c_support_code&nbsp;and&nbsp;will<br>
+supplement&nbsp;whatever&nbsp;is&nbsp;returned&nbsp;from&nbsp;there.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_support_code_struct"><strong>c_support_code_struct</strong></a>(self, node, name)</dt><dd><tt>Optional:&nbsp;return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;an&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;that&nbsp;will&nbsp;be<br>
+inserted&nbsp;at&nbsp;struct&nbsp;scope,&nbsp;that&nbsp;can&nbsp;be&nbsp;specialized&nbsp;for&nbsp;the<br>
+support&nbsp;of&nbsp;a&nbsp;particular&nbsp;`Apply`&nbsp;node.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+node&nbsp;:&nbsp;an&nbsp;Apply&nbsp;instance&nbsp;in&nbsp;the&nbsp;graph&nbsp;being&nbsp;compiled<br>
+name&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;unique&nbsp;name&nbsp;to&nbsp;distinguish&nbsp;you&nbsp;variables&nbsp;from&nbsp;those&nbsp;of&nbsp;other<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nodes.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="theano.gof.op.html#CLinkerObject">theano.gof.op.CLinkerObject</a>:<br>
+<dl><dt><a name="FuseSum-c_code_cache_version"><strong>c_code_cache_version</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;integers&nbsp;indicating&nbsp;the&nbsp;version&nbsp;of&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>.<br>
+&nbsp;<br>
+An&nbsp;empty&nbsp;tuple&nbsp;indicates&nbsp;an&nbsp;'unversioned'&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;that&nbsp;will&nbsp;not&nbsp;be&nbsp;cached<br>
+between&nbsp;processes.<br>
+&nbsp;<br>
+The&nbsp;cache&nbsp;mechanism&nbsp;may&nbsp;erase&nbsp;cached&nbsp;modules&nbsp;that&nbsp;have&nbsp;been&nbsp;superceded<br>
+by&nbsp;newer&nbsp;versions.&nbsp;See&nbsp;`ModuleCache`&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+See&nbsp;Also<br>
+--------<br>
+<a href="#FuseSum-c_code_cache_version_apply">c_code_cache_version_apply</a>()</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_compile_args"><strong>c_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;compile&nbsp;args&nbsp;recommended&nbsp;to&nbsp;compile&nbsp;the<br>
+code&nbsp;returned&nbsp;by&nbsp;other&nbsp;methods&nbsp;in&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+return&nbsp;['-ffast-math']<br>
+&nbsp;<br>
+Compiler&nbsp;arguments&nbsp;related&nbsp;to&nbsp;headers,&nbsp;libraries&nbsp;and&nbsp;search&nbsp;paths&nbsp;should<br>
+be&nbsp;provided&nbsp;via&nbsp;the&nbsp;functions&nbsp;`c_headers`,&nbsp;`c_libraries`,<br>
+`c_header_dirs`,&nbsp;and&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_header_dirs"><strong>c_header_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;header&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/include',&nbsp;'/opt/weirdpath/src/include']<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;headers,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any&nbsp;relevant<br>
+environment&nbsp;variables.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-I'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_init_code"><strong>c_init_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;code&nbsp;snippets&nbsp;to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;module<br>
+initialization.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_lib_dirs"><strong>c_lib_dirs</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;library&nbsp;search&nbsp;paths&nbsp;required&nbsp;by&nbsp;code<br>
+returned&nbsp;by&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['/usr/local/lib',&nbsp;'/opt/weirdpath/build/libs'].<br>
+&nbsp;<br>
+Provides&nbsp;search&nbsp;paths&nbsp;for&nbsp;libraries,&nbsp;in&nbsp;addition&nbsp;to&nbsp;those&nbsp;in&nbsp;any<br>
+relevant&nbsp;environment&nbsp;variables&nbsp;(e.g.&nbsp;LD_LIBRARY_PATH).<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-L'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_libraries"><strong>c_libraries</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;a&nbsp;list&nbsp;of&nbsp;libraries&nbsp;required&nbsp;by&nbsp;code&nbsp;returned&nbsp;by<br>
+this&nbsp;class.<br>
+&nbsp;<br>
+Examples<br>
+--------<br>
+return&nbsp;['gsl',&nbsp;'gslcblas',&nbsp;'m',&nbsp;'fftw3',&nbsp;'g2c'].<br>
+&nbsp;<br>
+The&nbsp;compiler&nbsp;will&nbsp;search&nbsp;the&nbsp;directories&nbsp;specified&nbsp;by&nbsp;the&nbsp;environment<br>
+variable&nbsp;LD_LIBRARY_PATH&nbsp;in&nbsp;addition&nbsp;to&nbsp;any&nbsp;returned&nbsp;by&nbsp;`c_lib_dirs`.<br>
+&nbsp;<br>
+Hint:&nbsp;for&nbsp;unix&nbsp;compilers,&nbsp;these&nbsp;are&nbsp;the&nbsp;things&nbsp;that&nbsp;get&nbsp;'-l'&nbsp;prefixed<br>
+in&nbsp;the&nbsp;compiler&nbsp;cmdline.<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_no_compile_args"><strong>c_no_compile_args</strong></a>(self)</dt><dd><tt>Optional:&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;incompatible&nbsp;gcc&nbsp;compiler&nbsp;arguments.<br>
+&nbsp;<br>
+We&nbsp;will&nbsp;remove&nbsp;those&nbsp;arguments&nbsp;from&nbsp;the&nbsp;command&nbsp;line&nbsp;of&nbsp;gcc.&nbsp;So&nbsp;if<br>
+another&nbsp;<a href="theano.gof.op.html#Op">Op</a>&nbsp;adds&nbsp;a&nbsp;compile&nbsp;arg&nbsp;in&nbsp;the&nbsp;graph&nbsp;that&nbsp;is&nbsp;incompatible<br>
+with&nbsp;this&nbsp;<a href="theano.gof.op.html#Op">Op</a>,&nbsp;the&nbsp;incompatible&nbsp;arg&nbsp;will&nbsp;not&nbsp;be&nbsp;used.<br>
+Useful&nbsp;for&nbsp;instance&nbsp;to&nbsp;remove&nbsp;-ffast-math.<br>
+&nbsp;<br>
+EXAMPLE<br>
+&nbsp;<br>
+WRITEME<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;subclass&nbsp;does&nbsp;not&nbsp;override&nbsp;this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="FuseSum-c_support_code"><strong>c_support_code</strong></a>(self)</dt><dd><tt>Optional:&nbsp;Return&nbsp;utility&nbsp;code&nbsp;for&nbsp;use&nbsp;by&nbsp;a&nbsp;`Variable`&nbsp;or&nbsp;`<a href="theano.gof.op.html#Op">Op</a>`&nbsp;to&nbsp;be<br>
+included&nbsp;at&nbsp;global&nbsp;scope&nbsp;prior&nbsp;to&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;code&nbsp;for&nbsp;this&nbsp;class.<br>
+&nbsp;<br>
+QUESTION:&nbsp;How&nbsp;many&nbsp;times&nbsp;will&nbsp;this&nbsp;support&nbsp;code&nbsp;be&nbsp;emitted&nbsp;for&nbsp;a&nbsp;graph<br>
+with&nbsp;many&nbsp;instances&nbsp;of&nbsp;the&nbsp;same&nbsp;type?<br>
+&nbsp;<br>
+Raises<br>
+------<br>
+MethodNotDefined<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subclass&nbsp;does&nbsp;not&nbsp;implement&nbsp;this&nbsp;method.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-crop2d"><strong>crop2d</strong></a>(input, offset)</dt></dl>
+ <dl><dt><a name="-fuse2d"><strong>fuse2d</strong></a>(input1, input2)</dt></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>null_type</strong> = &lt;theano.gof.null_type.NullType object&gt;</td></tr></table>
+</body></html>

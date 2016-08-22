@@ -12,11 +12,11 @@ from raw_pool_theano import *
 from raw_theano_conv3d import *
 from raw_theano import *
 
-"""
-The output image size of the convolution layer is
-the same as the input.
-"""
 class PaddedConvLayer(object):
+    """
+    The output image size of the convolution layer is
+    the same as the input.
+    """
 
     def __init__(self,rng,inputData,image_shape,filter_shape):
 
@@ -48,11 +48,8 @@ class PaddedConvLayer(object):
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
 
-        # adding a padding to get the same size of output and input.
-        #padding=(filter_shape[2]-1)/2
         conv_out=conv2d(self.input,self.W,border_mode='half',filter_flip=False)
 
-        #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
         self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')
 
         self.params=[self.W,self.b]
@@ -76,10 +73,20 @@ class PaddedConvLayer(object):
         assignb()
 
 
-
 class TemporalConvLayer(object):
+    """
+    Work the 5d data and apply stride later. This is not efficient
+    but it is done because the conv3d assumes the last one to be the
+    temporal layer but in the deep learning DeconvNet literature
+    the second channel is the temporal one.
+    """
 
     def __init__(self,rng,inputData,image_shape,filter_shape,temporal_stride=1,filter_stride=1):
+        """
+        The input shape is (batch,temporal,channels,x,y)
+        filter shape is (num_out_channels,window size in temporal domain,num_in_channels, filter size in x, size in y)
+        The strides in the temporal and the spatial domain.
+        """
         self.input=inputData
 
         fan_in = numpy.prod(filter_shape[1:])
@@ -108,6 +115,9 @@ class TemporalConvLayer(object):
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
         updates_b=(self.b,b)
 
@@ -128,13 +138,16 @@ class TemporalConvLayer(object):
 
 class TemporalDeConvLayer(object):
     """
-    The filter shape is:
-    (num_input_layers,temporal size,num_output_channels,height,width)
-
-
+    This reverses the backward and forward pass of the convolution.
     """
 
     def __init__(self,rng,inputData,out_shape,filter_shape,temporal_stride=1,filter_stride=1):
+        """
+        The input shape is (batch,temporal,channels,x,y)
+        The filter shape is:
+        (num_input_layers,temporal size,num_output_channels,height,width)
+        """
+
         self.input=inputData
 
         fan_in = numpy.prod(filter_shape[1:])
@@ -174,27 +187,15 @@ class TemporalDeConvLayer(object):
         #assignVals(conv_out,self.input)
         back_stride=T.grad(T.sum(conv_out),self.conv_input)
 
-        #update_conv=(conv_out,self.input)
-        #assignUpdate=theano.function(
-        #    inputs=[],
-        #    updates=[update_conv]
-        #)
-
-        #out_func=theano.function(
-        #    inputs=[],
-        #    outputs=[back_stride],
-            #givens={conv_out: self.input.eval()}
-        #)
-
-        #assignUpdate()
-        #self.output=out_func()[0]
-        #self.output=self.input.eval()
         self.output=back_stride
 
         self.params=[self.W]
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
         updates_b=(self.b,b)
 
@@ -245,17 +246,15 @@ class ConvLayer(object):
         b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
 
-        # adding a padding to get the same size of output and input.
-        #padding=(filter_shape[2]-1)/2
         conv_out=conv2d(self.input,self.W,filter_flip=False)
-
-        #self.output = T.tanh(conv_out + self.b.dimshuffle('x', 0, 'x', 'x'))
         self.output = conv_out + self.b.dimshuffle('x', 0, 'x', 'x')
-
         self.params=[self.W,self.b]
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
         updates_b=(self.b,b)
 
@@ -440,18 +439,6 @@ class PaddedDeConvLayer(object):
 
 
 class DeConvLayer(object):
-    """
-    def __init__(self,rng,inputData,image_shape,filter_shape):
-        self.input=lasagne.layers.InputLayer(shape=image_shape,input_var=inputData)
-
-        self.deConvLayer=TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
-        filter_size=(filter_shape[2],filter_shape[3]),nonlinearity=lasagne.nonlinearities.linear)
-
-        self.params=self.deConvLayer.get_params()
-
-        #self.output=self.deConvLayer.get_output_for(self.input)
-        self.output=lasagne.layers.get_output(self.deConvLayer)
-    """
     def __init__(self,rng,inputData,image_shape,filter_shape,output_shape):
         self.input=inputData
 

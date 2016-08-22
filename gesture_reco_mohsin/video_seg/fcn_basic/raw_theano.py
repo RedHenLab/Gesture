@@ -26,6 +26,9 @@ class Crop(Op):
 
     @staticmethod
     def out_shape(imgshape,offset):
+        """
+        computes the output shape given the image shape and the offset.
+        """
         nr=imgshape[2]
         nc=imgshape[3]
 
@@ -36,6 +39,9 @@ class Crop(Op):
         self.offset=offset
 
     def make_node(self,x):
+        """
+        This is used to make node for theano compilation.
+        """
         if x.type.ndim != 4:
             raise TypeError()
         # TODO: consider restricting the dtype?
@@ -47,6 +53,9 @@ class Crop(Op):
 
 
     def perform(self,node,inp,out):
+        """
+        Python code for performing the op
+        """
         x, = inp
         z, = out
         if len(x.shape) != 4:
@@ -71,6 +80,9 @@ class Crop(Op):
 
 
     def c_code(self, node, name, inp, out, sub):
+        """
+        C code to perform the op.
+        """
         x, = inp
         z, = out
         offset=self.offset
@@ -126,18 +138,20 @@ class Crop(Op):
 
 
     def grad(self,inps,out_grads):
+        """
+        Called by theano back prop.
+        """
         x,=inps
         gz,=out_grads
 
-
-        #return x,
         return np.array([CropGrad(self.offset)(x,gz)])
 
 
 
 class CropGrad(Op):
-
-    #TODO to implemet C code
+    """
+    Called by crop grad. Implemented in C for speed.
+    """
 
     @staticmethod
     def out_shape(imgshape,offset):
@@ -188,7 +202,7 @@ class CropGrad(Op):
 
 class FuseSum(Op):
     """
-    Implement centre cropping
+    Implement addition of two frames with the same size.
     """
 
     @staticmethod

@@ -1,0 +1,162 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module pipeline</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>pipeline</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/pipeline.py">/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/Gesture/gesture_reco_mohsin/video_seg/fcn_basic/pipeline.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="cv2.html">cv2</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="pipeline.html#KMeans">KMeans</a>
+</font></dt><dt><font face="helvetica, arial"><a href="pipeline.html#PersonFeeder">PersonFeeder</a>
+</font></dt><dt><font face="helvetica, arial"><a href="pipeline.html#PersonSeperator">PersonSeperator</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="KMeans">class <strong>KMeans</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;K-means&nbsp;clustering&nbsp;algorithm<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="KMeans-__init__"><strong>__init__</strong></a>(self, dataset, init_centroids)</dt></dl>
+
+<dl><dt><a name="KMeans-compute"><strong>compute</strong></a>(self, max_iter)</dt></dl>
+
+<dl><dt><a name="KMeans-getLabel"><strong>getLabel</strong></a>(self, data_pt)</dt></dl>
+
+<dl><dt><a name="KMeans-getLabels"><strong>getLabels</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="KMeans-reAssignCentroids"><strong>reAssignCentroids</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PersonFeeder">class <strong>PersonFeeder</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>This&nbsp;algorithm&nbsp;works&nbsp;for&nbsp;a&nbsp;video.&nbsp;It&nbsp;clusters&nbsp;the&nbsp;persons<br>
+in&nbsp;each&nbsp;frame&nbsp;and&nbsp;also&nbsp;keeps&nbsp;a&nbsp;track&nbsp;of&nbsp;them&nbsp;using&nbsp;the&nbsp;algorihtm<br>
+presented&nbsp;in&nbsp;the&nbsp;report.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PersonFeeder-CheckIfReset"><strong>CheckIfReset</strong></a>(self)</dt><dd><tt>Reset&nbsp;is&nbsp;done&nbsp;with&nbsp;the&nbsp;assumption&nbsp;that&nbsp;the&nbsp;same&nbsp;persons&nbsp;are<br>
+no&nbsp;longer&nbsp;present&nbsp;in&nbsp;the&nbsp;video&nbsp;anymore.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-__init__"><strong>__init__</strong></a>(self, diff_seqs)</dt><dd><tt>As&nbsp;there&nbsp;might&nbsp;be&nbsp;case&nbsp;in&nbsp;between&nbsp;that&nbsp;the&nbsp;face&nbsp;is&nbsp;not&nbsp;tracked&nbsp;properly,<br>
+so&nbsp;we&nbsp;allow&nbsp;some&nbsp;buffer&nbsp;frames&nbsp;that&nbsp;are&nbsp;not&nbsp;tracked&nbsp;properly.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-assignFaceCentres"><strong>assignFaceCentres</strong></a>(self, new_face_centers, weighted_centers)</dt><dd><tt>Given&nbsp;a&nbsp;list&nbsp;of&nbsp;new&nbsp;face&nbsp;centres,&nbsp;this&nbsp;function&nbsp;looks&nbsp;at&nbsp;the&nbsp;history<br>
+and&nbsp;assign&nbsp;the&nbsp;face&nbsp;to&nbsp;the&nbsp;cluster&nbsp;which&nbsp;is&nbsp;nearest.&nbsp;The&nbsp;weighted&nbsp;center<br>
+for&nbsp;each&nbsp;cluster&nbsp;using&nbsp;history&nbsp;with&nbsp;the&nbsp;recent&nbsp;frames&nbsp;getting&nbsp;more&nbsp;weight.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-checkProceed"><strong>checkProceed</strong></a>(self, human_labels, new_face_centers)</dt><dd><tt>Check&nbsp;if&nbsp;the&nbsp;current&nbsp;frame&nbsp;is&nbsp;proper&nbsp;ie&nbsp;the&nbsp;face&nbsp;is&nbsp;detected&nbsp;and<br>
+the&nbsp;human&nbsp;labels&nbsp;are&nbsp;properly&nbsp;segmented.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-getAndAssignData"><strong>getAndAssignData</strong></a>(self, new_face_centers, human_labels)</dt><dd><tt>This&nbsp;function&nbsp;gets&nbsp;the&nbsp;data&nbsp;and&nbsp;saves&nbsp;in&nbsp;the&nbsp;list&nbsp;that&nbsp;will&nbsp;be<br>
+used&nbsp;in&nbsp;the&nbsp;further&nbsp;steps.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-getWeightedCenters"><strong>getWeightedCenters</strong></a>(self)</dt><dd><tt>Computes&nbsp;weighted&nbsp;center&nbsp;for&nbsp;each&nbsp;cluster&nbsp;using&nbsp;the&nbsp;history.<br>
+The&nbsp;weights&nbsp;are&nbsp;reduced&nbsp;linearly&nbsp;with&nbsp;the&nbsp;least&nbsp;weight&nbsp;=1&nbsp;and<br>
+the&nbsp;most&nbsp;recent&nbsp;frame&nbsp;getting&nbsp;the&nbsp;highest</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-plotNewImages"><strong>plotNewImages</strong></a>(self)</dt><dd><tt>Code&nbsp;to&nbsp;plot&nbsp;the&nbsp;images&nbsp;of&nbsp;the&nbsp;seperated&nbsp;persons</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-readImg"><strong>readImg</strong></a>(self, new_img_path, new_img)</dt><dd><tt>The&nbsp;image&nbsp;can&nbsp;be&nbsp;passed&nbsp;using&nbsp;the&nbsp;path&nbsp;or&nbsp;the&nbsp;raw&nbsp;image&nbsp;itself</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-saveFrames"><strong>saveFrames</strong></a>(self)</dt><dd><tt>Save&nbsp;the&nbsp;video&nbsp;for&nbsp;each&nbsp;of&nbsp;the&nbsp;user.</tt></dd></dl>
+
+<dl><dt><a name="PersonFeeder-track"><strong>track</strong></a>(self, human_labels, new_img_path<font color="#909090">=None</font>, new_img<font color="#909090">=None</font>)</dt><dd><tt>Detect&nbsp;the&nbsp;face&nbsp;and&nbsp;check&nbsp;if&nbsp;the&nbsp;frame&nbsp;is&nbsp;proper&nbsp;and&nbsp;cluster<br>
+the&nbsp;persons&nbsp;out.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PersonSeperator">class <strong>PersonSeperator</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Given&nbsp;a&nbsp;image,&nbsp;it&nbsp;first&nbsp;computes&nbsp;the&nbsp;face&nbsp;centre<br>
+using&nbsp;Viola&nbsp;and&nbsp;Jones&nbsp;descriptor&nbsp;and&nbsp;then&nbsp;cluster&nbsp;out<br>
+the&nbsp;persons&nbsp;using&nbsp;K-means&nbsp;clustering<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PersonSeperator-__init__"><strong>__init__</strong></a>(self, img_path<font color="#909090">=None</font>, img<font color="#909090">=None</font>, max_iter<font color="#909090">=1</font>)</dt></dl>
+
+<dl><dt><a name="PersonSeperator-clusterPersons"><strong>clusterPersons</strong></a>(self, human_labels)</dt><dd><tt>Computes&nbsp;face&nbsp;centres&nbsp;and&nbsp;pass&nbsp;them&nbsp;to&nbsp;clustering&nbsp;algorithm<br>
+to&nbsp;get&nbsp;the&nbsp;cluster&nbsp;out&nbsp;all&nbsp;the&nbsp;persons.</tt></dd></dl>
+
+<dl><dt><a name="PersonSeperator-createNewImages"><strong>createNewImages</strong></a>(self, human_labels, cluster_labels, num_persons)</dt><dd><tt>Creates&nbsp;images&nbsp;for&nbsp;each&nbsp;person&nbsp;in&nbsp;the&nbsp;image&nbsp;with&nbsp;just&nbsp;the&nbsp;data&nbsp;for&nbsp;that<br>
+particular&nbsp;individual.</tt></dd></dl>
+
+<dl><dt><a name="PersonSeperator-getFaceCentre"><strong>getFaceCentre</strong></a>(self)</dt><dd><tt>Computes&nbsp;the&nbsp;face&nbsp;center&nbsp;for&nbsp;all&nbsp;the&nbsp;faces&nbsp;in&nbsp;the&nbsp;image.</tt></dd></dl>
+
+<dl><dt><a name="PersonSeperator-plotCluster"><strong>plotCluster</strong></a>(self, human_labels, cluster_labels)</dt><dd><tt>This&nbsp;code&nbsp;is&nbsp;to&nbsp;debug&nbsp;how&nbsp;the&nbsp;cluster&nbsp;and&nbsp;its&nbsp;boundary&nbsp;are</tt></dd></dl>
+
+<dl><dt><a name="PersonSeperator-updateImage"><strong>updateImage</strong></a>(self, img)</dt></dl>
+
+<dl><dt><a name="PersonSeperator-updateImagePath"><strong>updateImagePath</strong></a>(self, img_path)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-check_cascade"><strong>check_cascade</strong></a>(img_path)</dt></dl>
+</td></tr></table>
+</body></html>

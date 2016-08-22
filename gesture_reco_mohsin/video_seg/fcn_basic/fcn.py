@@ -4,7 +4,6 @@ import theano
 from theano import tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
-import matplotlib.pyplot as plt
 import time
 from video_support import *
 from raw_theano import *
@@ -15,13 +14,17 @@ from layers import *
 
 
 
-"""
-The class is FCN-8. It loads with the trained weights
-and can directly be used with for forward pass.
-"""
 class FCN(object):
+    """
+    The class is FCN-8. It loads with the trained weights
+    and can directly be used with for forward pass.
+    """
 
     def __init__(self,batch_size,input_size):
+        """
+        The inputs are the batch size to be used for training and
+        the input size of the image. FCN can accept images of varying size.
+        """
         self.batch_size=batch_size
         poolsize=(2,2)
         self.params=[]
@@ -349,6 +352,11 @@ class FCN(object):
 
 
     def test(self,test_set_x):
+        """
+        This function computes the forawrd pass for the test set in batches
+        with the batch size specified while making the FCN object. The test
+        set is required to be a multiple of the batch size
+        """
         out=self.score_Layer.output
 
         index = T.lscalar()
@@ -382,6 +390,11 @@ class FCN(object):
 
 
     def train(self,train_set_x,learning_rate,train_set_y=None):
+        """
+        This function computes the back propagation given the test
+        set x. This module is still not tested as the trained weights
+        were directly used.
+        """
         lossLayer=SoftmaxWithLossLayer(self.score_Layer.output)
         loss=T.sum(lossLayer.output)
 
@@ -415,11 +428,12 @@ class FCN(object):
             print out
 
 
-"""
-For FCN to work, it is required that the image be
-mean subtracted
-"""
 def loadData(im_path):
+    """
+    This module opens the image given the image path.
+    For FCN to work, it is required that the image be
+    mean subtracted.
+    """
     im = Image.open(im_path)
     in_ = np.array(im, dtype=np.float32)
     in_ = in_[:,:,::-1]
@@ -428,10 +442,10 @@ def loadData(im_path):
     return in_
 
 
-"""
-Generate segmentation labels
-"""
 def infer(outs):
+    """
+    Generate segmentation labels
+    """
     res=[]
     for out in outs:
         res.append(out.argmax(axis=0))
@@ -439,6 +453,11 @@ def infer(outs):
 
 
 def feedtoPipeline(person_feeder,human_labels,img_path,img,isImg=False):
+    """
+    This function takes a person_feeder class in the pipeline.py
+    It passes the raw image for face detection and the human labels
+    for clustering.
+    """
     person_feeder.track(human_labels,img_path,img)
     print "tracked"
     cluster_labels = person_feeder.person_sep.clusterPersons(human_labels)
@@ -452,6 +471,11 @@ def feedtoPipeline(person_feeder,human_labels,img_path,img,isImg=False):
 
 
 def processImage(im_path):
+    """
+    This function loads the FCN , abd runs a forward pass
+    for the image in the path. The output is then fed to the
+    pipeline
+    """
     im=loadData(im_path)
     print im.shape
     net=FCN(1,im.shape[1:])
@@ -472,23 +496,35 @@ def processImage(im_path):
 
 
 def processVideo(vid_path):
-    inp_frames=loadVideo(vid_path,10000)
-    raw_inp_frames=loadRawVideo(vid_path,10000)
+    """
+    This function loads the FCN , abd runs a forward pass
+    for the video in the path. The output is then fed to the
+    pipeline. The seperated frames for each person are saved
+    in the end.
+    """
+    inp_frames=loadVideo(vid_path,100)
+    raw_inp_frames=loadRawVideo(vid_path,100)
     out_frames=[]
     net=FCN(1,inp_frames[0].shape[1:])
     print "network loaded"
     start_time=time.time()
 
-    person_feeder = PersonFeeder(50)
+    person_feeder = PersonFeeder(150)
+    sample_fac = 3
 
 
     for i in range(len(inp_frames)):
+        if not i%sample_fac==0:
+            continue
         im=inp_frames[i]
         out=net.test(np.array([im]))
         labels=infer(out)
         human_labels = genLabelData(labels[0],15,out.shape)
         print str(i)+" feeding"
-        feedtoPipeline(person_feeder,human_labels,None,raw_inp_frames[i])
+        try:
+            feedtoPipeline(person_feeder,human_labels,None,raw_inp_frames[i])
+        except Exception:
+            print "some error"
         out_frames.append(labels[0])
 
     #saveVideo(out_frames,15)
@@ -497,7 +533,11 @@ def processVideo(vid_path):
 
 
 def trainImage():
-    im=loadData()
+    """
+    This computes the back propagation for the single image for FCN
+    """
+    im_path = "/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news03.mp4"
+    im=loadData(im_path)
     print im.shape
     net=FCN(1,im.shape[1:])
     print "network loaded"

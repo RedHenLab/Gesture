@@ -10,11 +10,11 @@ from theano.tensor.signal import downsample
 
 from raw_theano import *
 
-"""
-The output image size of the convolution layer is
-the same as the input.
-"""
 class PaddedConvLayer(object):
+    """
+    Convolution layer for the output image size of the convolution layer is
+    the same as the input.
+    """
 
     def __init__(self,rng,inputData,image_shape,filter_shape,pad_val):
 
@@ -57,6 +57,9 @@ class PaddedConvLayer(object):
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
         updates_b=(self.b,b)
 
@@ -76,13 +79,15 @@ class PaddedConvLayer(object):
 
 
 class ConvLayer(object):
+    """
+    The normal convolution layer
+    """
 
     def __init__(self,rng,inputData,image_shape,filter_shape):
-
         """
         rng : Random number generator
         input : tensor4(batch_size,num_input_feature_maps,height,width)
-        filter_shape:tensor4(num_features,num_input_feature_maps,filter height, filter_width)
+        filter_shape:tensor4(num_out_features,num_input_feature_maps,filter height, filter_width)
         out_features_shape=tensor4(batch_size,num)
         """
 
@@ -118,6 +123,9 @@ class ConvLayer(object):
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
         updates_b=(self.b,b)
 
@@ -135,12 +143,15 @@ class ConvLayer(object):
         assignb()
 
 
-"""
-Batch normalization layer. The output and the input are
-of the same size. It is just normalized across batch and
-shifted to maintain the effect of non linearity
-"""
 class CNNBatchNormLayer(object):
+    """
+    Batch normalization layer. The output and the input are
+    of the same size. It is just normalized across batch and
+    shifted to maintain the effect of non linearity. Each entry
+    in the feature map is subtracted by the mean of the data set
+    across batch and each channel in all the frame. So the mean
+    is just a number
+    """
 
     def __init__(self,inputData,image_shape):
         self.input=inputData
@@ -173,22 +184,32 @@ class CNNBatchNormLayer(object):
 
 
     def tileMap(self,val,prev):
+        """
+        Used to repeat the values across a single frame.
+        The theano scan passes two values: one current and the rest
+        is the accumulated one.
+        """
         return T.tile(val,(self.image_shape[2],self.image_shape[3]))
 
 
     def adjustVals(self,batch_vals):
+        """
+        In oder to do easy subtraction the mean is replicated across
+        all the frames and theano scan is used to fill for all the
+        frames.
+        """
         seq=batch_vals
-        #outputs_info = T.as_tensor_variable(np.asarray(0, seq.dtype))
         outputs_info=T.zeros_like(self.input[0])
         scan_result, scan_updates = theano.scan(fn=self.tileMap,
                                         outputs_info=outputs_info,
                                         sequences=seq)
-        #filled_vals = theano.function(inputs=[seq], outputs=scan_result)
-        #return filled_vals(seq)
         return scan_result
 
 
     def assignParams(self,gamma,beta):
+        """
+        assign loaded paramters
+        """
         updates_gamma=(self.gamma_vals,gamma)
         updates_beta=(self.beta_vals,beta)
 
@@ -252,6 +273,9 @@ class SwitchedMaxPoolLayer(object):
 
 
 class PaddedDeConvLayer(object):
+    """
+    Deconvolution layer to get the same size of output as input
+    """
 
     def __init__(self,rng,inputData,image_shape,filter_shape,output_shape):
         self.input=inputData
@@ -280,6 +304,9 @@ class PaddedDeConvLayer(object):
 
 
     def assignParams(self,W,b):
+        """
+        assign loaded paramters
+        """
         updates_W=(self.params[0],W)
         updates_b=(self.params[1],b)
 
@@ -298,19 +325,13 @@ class PaddedDeConvLayer(object):
 
 
 class DeConvLayer(object):
-    """
-    def __init__(self,rng,inputData,image_shape,filter_shape):
-        self.input=lasagne.layers.InputLayer(shape=image_shape,input_var=inputData)
-
-        self.deConvLayer=TransposedConv2DLayer(self.input,num_filters=filter_shape[0],
-        filter_size=(filter_shape[2],filter_shape[3]),nonlinearity=lasagne.nonlinearities.linear)
-
-        self.params=self.deConvLayer.get_params()
-
-        #self.output=self.deConvLayer.get_output_for(self.input)
-        self.output=lasagne.layers.get_output(self.deConvLayer)
-    """
     def __init__(self,rng,inputData,image_shape,filter_shape,output_shape,stride):
+        """
+        rng : Random number generator
+        input : tensor4(batch_size,num_input_feature_maps,height,width)
+        filter_shape:tensor4(num_features_in,num_out_feature_maps,filter height, filter_width)
+        out_features_shape=tensor4(batch_size,num)
+        """
         self.input=inputData
 
         fan_in = numpy.prod(filter_shape[1:])
@@ -337,7 +358,9 @@ class DeConvLayer(object):
 
 
     def assignParams(self,W,b=0):
-
+        """
+        assign loaded paramters
+        """
         updates_W=(self.W,W)
 
         assignW=theano.function(
@@ -358,6 +381,9 @@ class DeConvLayer(object):
 class UnPoolLayer(object):
 
     def __init__(self,inputData,switchedData,poolsize=(2,2)):
+        """
+        UNpooling using the switch data.
+        """
         self.input=inputData
         self.switch=switchedData
 
@@ -372,6 +398,10 @@ class UnPoolLayer(object):
 
 
 class CropLayer(object):
+    """
+    Gets the output by removing offset number of rows/ columns in the
+    frame
+    """
 
     def __init__(self,inputData,offset):
         self.input=inputData
@@ -386,6 +416,9 @@ class CropLayer(object):
 
 
 class FuseSumLayer(object):
+    """
+    Add two frames with the same size.
+    """
 
     def __init__(self,inputData1,inputData2):
         self.input1=inputData1
@@ -405,11 +438,7 @@ class SoftmaxWithLossLayer(object):
         self.x=inputData
         self.tar=targetData
 
-        # subtraction adds numerical stability
         ex=T.exp(self.x-self.x.max(axis=1))
         self.softmaxOut=ex/ex.sum(axis=1)
 
         self.output=self.softmaxOut
-
-        #self.CEerror=T.sum(-targetData*T.log(self.softmaxOut))
-        #self.output=self.CEerror

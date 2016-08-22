@@ -24,14 +24,18 @@ def check_cascade(img_path):
 
 
 
-"""
-This algorithm works for a video. It clusters the persons
-in each frame and also keeps a track of them using the algorihtm
-presented in the report.
-"""
 class PersonFeeder(object):
+    """
+    This algorithm works for a video. It clusters the persons
+    in each frame and also keeps a track of them using the algorihtm
+    presented in the report.
+    """
 
     def __init__(self,diff_seqs):
+        """
+        As there might be case in between that the face is not tracked properly,
+        so we allow some buffer frames that are not tracked properly.
+        """
         self.persons_data=[]
         self.diff_seqs = diff_seqs
         self.num_seq=0
@@ -40,6 +44,9 @@ class PersonFeeder(object):
 
 
     def readImg(self,new_img_path,new_img):
+        """
+        The image can be passed using the path or the raw image itself
+        """
         if not img_path==None:
             self.img = cv2.imread(img_path)
             return
@@ -51,6 +58,10 @@ class PersonFeeder(object):
 
 
     def CheckIfReset(self):
+        """
+        Reset is done with the assumption that the same persons are
+        no longer present in the video anymore.
+        """
         if self.between_jump >= self.diff_seqs:
             print "had to reset"
             self.num_seq = 0
@@ -60,6 +71,10 @@ class PersonFeeder(object):
 
 
     def checkProceed(self,human_labels,new_face_centers):
+        """
+        Check if the current frame is proper ie the face is detected and
+        the human labels are properly segmented.
+        """
 
         if len(new_face_centers) ==0:
             self.between_jump +=1
@@ -73,26 +88,23 @@ class PersonFeeder(object):
 
 
     def track(self,human_labels,new_img_path=None,new_img=None):
+        """
+        Detect the face and check if the frame is proper and cluster
+        the persons out.
+        """
         self.person_sep = PersonSeperator(new_img_path,new_img)
         new_face_centers = self.person_sep.getFaceCentre()
-
-        #print "len_human "+str(len(human_labels))
 
         if not self.checkProceed(human_labels,new_face_centers):
             print "failed proceed"
             return
 
-    #    self.readImg(new_img_path,img)
-
         if len(self.persons_center) == 0:
             print "zero len persons_center"
             for face_center in new_face_centers:
                 self.persons_center.append([face_center])
-    #        self.__genPersonsData()
 
         self.weighted_centers = self.getWeightedCenters()
-        #print "weighted centers"
-        #print self.weighted_centers
 
         if not len(new_face_centers) == len(self.weighted_centers):
             print "not equal len of weighted and new face centres"
@@ -104,6 +116,9 @@ class PersonFeeder(object):
 
 
     def plotNewImages(self):
+        """
+        Code to plot the images of the seperated persons
+        """
         print "num_persons" + str(len(self.persons_data))
         for i in range(len(self.persons_data)):
             person_data = self.persons_data[i]
@@ -117,26 +132,27 @@ class PersonFeeder(object):
 
 
     def saveFrames(self):
+        """
+        Save the video for each of the user.
+        """
         for i in range(len(self.persons_data)):
             person_data = self.persons_data[i]
             saveRawVideo(person_data,"out_"+str(i))
 
 
-
-
     def getAndAssignData(self,new_face_centers,human_labels):
+        """
+        This function gets the data and saves in the list that will be
+        used in the further steps.
+        """
         self.assignFaceCentres(new_face_centers,self.weighted_centers)
         self.num_seq+=1
 
         cluster_labels = self.person_sep.clusterPersons(human_labels)
         sep_images = self.person_sep.createNewImages(human_labels,cluster_labels,len(new_face_centers))
 
-        #print "face_labels"
-        #print self.new_face_labels
-
         for i in range(len(new_face_centers)):
             label_index = int(self.new_face_labels[i])
-            #print "appending"
             (self.persons_center[label_index]).append(new_face_centers[i])
 
             if label_index >= len(self.persons_data):
@@ -144,23 +160,21 @@ class PersonFeeder(object):
             else:
                 (self.persons_data[label_index]).append(sep_images[i])
 
-        #print "persons centre after assigning"
-        #print self.persons_center
-
 
     def assignFaceCentres(self,new_face_centers,weighted_centers):
+        """
+        Given a list of new face centres, this function looks at the history
+        and assign the face to the cluster which is nearest. The weighted center
+        for each cluster using history with the recent frames getting more weight.
+        """
         self.new_face_labels = np.zeros(len(new_face_centers))
         for i in range(len(new_face_centers)):
             face_center = new_face_centers[i]
-            #print "computing distance for face center"
-            #print face_center
             min_index = 0
             min_dist = 100000000
 
             for j in range(len(weighted_centers)):
                 weighted_center = weighted_centers[j][0]
-                #print "weighted center to check"
-                #print weighted_center
                 dist=np.linalg.norm(weighted_center-face_center)
                 if dist < min_dist:
                     min_dist = dist
@@ -170,22 +184,13 @@ class PersonFeeder(object):
 
 
     def getWeightedCenters(self):
+        """
+        Computes weighted center for each cluster using the history.
+        The weights are reduced linearly with the least weight =1 and
+        the most recent frame getting the highest
+        """
         weights = np.zeros((1,len(self.persons_center[0])))
         weighted_sum = 0
-        """
-        for i in range(len(self.persons_center[0])):
-            weights[i][0] = i+1
-            weighted_sum+=i+1
-
-        print "persons_center "
-        print self.persons_center
-
-        print "weighted_sum" + str(weighted_sum)
-        print "weights"
-        print weights
-
-        return weights * self.persons_center / weighted_sum
-        """
 
         for i in range(len(self.persons_center[0])):
             weights[0][i] = i+1
@@ -201,13 +206,12 @@ class PersonFeeder(object):
 
 
 
-
-"""
-Given a image, it first computes the face centre
-using Viola and Jones descriptor and then cluster out
-the persons using K-means clustering
-"""
 class PersonSeperator(object):
+    """
+    Given a image, it first computes the face centre
+    using Viola and Jones descriptor and then cluster out
+    the persons using K-means clustering
+    """
 
     def __init__(self,img_path=None,img=None,max_iter=1):
         self.face_cascade = cv2.CascadeClassifier('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code/opencv-3.1.0/data/haarcascades/haarcascade_frontalface_default.xml')
@@ -221,8 +225,6 @@ class PersonSeperator(object):
             raise TypeError("No input")
 
         self.img = img
-        #cv2.imshow("img",self.img)
-        #cv2.waitKey(0)
 
 
     def updateImagePath(self,img_path):
@@ -234,6 +236,9 @@ class PersonSeperator(object):
 
 
     def getFaceCentre(self):
+        """
+        Computes the face center for all the faces in the image.
+        """
         img = self.img
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -245,17 +250,18 @@ class PersonSeperator(object):
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = img[y:y+h, x:x+w]
 
-        #cv2.imshow('img',img)
-        #cv2.waitKey(0)
         cv2.destroyAllWindows()
 
         return face_centres
 
 
     def clusterPersons(self,human_labels):
+        """
+        Computes face centres and pass them to clustering algorithm
+        to get the cluster out all the persons.
+        """
         img = self.img
         face_centres = self.getFaceCentre()
-        #print face_centres
         Km = KMeans(human_labels,face_centres)
         Km.compute(self.max_iter)
         self.Km=Km
@@ -263,8 +269,11 @@ class PersonSeperator(object):
 
 
     def createNewImages(self,human_labels,cluster_labels,num_persons):
+        """
+        Creates images for each person in the image with just the data for that
+        particular individual.
+        """
         img = self.img
-        #print img.shape
         height=img.shape[0]
         width=img.shape[1]
         blank_images=[]
@@ -285,17 +294,15 @@ class PersonSeperator(object):
 
 
     def plotCluster(self,human_labels,cluster_labels):
+        """
+        This code is to debug how the cluster and its boundary are
+        """
         img = self.img
         height=img.shape[0]
         width=img.shape[1]
-        #print img.shape
         blank_image = np.zeros((height+1,width+1,3), np.uint8)
-        #print blank_image.shape
-        #print len(human_labels)
-        #print len(cluster_labels)
 
         for i in range(len(self.Km.centroids)):
-            #print self.Km.centroids[i]
             cv2.circle(blank_image,(self.Km.centroids[i][1],self.Km.centroids[i][0]),5,(255,255,255),-1)
 
 
@@ -308,10 +315,10 @@ class PersonSeperator(object):
         cv2.waitKey(0)
 
 
-"""
-The K-means clustering algorithm
-"""
 class KMeans(object):
+    """
+    The K-means clustering algorithm
+    """
 
     def __init__(self,dataset,init_centroids):
         num_iter=0

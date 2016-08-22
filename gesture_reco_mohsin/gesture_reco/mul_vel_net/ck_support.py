@@ -3,8 +3,22 @@ import cv2
 import numpy as np
 from PIL import Image
 
-
 class CKDataLoader(object):
+    """
+    As the video is in the sequence of image format and the labeled
+    and the unlabeled sequences are not properly seperated. So This
+    class helps in reading the labels, remove the images in the sequence
+    so that in the end each sequence has fixed number of frames.
+
+
+    This works by listing the directories of the user and the
+    sub directories of the sequences for each user. Each time a new
+    request comes up, the count in the sub dir is moved by one and if all
+    the sequences of the user are over then the user directory count
+    is updated.
+
+    The output has to be of the 1-of-k format so that is also processed
+    """
 
     def __init__(self,data_dir,label_dir):
         self.count_vid=0
@@ -15,21 +29,26 @@ class CKDataLoader(object):
         self.allowed_len=12
 
         self.sub_dirs=os.listdir(data_dir)[1:]
-        #print self.sub_dirs
         self.updateDirs()
 
 
     def updateDirs(self):
-#        print self.count_vid
+        """
+        Once the counts are updated, the directories are updated.
+        """
         self.subject_dir=self.sub_dirs[self.count_sub]
         self.subject_vids=os.listdir(self.data_dir+"/"+self.subject_dir)
         if self.subject_vids[0].startswith("."):
             self.subject_vids=self.subject_vids[1:]
-        #print self.subject_vids
         self.sub_vid_dir=os.listdir(self.data_dir+"/"+self.subject_dir+"/"+self.subject_vids[self.count_vid])
 
 
     def getLabel(self):
+        """
+        Gets a label for the sequence. If the sequence is not labeled, the directory
+        will be missing, hence that is given label 0 at all representation. This will be used
+        in the training procedure. It will make the weight for the supervised part 0.
+        """
         file_path=self.label_dir+"/"+self.subject_dir+"/"+self.subject_vids[self.count_vid]
         dir_files=os.listdir(file_path)
 
@@ -44,11 +63,20 @@ class CKDataLoader(object):
         print dir_files
         f=open(file_path+"/"+dir_files[0])
         label=f.readline()
-        #print label[:-1][3]
         return int(label[:-1][3])
 
 
     def getSeqs(self,size,ret_same=False,get_lab=False):
+        """
+        Reads the images from the file. If the number of sequence is less than
+        the allowed sequence, then that sequence is ignored. Else the frames at
+        both the ends are removed so that left number of sequence are the same
+        as the allowed seq. Also updates the pointers accordingly for the directories
+        providing the data.
+
+        ret_same True does not get a new sequence, instead it gives a cached
+        sequence.
+        """
         seqs=[]
         labels=[]
 
@@ -67,24 +95,17 @@ class CKDataLoader(object):
                 vid_files=vid_files[1:]
 
             file2_open=self.processSeq(vid_files)
-            #print file2_open
             frames=[]
 
             for img in file2_open:
-                #print file_path+"/"+img
                 frame=cv2.imread(file_path+"/"+img,cv2.IMREAD_COLOR)
                 frame=cv2.resize(frame,(145,145))
-                #frame= Image.open(file_path+"/"+img)
-                #cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
-                #print frame.shape
 
                 in_ = np.array(frame, dtype=np.float32)
 
                 in_ = in_[:,:,::-1]
                 in_ -= np.array((104.00698793,116.66876762,122.67891434))
                 in_ = in_.transpose((2,0,1))
-                #print in_.shape
-
 
                 frames.append(in_)
 
@@ -120,8 +141,10 @@ class CKDataLoader(object):
 
 
     def processSeq(self,seq):
+        """
+        Remove the sequence at the corners.
+        """
         allowed_len=self.allowed_len
-        #print "processing"
 
         if len(seq)>=allowed_len:
             num_extra=len(seq)-allowed_len
@@ -134,12 +157,19 @@ class CKDataLoader(object):
 
 
     def reset(self):
+        """
+        Reset the directory pointers.
+        """
         self.count_vid=0
         self.count_sub=0
         self.updateDirs()
 
 
 def processLabels(labels):
+    """
+    Convert the date from a number to 1 of K representation and
+    0 at all if not labeled.
+    """
     prs_labels=[]
     for label in labels:
         prs_label=np.zeros((1,8,1,1))
@@ -154,7 +184,6 @@ def processLabels(labels):
 
 
 if __name__=="__main__":
-    #print os.listdir(".")
     data_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/cohn-kanade-images"
     label_dir="/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/gesture_data/www.consortium.ri.cmu.edu/data/ck/CK+/Emotion"
     loader=CKDataLoader(data_dir,label_dir)
@@ -164,4 +193,3 @@ if __name__=="__main__":
             frames,labels= loader.getSeqs(1,False,True)
             print frames.shape
         loader.reset()
-        #print processLabels(labels).shape
