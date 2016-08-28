@@ -460,7 +460,7 @@ def feedtoPipeline(person_feeder,human_labels,img_path,img,isImg=False):
     """
     person_feeder.track(human_labels,img_path,img)
     print "tracked"
-    cluster_labels = person_feeder.person_sep.clusterPersons(human_labels)
+    cluster_labels = person_feeder.cluster_labels
 
     if isImg:
         person_feeder.person_sep.plotCluster(human_labels,cluster_labels)
@@ -502,15 +502,15 @@ def processVideo(vid_path):
     pipeline. The seperated frames for each person are saved
     in the end.
     """
-    inp_frames=loadVideo(vid_path,1000)
-    raw_inp_frames=loadRawVideo(vid_path,1000)
+    inp_frames=loadVideo(vid_path,1500)
+    raw_inp_frames=loadRawVideo(vid_path,1500)
     out_frames=[]
     net=FCN(1,inp_frames[0].shape[1:])
     print "network loaded"
     start_time=time.time()
 
     person_feeder = PersonFeeder(150)
-    sample_fac = 3
+    sample_fac = 2
 
 
     for i in range(len(inp_frames)):
@@ -527,7 +527,7 @@ def processVideo(vid_path):
             print "some error"
         out_frames.append(labels[0])
 
-    #saveVideo(out_frames,15)
+    saveVideo(out_frames,15)
     person_feeder.saveFrames()
     print "elpased time ="+str(time.time()-start_time)
 
@@ -552,5 +552,5 @@ def trainImage():
 
 
 if __name__=="__main__":
-    processVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/news02.mp4")
+    processVideo("/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/news_data/test/bbc_01.mp4")
     #processImage('/Users/mohsinvindhani/myHome/web_stints/gsoc16/RedHen/code_Theano/fcn.berkeleyvision.org/data/pascal/VOCdevkit/VOC2012/JPEGImages/2008_002103.jpg')

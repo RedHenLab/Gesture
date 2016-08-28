@@ -105,6 +105,8 @@ class PersonFeeder(object):
                 self.persons_center.append([face_center])
 
         self.weighted_centers = self.getWeightedCenters()
+        #print "weighted centers" + str(self.weighted_centers)
+        #print "new centers" + str(new_face_centers)
 
         if not len(new_face_centers) == len(self.weighted_centers):
             print "not equal len of weighted and new face centres"
@@ -137,6 +139,10 @@ class PersonFeeder(object):
         """
         for i in range(len(self.persons_data)):
             person_data = self.persons_data[i]
+            #for j in range(len(person_data)):
+                #cv2.imshow("img_"+str(j),person_data[j])
+                #cv2.waitKey(0)
+                #cv2.destroyAllWindows()
             saveRawVideo(person_data,"out_"+str(i))
 
 
@@ -148,7 +154,8 @@ class PersonFeeder(object):
         self.assignFaceCentres(new_face_centers,self.weighted_centers)
         self.num_seq+=1
 
-        cluster_labels = self.person_sep.clusterPersons(human_labels)
+        cluster_labels = self.person_sep.clusterPersons(human_labels,new_face_centers)
+        self.cluster_labels = cluster_labels
         sep_images = self.person_sep.createNewImages(human_labels,cluster_labels,len(new_face_centers))
 
         for i in range(len(new_face_centers)):
@@ -181,6 +188,7 @@ class PersonFeeder(object):
                     min_index = j
 
             self.new_face_labels[i] = min_index
+            #print str(face_center) + "assigned to "+ str(weighted_centers[min_index])
 
 
     def getWeightedCenters(self):
@@ -255,13 +263,14 @@ class PersonSeperator(object):
         return face_centres
 
 
-    def clusterPersons(self,human_labels):
+    def clusterPersons(self,human_labels,face_centres):
         """
         Computes face centres and pass them to clustering algorithm
         to get the cluster out all the persons.
         """
         img = self.img
-        face_centres = self.getFaceCentre()
+        #face_centres = self.getFaceCentre()
+        #print "face centers used for clustering "+ str(face_centres)
         Km = KMeans(human_labels,face_centres)
         Km.compute(self.max_iter)
         self.Km=Km
@@ -328,6 +337,7 @@ class KMeans(object):
 
 
     def getLabels(self):
+        #print "K-means centroids "+ str(self.centroids)
         for i in range(len(self.dataset)):
             data_pt = self.dataset[i]
             self.labels[i] = self.getLabel(data_pt)
