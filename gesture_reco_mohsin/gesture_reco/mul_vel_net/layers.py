@@ -308,6 +308,7 @@ class CNNBatchNormLayer(object):
             self.gamma = self.gamma_vals.dimshuffle('x', 0, 'x', 'x')
 
         self.output=batch_normalize*self.gamma+self.beta
+        self.batch_normalize = batch_normalize
         #self.output=inputData-self.batch_mean
 
         self.params=[self.gamma_vals,self.beta_vals]
@@ -345,6 +346,19 @@ class CNNBatchNormLayer(object):
 
         assignGamma()
         assignBeta()
+
+
+
+class LocalResponseNormLayer(object):
+
+    def __init__(self,inputData,image_shape,lrn_params):
+        self.k = lrn_params[0]
+        self.n = lrn_params[1]
+        self.alpha = lrn_params[2]
+        self.beta = lrn_params[3]
+
+        self.input = inputData
+        self.output = lrn(self.input,self.k,self.n, self.alpha, self.beta)
 
 
 

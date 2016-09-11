@@ -58,10 +58,15 @@ class DeConvBlock(object):
         convLayer1_filter_shape,conv1_temporal_stride,conv1_filter_stride)
         self.params.extend(self.convLayer1_1.params)
 
+        relu_layer1_1_input=self.convLayer1_1.output
+        self.relu_layer1_1=ReLuLayer(relu_layer1_1_input)
+
         NormLayer1_input_shape=[batch_size,4,96,45,45]
-        self.NormLayer1_1=CNNBatchNormLayer(self.convLayer1_1.output,NormLayer1_input_shape)
+        self.NormLayer1_1=CNNBatchNormLayer(self.relu_layer1_1.output,NormLayer1_input_shape)
         self.params.extend(self.NormLayer1_1.params)
 
+        lrnLayer1_1_params = [2,5,10**(-4),0.75]
+        self.localResponseNormLayer1_1 = LocalResponseNormLayer(self.relu_layer1_1.output,NormLayer1_input_shape,lrnLayer1_1_params)
 
         self.convLayer1_2=TemporalConvLayer(rng,self.x1_2,convLayer1_input_shape,
         convLayer1_filter_shape,conv1_temporal_stride,conv1_filter_stride)
@@ -246,7 +251,7 @@ class DeConvBlock(object):
 
 
     def test(self,test_set_x):
-        out=self.deconvLayer1_1.output
+        out=self.localResponseNormLayer1_1.output
         batch_size=self.batch_size
 
         index = T.lscalar()
@@ -297,7 +302,9 @@ class DeConvBlock(object):
 
         trainDeConvNet=theano.function(
             inputs=[index],
-            outputs=[loss],
+            outputs=[self.relu_layer1_1.output,self.NormLayer1_1.output,self.NormLayer1_1.batch_mean
+            ,self.NormLayer1_1.batch_var,self.NormLayer1_1.batch_normalize,self.NormLayer1_1.gamma,
+            self.NormLayer1_1.beta],
             updates=updates,
             on_unused_input='warn',
             givens={
@@ -312,7 +319,20 @@ class DeConvBlock(object):
         for epoch in range(num_epochs):
             for batch_index in range(n_train_batches):
                 out=trainDeConvNet(batch_index)
-                print out
+                print "relu"
+                print out[0][-1][-1]
+                print "batch_out"
+                print out[1][-1][-1]
+                print "batch_mean"
+                print out[2][-1][-1]
+                print "batch_var"
+                print out[3][-1][-1]
+                print "batch_norm"
+                print out[4][-1][-1]
+                print "gamma"
+                print out[5][-1][-1]
+                print "beta"
+                print out[6][-1][-1]
                 #print out[0].shape
 
 
@@ -580,4 +600,5 @@ if __name__=="__main__":
     block = DeConvBlock(1)
     x=np.random.rand(1,25,3,145,145).astype(np.float32)
     y=np.random.rand(1,1,8,1,1)
-    block.train(x,10**-3,25)
+    #block.train(x,10**-3,2)
+    block.test(x)

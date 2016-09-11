@@ -24,6 +24,12 @@ def assignVals(var,vals):
     return output
 
 
+def lrn(input,k,n,alpha,beta):
+    op = LRN(k,n,alpha,beta)
+    output = op(input)
+    return output
+
+
 class Crop(Op):
     """
     Implement centre cropping
@@ -188,6 +194,126 @@ class CropGrad(Op):
         z[0]=zz
 
         #return zz
+
+class LRN(Op):
+    """
+    Implement centre cropping
+    """
+
+    def __init__(self,k,n,alpha,beta):
+        self.k= k
+        self.n = n
+        self.alpha = alpha
+        self.beta = beta
+
+
+    def make_node(self,x):
+        x = tensor.as_tensor_variable(x)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        broad = x.broadcastable[:2] + (False, False)
+        out = tensor.TensorType(x.dtype, broad)
+        return Apply(self, [x], [x.type()])
+
+
+    def perform(self,node,inp,out):
+        x, = inp
+        z, = out
+
+        zz=np.zeros_like(x)
+
+        for n in xrange(x.shape[0]):
+            for t in xrange(x.shape[1]):
+                for k in xrange(x.shape[2]):
+                    for r in xrange(x.shape[3]):
+                        for c in xrange(x.shape[4]):
+                            den = self.k
+                            sum_min = int(max(0,k - self.n/2))
+                            sum_max = int(min(x.shape[2]-1, k +self.n/2))
+                            for j in range(sum_min,sum_max+1):
+                                den = den + self.aplha * (x[n,t,j,r,c])**2
+                            zz[n,t,k,r,c]=x[n,t,k,r,c]/(den**self.beta)
+
+        z[0] = zz
+
+
+
+    def c_headers(self):
+        return ['<algorithm>','<math.h>']
+
+
+    def c_code(self, node, name, inp, out, sub):
+        x, = inp
+        z, = out
+
+        n =  self.n
+        alpha = self.alpha
+        k = self.k
+        beta = self.beta
+
+
+        ccode="""
+        int typenum = PyArray_ObjectType((PyObject*)%(x)s, 0);
+        int z_r, z_c, x_rn, x_cn; // shape of the output
+        int r, c; // shape of the input
+
+
+        // memory allocation of z if necessary
+        if ((!%(z)s)
+          ||(PyArray_DIMS(%(z)s)[0] != PyArray_DIMS(%(x)s)[0])
+          ||(PyArray_DIMS(%(z)s)[1] != PyArray_DIMS(%(x)s)[1])
+          ||(PyArray_DIMS(%(z)s)[2] != PyArray_DIMS(%(x)s)[2])
+          ||(PyArray_DIMS(%(z)s)[3] != PyArray_DIMS(%(x)s)[3])
+          ||(PyArray_DIMS(%(z)s)[4] != PyArray_DIMS(%(x)s)[4])
+          )
+        {
+          if (%(z)s) Py_XDECREF(%(z)s);
+          npy_intp dims[5] = {0,0,0,0,0};
+          dims[0]=PyArray_DIMS(%(x)s)[0];
+          dims[1]=PyArray_DIMS(%(x)s)[1];
+          dims[2]=PyArray_DIMS(%(x)s)[2];
+          dims[3]=PyArray_DIMS(%(x)s)[3];
+          dims[4]=PyArray_DIMS(%(x)s)[4];
+          //TODO: zeros not necessary
+          %(z)s = (PyArrayObject*) PyArray_ZEROS(5, dims, typenum,0);
+        }
+        if (1>0)
+        {
+            for(int n=0; n<PyArray_DIMS(%(x)s)[0]; n++){
+              for(int t=0; t<PyArray_DIMS(%(x)s)[1]; t++){
+                for(int k=0; k<PyArray_DIMS(%(x)s)[2]; k++){
+                    for(int r=0; r<PyArray_DIMS(%(x)s)[3]; r++){
+                        for(int c=0; c<PyArray_DIMS(%(x)s)[4]; c++){
+
+                            npy_intp index[5] = {n, t, k, r, c};
+
+                            dtype_%(z)s * z = ((dtype_%(z)s*)(PyArray_GetPtr(%(z)s, index)));
+                            dtype_%(x)s * x = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index)));
+
+                            double alpha_d = %(alpha)s;
+                            double k_d = %(k)s;
+
+                            dtype_%(z)s * den =  (dtype_%(z)s*) &k_d;
+                            dtype_%(x)s * alpha = ((dtype_%(x)s*) &alpha_d);
+
+                            int sum_min = int(std::max(0,k-%(n)s/2));
+                            int sum_max = int(std::min(int(PyArray_DIMS(%(x)s)[2]-1),k+%(n)s/2));
+
+                            for(int j=sum_min; j<= sum_max ; j++){
+                                npy_intp index_j[5] = {n,t,j,r,c};
+                                dtype_%(x)s * den_j = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index_j)));
+                                *den = (*den) + (*alpha) * (*den_j);
+                            }
+
+                            z[0]=x[0] / ((dtype_%(x)s)pow((double) *den,%(beta)s)) ;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+
+        return ccode % locals()
 
 
 
