@@ -272,7 +272,7 @@ class DeConvBlock(object):
         print n_test_batches
         for batch_index in range(n_test_batches):
             out=testDeConvNet(batch_index)
-            #print out
+            print out[-1][-1][-1]
             outs.append(out)
 
         return np.array(outs)

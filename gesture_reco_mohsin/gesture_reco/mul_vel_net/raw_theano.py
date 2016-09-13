@@ -289,11 +289,8 @@ class LRN(Op):
                             dtype_%(z)s * z = ((dtype_%(z)s*)(PyArray_GetPtr(%(z)s, index)));
                             dtype_%(x)s * x = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index)));
 
-                            double alpha_d = %(alpha)s;
-                            double k_d = %(k)s;
-
-                            dtype_%(z)s * den =  (dtype_%(z)s*) &k_d;
-                            dtype_%(x)s * alpha = ((dtype_%(x)s*) &alpha_d);
+                            dtype_%(z)s den =  (dtype_%(z)s) %(k)s;
+                            dtype_%(x)s alpha = ((dtype_%(x)s) %(alpha)s);
 
                             int sum_min = int(std::max(0,k-%(n)s/2));
                             int sum_max = int(std::min(int(PyArray_DIMS(%(x)s)[2]-1),k+%(n)s/2));
@@ -301,10 +298,10 @@ class LRN(Op):
                             for(int j=sum_min; j<= sum_max ; j++){
                                 npy_intp index_j[5] = {n,t,j,r,c};
                                 dtype_%(x)s * den_j = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index_j)));
-                                *den = (*den) + (*alpha) * (*den_j);
+                                den = (den) + (alpha) * (*den_j) * (*den_j);
                             }
 
-                            z[0]=x[0] / ((dtype_%(x)s)pow((double) *den,%(beta)s)) ;
+                            z[0]=x[0] / ((dtype_%(x)s)pow((double) den,%(beta)s)) ;
                             }
                         }
                     }
@@ -388,6 +385,122 @@ class LRNGrad(Op):
 
     def c_headers(self):
         return ['<algorithm>','<math.h>']
+
+
+    def c_code(self, node, name, inp, out, sub):
+        x,gz = inp
+        z, = out
+
+        n =  self.n
+        alpha = self.alpha
+        k = self.k
+        beta = self.beta
+
+        #print [self.n,self.alpha,self.k,self.beta]
+
+        scales = T.copy(z)
+
+
+        ccode="""
+        int typenum = PyArray_ObjectType((PyObject*)%(x)s, 0);
+        int z_r, z_c, x_rn, x_cn; // shape of the output
+        int r, c; // shape of the input
+
+
+        // memory allocation of z if necessary
+        if ((!%(z)s)
+          ||(PyArray_DIMS(%(z)s)[0] != PyArray_DIMS(%(x)s)[0])
+          ||(PyArray_DIMS(%(z)s)[1] != PyArray_DIMS(%(x)s)[1])
+          ||(PyArray_DIMS(%(z)s)[2] != PyArray_DIMS(%(x)s)[2])
+          ||(PyArray_DIMS(%(z)s)[3] != PyArray_DIMS(%(x)s)[3])
+          ||(PyArray_DIMS(%(z)s)[4] != PyArray_DIMS(%(x)s)[4])
+          )
+        {
+          if (%(z)s) Py_XDECREF(%(z)s);
+          npy_intp dims[5] = {0,0,0,0,0};
+          dims[0]=PyArray_DIMS(%(x)s)[0];
+          dims[1]=PyArray_DIMS(%(x)s)[1];
+          dims[2]=PyArray_DIMS(%(x)s)[2];
+          dims[3]=PyArray_DIMS(%(x)s)[3];
+          dims[4]=PyArray_DIMS(%(x)s)[4];
+          //TODO: zeros not necessary
+          %(z)s = (PyArrayObject*) PyArray_ZEROS(5, dims, typenum,0);
+          %(scales)s = (PyArrayObject*) PyArray_ZEROS(5, dims, typenum,0);
+        }
+
+        for(int n=0; n<PyArray_DIMS(%(x)s)[0]; n++){
+          for(int t=0; t<PyArray_DIMS(%(x)s)[1]; t++){
+            for(int k=0; k<PyArray_DIMS(%(x)s)[2]; k++){
+                for(int r=0; r<PyArray_DIMS(%(x)s)[3]; r++){
+                    for(int c=0; c<PyArray_DIMS(%(x)s)[4]; c++){
+                            npy_intp index[5] = {n, t, k, r, c};
+
+                            dtype_%(z)s * scale = ((dtype_%(z)s*)(PyArray_GetPtr(%(scales)s, index)));
+                            double alpha_d = %(alpha)s;
+                            double k_d = %(k)s;
+
+                            dtype_%(z)s den =  (dtype_%(z)s) %(k)s;
+                            dtype_%(x)s alpha = ((dtype_%(x)s) %(alpha)s);
+
+                            int sum_min = int(std::max(0,k-%(n)s/2));
+                            int sum_max = int(std::min(int(PyArray_DIMS(%(x)s)[2]-1),k+%(n)s/2));
+
+                            for(int j=sum_min; j<= sum_max ; j++){
+                                npy_intp index_j[5] = {n,t,j,r,c};
+                                dtype_%(x)s * den_j = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index_j)));
+                                den = (den) + (alpha) * (*den_j) * (*den_j);
+                            }
+                            scale[0] = den;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int n=0; n<PyArray_DIMS(%(x)s)[0]; n++){
+          for(int t=0; t<PyArray_DIMS(%(x)s)[1]; t++){
+            for(int k=0; k<PyArray_DIMS(%(x)s)[2]; k++){
+                for(int r=0; r<PyArray_DIMS(%(x)s)[3]; r++){
+                    for(int c=0; c<PyArray_DIMS(%(x)s)[4]; c++){
+
+                        npy_intp index[5] = {n, t, k, r, c};
+
+                        dtype_%(z)s * z = ((dtype_%(z)s*)(PyArray_GetPtr(%(z)s, index)));
+                        dtype_%(z)s * gz = ((dtype_%(z)s*)(PyArray_GetPtr(%(gz)s, index)));
+                        dtype_%(x)s * x = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index)));
+
+                        double alpha_d = %(alpha)s;
+                        double k_d = %(k)s;
+
+                        double zero = 0;
+
+                        dtype_%(z)s  sum_val =  (dtype_%(z)s) 0;
+                        dtype_%(x)s  alpha = ((dtype_%(x)s) %(alpha)s);
+                        dtype_%(x)s  beta = ((dtype_%(x)s) %(beta)s);
+
+                        int sum_min = int(std::max(0,k-%(n)s/2));
+                        int sum_max = int(std::min(int(PyArray_DIMS(%(x)s)[2]-1),k+%(n)s/2));
+
+                        for(int j=sum_min; j<= sum_max ; j++){
+                            npy_intp index_j[5] = {n,t,j,r,c};
+                            dtype_%(x)s * sum_j = ((dtype_%(x)s*)(PyArray_GetPtr(%(x)s, index_j)));
+                            *sum_j = *sum_j * (*((dtype_%(x)s*)(PyArray_GetPtr(%(gz)s, index_j))));
+                            dtype_%(z)s * scale = ((dtype_%(z)s*)(PyArray_GetPtr(%(scales)s, index_j)));
+                            dtype_%(x)s den = ((dtype_%(x)s)pow((double) *scale,%(beta)s+1));
+                            sum_val = (sum_val) + (*sum_j) / den;//
+                        }
+                        dtype_%(z)s * scale = ((dtype_%(z)s*)(PyArray_GetPtr(%(scales)s, index)));
+                        dtype_%(x)s den = ((dtype_%(x)s)pow((double) *scale,%(beta)s));
+                        z[0]= scale[0] /den - (2 * (alpha) * beta * x[0] * (sum_val));
+                        }
+                    }
+                }
+            }
+        }
+
+        """
+
+        return ccode % locals()
 
 
 
