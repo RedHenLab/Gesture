@@ -316,6 +316,80 @@ class LRN(Op):
         return ccode % locals()
 
 
+    def grad(self,inps,out_grads):
+        x,=inps
+        gz,=out_grads
+
+        return np.array([LRNGrad(self.k,self.n,self.alpha,self.beta)(x,gz)])
+
+
+
+class LRNGrad(Op):
+
+
+    def __init__(self,k,n,alpha,beta):
+        self.k= k
+        self.n = n
+        self.alpha = alpha
+        self.beta = beta
+
+
+    def make_node(self,x,y):
+        x = tensor.as_tensor_variable(x)
+        y = tensor.as_tensor_variable(y)
+        # If the input shape are broadcastable we can have 0 in the output shape
+        broad = x.broadcastable[:2] + (False, False)
+        out = tensor.TensorType(x.dtype, broad)
+        return Apply(self, [x,y], [x.type()])
+
+
+    def compScales(self,x):
+        scales = np.zeros_like(x)
+
+        for n in xrange(x.shape[0]):
+            for t in xrange(x.shape[1]):
+                for k in xrange(x.shape[2]):
+                    for r in xrange(x.shape[3]):
+                        for c in xrange(x.shape[4]):
+                            den = self.k
+                            sum_min = int(max(0,k - self.n/2))
+                            sum_max = int(min(x.shape[2]-1, k +self.n/2))
+                            for j in range(sum_min,sum_max+1):
+                                den = den + self.alpha * (x[n,t,j,r,c])**2
+
+                            scales[n,t,k,r,c] = den
+
+        return scales
+
+
+    def perform(self,node,inp,out):
+        x,gz = inp
+        z, = out
+
+        zz=np.zeros_like(x)
+        scales = self.compScales(x)
+
+        for n in xrange(x.shape[0]):
+            for t in xrange(x.shape[1]):
+                for k in xrange(x.shape[2]):
+                    for r in xrange(x.shape[3]):
+                        for c in xrange(x.shape[4]):
+                            sum_val = 0
+                            sum_min = int(max(0,k - self.n/2))
+                            sum_max = int(min(x.shape[2]-1, k +self.n/2))
+                            for j in range(sum_min,sum_max+1):
+                                sum_val = sum_val +  x[n,t,j,r,c] * gz[n,t,j,r,c]/(scales[n,t,j,r,c]**(self.beta+1))
+
+                            zz[n,t,k,r,c] = gz[n,t,k,r,c]/(scales[n,t,k,r,c]**self.beta) - (2*self.alpha*self.beta)*x[n,t,k,r,c]*sum_val
+                            #zz[n,t,k,r,c]=x[n,t,k,r,c]/(den**self.beta)
+
+        z[0] = zz
+
+
+    def c_headers(self):
+        return ['<algorithm>','<math.h>']
+
+
 
 class FuseSum(Op):
     """

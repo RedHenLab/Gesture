@@ -63,7 +63,7 @@ class DeConvBlock(object):
 
         NormLayer1_input_shape=[batch_size,4,96,45,45]
         self.NormLayer1_1=CNNBatchNormLayer(self.relu_layer1_1.output,NormLayer1_input_shape)
-        self.params.extend(self.NormLayer1_1.params)
+        #self.params.extend(self.NormLayer1_1.params)
 
         lrnLayer1_1_params = [2,5,10**(-4),0.75]
         self.localResponseNormLayer1_1 = LocalResponseNormLayer(self.relu_layer1_1.output,NormLayer1_input_shape,lrnLayer1_1_params)
@@ -285,7 +285,7 @@ class DeConvBlock(object):
         #gparams=T.grad(T.sum(self.deconvLayer1_1.output+self.deconvLayer1_2.output+
         #self.deconvLayer1_3.output+self.deconvLayer1_4.output),self.params)
 
-        loss = T.sum(self.NormLayer1_1.output)
+        loss = T.sum(self.localResponseNormLayer1_1.output)
         #self.params = [self.convLayer1_1.params]
 
         gparams=T.grad(loss,self.params)
@@ -302,9 +302,9 @@ class DeConvBlock(object):
 
         trainDeConvNet=theano.function(
             inputs=[index],
-            outputs=[self.relu_layer1_1.output,self.NormLayer1_1.output,self.NormLayer1_1.batch_mean
-            ,self.NormLayer1_1.batch_var,self.NormLayer1_1.batch_normalize,self.NormLayer1_1.gamma,
-            self.NormLayer1_1.beta],
+            outputs=[self.relu_layer1_1.output],#,self.NormLayer1_1.output,self.NormLayer1_1.batch_mean
+            #,self.NormLayer1_1.batch_var,self.NormLayer1_1.batch_normalize,self.NormLayer1_1.gamma,
+            #self.NormLayer1_1.beta],
             updates=updates,
             on_unused_input='warn',
             givens={
@@ -321,6 +321,7 @@ class DeConvBlock(object):
                 out=trainDeConvNet(batch_index)
                 print "relu"
                 print out[0][-1][-1]
+                """
                 print "batch_out"
                 print out[1][-1][-1]
                 print "batch_mean"
@@ -334,6 +335,8 @@ class DeConvBlock(object):
                 print "beta"
                 print out[6][-1][-1]
                 #print out[0].shape
+                """
+
 
 
 class MulVelNet(object):
@@ -600,5 +603,5 @@ if __name__=="__main__":
     block = DeConvBlock(1)
     x=np.random.rand(1,25,3,145,145).astype(np.float32)
     y=np.random.rand(1,1,8,1,1)
-    #block.train(x,10**-3,2)
-    block.test(x)
+    block.train(x,10**-3,2)
+    #block.test(x)
