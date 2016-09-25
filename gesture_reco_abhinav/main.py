@@ -203,9 +203,9 @@ def getHand(thresh):
             max_area = area
 
     if(max_area>1000):
-        ellipse1 = cv2.fitEllipse(max_contour1)
+        ellipse1 = cv2.fitEllipse(max_contour)
         # cv2.ellipse(OriginalImg,ellipse1,(0,255,0),2)
-        M = cv2.moments(max_contour1)
+        M = cv2.moments(max_contour)
         cx = int(M['m10']/M['m00'])
         cy = int(M['m01']/M['m00'])
         # mssg = str(cx) + " " + str(cy)+"\n"
