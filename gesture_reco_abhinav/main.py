@@ -39,7 +39,6 @@ def distance(a1,a2):
 # Train function: To get the row-row and column-column covariance matrix after training. Takes as input training data. Returns U(MXS) row-row covariance matrix, V(RXN) column-column 
 # covariance matrix and M(S*R) new mapped data.
 def train(data):
-    
     avg = [[0 for x in range(N)] for y in range(M)]
 
     # get averag of whole training data
@@ -70,17 +69,18 @@ def train(data):
     U = feignVec[0:M,0:S]
     V = geignVec[0:N,0:R]
     U = np.transpose(U)
-    M = [[[0 for x in range(R)] for y in range(S)] for z in range(SIZE_OF_DATA)]
-    M = np.array(M)
+    # To differentiate global variable M, I am using M_
+    M_ = [[[0 for x in range(R)] for y in range(S)] for z in range(SIZE_OF_DATA)]
+    M_ = np.array(M_)
 
     # map training data to new dimensions
     for x in range(SIZE_OF_DATA):
         temp = data[x]
         temp = np.mat(temp)
         temp = (U*temp)*V
-        M[x] = np.array(temp)
+        M_[x] = np.array(temp)
 
-    return M,U,V
+    return M_,U,V
 
 # Read Function: To read the training data. Take an empty 2d list and name of the indexfile (file with names of files for each data point) as input.
 def read(data,indexfilename):
@@ -89,7 +89,7 @@ def read(data,indexfilename):
     for filename in indexfile:
         filename = filename.rstrip()
         # print filename
-        f = open(filename,"r")
+        f = open("Data/using coor + area+ orientation/" + filename,"r")
         for x in f:
             x=x.rstrip()
             x=x.split()
@@ -203,13 +203,14 @@ def getHand(thresh):
             max_area = area
 
     if(max_area>1000):
-        ellipse1 = cv2.fitEllipse(max_contour)
-        # cv2.ellipse(OriginalImg,ellipse1,(0,255,0),2)
+        ellipse = cv2.fitEllipse(max_contour)
+        cv2.ellipse(thresh.copy(),ellipse,(0,255,0),2)
         M = cv2.moments(max_contour)
         cx = int(M['m10']/M['m00'])
         cy = int(M['m01']/M['m00'])
         # mssg = str(cx) + " " + str(cy)+"\n"
         # data.write(mssg)
+        flag = 0;
 
     else: 
         flag=-1
@@ -227,7 +228,7 @@ def getHand(thresh):
 # Starting the camera/video capture
 if (len(sys.argv)>1): camera = cv2.VideoCapture(sys.argv[1])
 else: 
-camera= cv2.VideoCapture(0)
+    camera= cv2.VideoCapture(0)
 
 #if(len(sys.argv)>1):
 #    data1 = open(sys.argv[1],"w")
